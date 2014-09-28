@@ -29,9 +29,7 @@ def main():
     args = parser.parse_args()
     database = args.database[0]
 
-    sql_files = get_sql_files()
-
-    for sql_file in sql_files:
+    for sql_file in get_sql_files():
         print "Installing {0} to {1}".format(sql_file, database)
         subprocess.call(
             "psql {0} < {1}".format(database, sql_file),
