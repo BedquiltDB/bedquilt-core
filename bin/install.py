@@ -29,13 +29,14 @@ def main():
     args = parser.parse_args()
     database = args.database[0]
 
-    files = get_sql_files()
+    sql_files = get_sql_files()
 
-    print "This does nothing yet"
-    print SQL_DIR
-    print "Database: ", database
-    print files
-
+    for sql_file in sql_files:
+        print "Installing {0} to {1}".format(sql_file, database)
+        subprocess.call(
+            "psql {0} < {1}".format(database, sql_file),
+            shell=True
+        )
 
 
 if __name__ == "__main__":
