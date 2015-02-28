@@ -10,7 +10,7 @@ EXECUTE format('
       payload jsonb,
       created timestamptz default current_timestamp,
       updated timestamptz default current_timestamp,
-      CONSTRAINT validate__id CHECK ((payload->>''_id'') IS NOT NULL)
+      CONSTRAINT validate_id CHECK ((payload->>''_id'') IS NOT NULL)
   );
   CREATE INDEX idxgin ON %I USING gin (payload);
   CREATE UNIQUE INDEX ui_id ON %I ((payload->>''_id''));
