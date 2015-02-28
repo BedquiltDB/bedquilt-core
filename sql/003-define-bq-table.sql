@@ -9,8 +9,12 @@ EXECUTE format('
       id serial PRIMARY KEY,
       payload jsonb,
       created timestamptz default current_timestamp,
-      updated timestamptz default current_timestamp
-  )', t_name);
+      updated timestamptz default current_timestamp,
+      CONSTRAINT validate__id CHECK ((payload->>''_id'') IS NOT NULL)
+  );
+  CREATE INDEX idxgin ON %I USING gin (payload);
+  CREATE UNIQUE INDEX ui_id ON %I ((payload->>''_id''));
+  ', t_name, t_name, t_name);
 
 END
 $$ LANGUAGE plpgsql;
