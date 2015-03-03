@@ -1,7 +1,6 @@
 DROP FUNCTION IF EXISTS bq_create_collection(t_name text);
 
-CREATE OR REPLACE FUNCTION
-bq_create_collection(t_name text)
+CREATE OR REPLACE FUNCTION bq_create_collection(t_name text)
 RETURNS VOID AS $$
 BEGIN
 
