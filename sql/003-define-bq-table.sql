@@ -6,16 +6,16 @@ RETURNS VOID AS $$
 BEGIN
 
 EXECUTE format('
-  CREATE TABLE IF NOT EXISTS %I (
+  CREATE TABLE IF NOT EXISTS %1$I (
       id serial PRIMARY KEY,
       payload jsonb,
       created timestamptz default current_timestamp,
       updated timestamptz default current_timestamp,
       CONSTRAINT validate_id CHECK ((payload->>''_id'') IS NOT NULL)
   );
-  CREATE INDEX idxgin ON %I USING gin (payload);
-  CREATE UNIQUE INDEX ui_id ON %I ((payload->>''_id''));
-  ', t_name, t_name, t_name);
+  CREATE INDEX idx_%1$I_payload ON %1$I USING gin (payload);
+  CREATE UNIQUE INDEX idx_%1$I_payload_id ON %1$I ((payload->>''_id''));
+  ', t_name);
 
 END
 $$ LANGUAGE plpgsql;
