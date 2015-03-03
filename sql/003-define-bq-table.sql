@@ -1,6 +1,7 @@
-DROP FUNCTION IF EXISTS bq_define_table(t_name text);
+DROP FUNCTION IF EXISTS bq_create_collection(t_name text);
 
-CREATE OR REPLACE FUNCTION bq_define_table(t_name text)
+CREATE OR REPLACE FUNCTION
+bq_create_collection(t_name text)
 RETURNS VOID AS $$
 BEGIN
 
