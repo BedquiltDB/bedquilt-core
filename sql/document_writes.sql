@@ -9,7 +9,7 @@ BEGIN
 PERFORM bq_create_collection(i_coll);
 
 EXECUTE format(
-    'INSERT INTO %I (payload) VALUES (''%s'');',
+    'INSERT INTO %I (jdoc) VALUES (''%s'');',
     i_coll,
     i_json_data
 );
