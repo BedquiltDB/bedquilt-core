@@ -13,8 +13,18 @@ SCRIPT_LOCATION = os.path.dirname(os.path.realpath(__file__))
 SQL_DIR = os.path.realpath(os.path.join(SCRIPT_LOCATION, '../sql'))
 
 
+BEDQUILT_MODULES = [
+    'bootstrap.sql',
+    'utilities.sql',
+    'collection_ops.sql',
+    'document_writes.sql',
+    'document_reads.sql'
+]
+
+
 def get_sql_files():
-    return sorted(glob.glob(os.path.join(SQL_DIR, '*.sql')))
+    return map(lambda i: os.path.join(SQL_DIR, i),
+               BEDQUILT_MODULES)
 
 
 def main():
@@ -30,7 +40,7 @@ def main():
     database = args.database[0]
 
     for sql_file in get_sql_files():
-        print "Installing {0} to {1}".format(sql_file, database)
+        print ">> Installing {0} to {1}".format(sql_file, database)
         subprocess.call(
             "psql {0} < {1}".format(database, sql_file),
             shell=True
