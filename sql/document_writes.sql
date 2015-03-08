@@ -1,5 +1,7 @@
-DROP FUNCTION IF EXISTS bq_insert_document(i_coll text, i_json_data json);
+-- Document Writes
 
+
+-- insert document
 CREATE OR REPLACE FUNCTION bq_insert_document(
     i_coll text,
     i_json_data json

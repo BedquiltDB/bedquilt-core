@@ -1,5 +1,7 @@
-DROP FUNCTION IF EXISTS bq_create_collection(i_coll text);
+-- Collection-level operations
 
+
+-- create collection
 CREATE OR REPLACE FUNCTION bq_create_collection(i_coll text)
 RETURNS VOID AS $$
 BEGIN
