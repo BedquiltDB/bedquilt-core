@@ -23,10 +23,10 @@ END
 $$ LANGUAGE plpgsql;
 
 
--- find
+-- find many documents
 CREATE OR REPLACE FUNCTION bq_find_documents(
-i_coll text,
-i_json_query json
+    i_coll text,
+    i_json_query json
 ) RETURNS table(jdoc json) AS $$
 BEGIN
 
