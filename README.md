@@ -1,5 +1,7 @@
 # Bedquilt
 
+![Bedquilt](./resources/bedquilt_logo_tile.png)
+
 A JSON store on PostgreSQL.
 
 
