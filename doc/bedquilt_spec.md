@@ -8,7 +8,7 @@ This document specifies a high-level interface to BedquiltDB. The examples will 
 ## Connections
 
 - Connect to a PostgreSQL database directly:
-`db = bedquilt.BedquiltClient(“localhost/bedquilt_test”)`
+`db = bedquilt.BedquiltClient("localhost/bedquilt_test")`
 - Get a collection from the database:
 `coll = db[‘people’]`
 
@@ -34,7 +34,7 @@ Returns: None
 
 Examples:
 ```
-coll.create_index({“name”: 1})
+coll.create_index({"name": 1})
 ```
 
 ### Delete Index
@@ -48,7 +48,7 @@ Returns: None
 
 Examples:
 ```
-coll.delete_index({“name”: 1})
+coll.delete_index({"name": 1})
 ```
 
 ### Add Constraint
@@ -59,7 +59,7 @@ The spec describes the fields which should be constrained, and how. This will va
 Spec Options:
 - $required (Boolean) : Enforces that this field must be present in all documents
 - $notnull (Boolean) : Field must never have a null value
-- $type (String) : enforce the type of this field, options are “string”, “number|double|float”,  “array”, “object”
+- $type (String) : enforce the type of this field, options are "string", "number|double|float",  "array", "object"
 - $unique (Boolean) : Enforces uniqueness of this field
 
 Params:
@@ -69,10 +69,10 @@ Returns: Boolean indicating success or failure
 
 Examples:
 ```
-coll.add_constraint({“name”: {“$required”: True,
-                              “$notnull”: True,
-                              “$type”: “string”,
-															“$unique”: False}})
+coll.add_constraint({"name": {"$required": True,
+                              "$notnull": True,
+                              "$type": "string",
+                              "$unique": False}})
 ```
 
 
@@ -87,10 +87,10 @@ Returns: String representing the _id field of the document
 
 Examples:
 ```
-_id = coll.insert({“_id”: “sarah@example.com”,
-									 “name”: “Sarah Bingham”,
-								   “age”: 42,
-									 “likes”: [“icecream”, “code”, “hockey”]})
+_id = coll.insert({"_id": "sarah@example.com",
+                   "name": "Sarah Bingham",
+                   "age": 42,
+                   "likes": ["icecream", "code", "hockey"]})
 ```
 
 
@@ -108,12 +108,12 @@ Returns: String representing the _id field of the document
 
 Examples:
 ```
-_id = coll.insert({“_id”: “sarah@example.com”,
-									 “name”: “Sarah Bingham”,
-								   “age”: 42,
-									 “likes”: [“icecream”, “code”, “hockey”]})
+_id = coll.insert({"_id": "sarah@example.com",
+                   "name": "Sarah Bingham",
+                   "age": 42,
+                   "likes": ["icecream", "code", "hockey"]})
 sarah_doc = coll.find_one(_id)
-sarah_doc[‘likes’].append(“music”)
+sarah_doc[‘likes’].append("music")
 coll.save(sarah_doc)
 ```
 
@@ -130,7 +130,7 @@ Returns: A single document, or null if none could be found.
 
 Examples:
 ```
-likes = coll.find_one({“name”: “Sarah Bingham”}, {“likes”: 1})
+likes = coll.find_one({"name": "Sarah Bingham"}, {"likes": 1})
 ```
 
 ### Find
@@ -146,7 +146,7 @@ Returns: A potentially empty sequence of documents.
 Examples:
 ```
 people_who_like_icecream = coll.find(
-		{“likes”: [“icecream”]}
+    {"likes": ["icecream"]}
 )
 ```
 
@@ -162,7 +162,7 @@ Returns: Number, representing the number of documents removed
 
 Examples:
 ```
-removed = coll.remove({“likes”: [“pears”]}, multi=True)
+removed = coll.remove({"likes": ["pears"]}, multi=True)
 ```
 
 ### Update
@@ -179,13 +179,12 @@ Params:
 
 Examples:
 ```
-coll.update({“_id”: “some_id”},
-					  {“$set”: {“description”: “A nice thing”})
+coll.update({"_id": "some_id"},
+            {"$set": {"description": "A nice thing"})
 
-coll.update({“likes”: [“jazz”]},
-						{“$set”: {“goodPerson”: True}})
+coll.update({"likes": ["jazz"]},
+            {"$set": {"goodPerson": True}})
 
-coll.update({“likes”: [“pineapple”]},
-						{“$unset”: {“goodPerson”: 1}})
+coll.update({"likes": ["pineapple"]},
+            {"$unset": {"goodPerson": 1}})
 ```
-
