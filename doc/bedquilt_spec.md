@@ -17,6 +17,7 @@ This document specifies a high-level interface to BedquiltDB. The examples will 
 
 - Create Collection
 - Delete Collection
+- List Collections
 
 
 ## Collection Operations
