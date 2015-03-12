@@ -15,9 +15,27 @@ This document specifies a high-level interface to BedquiltDB. The examples will 
 
 ## Database Operations
 
-- Create Collection
-- Delete Collection
-- List Collections
+## Create Collection
+
+Create a collection. Does nothing if the collection already exists.
+
+Params:
+- collectionName::String
+
+Returns: Boolean indicating whether the collection was created.
+
+Examples:
+```
+db.create_collection("people")
+```
+
+## Delete Collection
+
+Todo
+
+## List Collections
+
+Todo
 
 
 ## Collection Operations
