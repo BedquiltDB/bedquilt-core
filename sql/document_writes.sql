@@ -11,7 +11,7 @@ BEGIN
 PERFORM bq_create_collection(i_coll);
 
 EXECUTE format(
-    'INSERT INTO %I (jdoc) VALUES (''%s'');',
+    'INSERT INTO %I (bq_jdoc) VALUES (''%s'');',
     i_coll,
     i_json_data
 );

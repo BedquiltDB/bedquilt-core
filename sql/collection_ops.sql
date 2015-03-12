@@ -11,14 +11,14 @@ THEN
   EXECUTE format('
   CREATE TABLE IF NOT EXISTS %1$I (
       id serial PRIMARY KEY,
-      jdoc jsonb,
+      bq_jdoc jsonb,
       created timestamptz default current_timestamp,
       updated timestamptz default current_timestamp,
-      CONSTRAINT validate_id CHECK ((jdoc->>''_id'') IS NOT NULL)
+      CONSTRAINT validate_id CHECK ((bq_jdoc->>''_id'') IS NOT NULL)
   );
   COMMENT ON TABLE %1$I IS ''bedquilt.%1$s'';
-  CREATE INDEX idx_%1$I_jdoc ON %1$I USING gin (jdoc);
-  CREATE UNIQUE INDEX idx_%1$I_jdoc_id ON %1$I ((jdoc->>''_id''));
+  CREATE INDEX idx_%1$I_bq_jdoc ON %1$I USING gin (bq_jdoc);
+  CREATE UNIQUE INDEX idx_%1$I_bq_jdoc_id ON %1$I ((bq_jdoc->>''_id''));
   ', i_coll);
 END IF;
 
@@ -32,10 +32,9 @@ RETURNS table(collection_name text) AS $$
 BEGIN
 
 RETURN QUERY SELECT table_name::text
-       FROM information_sachema.tables
-       WHERE table_schema = 'public'
-       AND pg_catalog.obj_description((table_name)::regclass, 'pg_class')
-       LIKE 'bedquilt.%';
+       FROM information_schema.columns
+       WHERE column_name = 'bq_jdoc'
+       AND data_type = 'jsonb';
 
 END
 $$ LANGUAGE plpgsql;
