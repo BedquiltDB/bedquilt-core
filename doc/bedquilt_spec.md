@@ -2,7 +2,8 @@
 
 ## Overview
 
-This document specifies a high-level interface to BedquiltDB. The examples will be given in a pseudo-python language.
+This document specifies a high-level interface to BedquiltDB.
+The examples will be given in a pseudo-python language.
 
 
 ## Connections
@@ -29,21 +30,45 @@ Examples:
 db.create_collection("people")
 ```
 
+
 ## Delete Collection
 
-Todo
+Delete a collection. Does nothing if the collection does not exist.
+
+Params:
+- collectionName::String
+
+Returns: Boolean indicating whether the collection was deleted.
+
+Examples:
+```
+db.delete_collection("people")
+```
+
 
 ## List Collections
 
-Todo
+Get a list of collection names.
+
+Params: None
+
+Returns: List of string names of collections.
+
+Examples:
+```
+for collection_name in db.list_collections():
+    print collection_name
+```
 
 
 ## Collection Operations
 
 ### Create Index:
 
-Add an index to the collection.
-The spec is a json-like map where the keys are field names and the values are numbers. positive numbers correspond to ascending index, negative numbers to descending index. If unique is true, then the index will enforce uniqueness.
+Add an index to the collection.  The spec is a json-like map where the
+keys are field names and the values are numbers. positive numbers
+correspond to ascending index, negative numbers to descending
+index. If unique is true, then the index will enforce uniqueness.
 
 Params:
 - spec::Map
@@ -72,13 +97,19 @@ coll.delete_index({"name": 1})
 
 ### Add Constraint
 
-Adds a constraint to the fields of this collection.
-The spec describes the fields which should be constrained, and how. This will validate all existing documents in the collection before applying. Further writes to this collection will be validated before writing, and will fail if the written document does not satisfy the constraints.
+Adds a constraint to the fields of this collection.  The spec
+describes the fields which should be constrained, and how. This will
+validate all existing documents in the collection before
+applying. Further writes to this collection will be validated before
+writing, and will fail if the written document does not satisfy the
+constraints.
 
 Spec Options:
-- $required (Boolean) : Enforces that this field must be present in all documents
+- $required (Boolean) : Enforces that this
+  field must be present in all documents
 - $notnull (Boolean) : Field must never have a null value
-- $type (String) : enforce the type of this field, options are "string", "number|double|float",  "array", "object"
+- $type (String) : enforce the type of this field,
+  options are "string", "number|double|float",  "array", "object"
 - $unique (Boolean) : Enforces uniqueness of this field
 
 Params:
@@ -97,7 +128,11 @@ coll.add_constraint({"name": {"$required": True,
 
 ### Insert
 
-Insert a document into the collection. If the document does not contain an _id field, one will be generated and added to the document before insertion. If an _id is supplied and there already exists a document in this collection with the same _id, that is an error.
+Insert a document into the collection. If the document does not
+contain an _id field, one will be generated and added to the
+document before insertion. If an _id is supplied and there
+already exists a document in this collection with the
+same _id, that is an error.
 
 Params:
 - doc::Map
@@ -116,9 +151,13 @@ _id = coll.insert({"_id": "sarah@example.com",
 ### Save
 
 Write a document to the collection.
-If an _id is supplied and there already exists a document in this collection with the same _id, that document will be replaced with this one.
+If an _id is supplied and there already exists a document in this
+collection with the same _id, that document will be
+replaced with this one.
 
-If the document does not contain an _id field, one will be generated and added to the document before insertion as a new document.
+If the document does not contain an _id field, one will be
+generated and added to the document before insertion as
+a new document.
 
 Params:
 - doc::Map
@@ -139,7 +178,9 @@ coll.save(sarah_doc)
 
 ### Find One
 
-Retrieve the first document which matches the provided query document from the collection. The filter specifies the structure of the returned document.
+Retrieve the first document which matches the provided query document
+from the collection. The filter specifies the structure of the
+returned document.
 
 Params:
 - query::Map
@@ -154,7 +195,9 @@ likes = coll.find_one({"name": "Sarah Bingham"}, {"likes": 1})
 
 ### Find
 
-Retrieve a sequence of documents which match the provided query document. The filter specifies the structure of the returned documents.
+Retrieve a sequence of documents which match the provided
+query document. The filter specifies the structure of the returned
+documents.
 
 Params:
 - query::Map
