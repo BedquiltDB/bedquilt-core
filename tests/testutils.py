@@ -17,3 +17,12 @@ def get_pg_connection():
         database='bedquilt_test',
         user=getpass.getuser()
     )
+
+
+def clean_database(conn):
+    cur = conn.cursor()
+    cur.execute("select bq_list_collections();")
+    result = cur.fetchone()
+    if result is not None:
+        for collecion in cur.fetchone():
+            cur.execute("select bq_delete_collection('{}')".format(collection))
