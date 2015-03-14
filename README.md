@@ -8,7 +8,7 @@ A JSON store on PostgreSQL.
 # Warning
 
 Bedquilt is currently worse-than-alpha quality and should not be used in production,
-or anywher else for that matter. If Bedquilt kills your database, just imagine me
+or anywhere else for that matter. If Bedquilt kills your database, just imagine me
 whispering "told you so" and think hard about how you got yourself into this
 mess.
 
