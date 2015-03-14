@@ -193,6 +193,7 @@ Examples:
 likes = coll.find_one({"name": "Sarah Bingham"}, {"likes": 1})
 ```
 
+
 ### Find
 
 Retrieve a sequence of documents which match the provided
@@ -211,6 +212,22 @@ people_who_like_icecream = coll.find(
     {"likes": ["icecream"]}
 )
 ```
+
+
+### Find One By Id
+
+Retrieve the document whose `_id` field matches the supplied value.
+
+Params:
+- id::String
+
+Returns: A single document, or null if none could be found.
+
+Examples:
+```
+likes = coll.find_one_by_id("sarah@example.com")
+```
+
 
 ### Remove
 
