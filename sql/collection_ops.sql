@@ -41,3 +41,20 @@ RETURN QUERY SELECT table_name::text
 
 END
 $$ LANGUAGE plpgsql;
+
+
+-- delete collection
+CREATE OR REPLACE FUNCTION bq_delete_collection(i_coll text)
+RETURNS BOOLEAN AS $$
+BEGIN
+
+IF (SELECT bq_collection_exists(i_coll))
+THEN
+  EXECUTE format('DROP TABLE %I;', i_coll);
+  RETURN true;
+ELSE
+  RETURN false;
+END IF;
+
+END
+$$ LANGUAGE plpgsql;
