@@ -20,6 +20,7 @@ mess.
 - Harness the new jsonb functionality of PostgreSQL and wrap it in a nice
 programmatic API that is consistent across languages
 - Make use of SQL strong-points, such as schema constraints and table joins
+- Build a tool which is actually useful for developers
 
 
 # Installation
