@@ -13,6 +13,15 @@ whispering "told you so" and think hard about how you got yourself into this
 mess.
 
 
+# Goals
+
+- Borrow some of the good ideas and positive attributes of json
+  object-stores and bring them to PostgreSQL
+- Harness the new jsonb functionality of PostgreSQL and wrap it in a nice
+programmatic API that is consistent across languages
+- Make use of SQL strong-points, such as schema constraints and table joins
+
+
 # Installation
 
 Run the following to build the extension and install it to the local database:
