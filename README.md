@@ -15,11 +15,19 @@ mess.
 
 # Installation
 
-Run the `bin/install.py` script as a user with permisson to alter the database;
-for example:
-
+Run the following to build the extension and install it to the local database:
 ```bash
-su postgres -c './bin/install.py --database some_db'
+make install
+```
+
+Run this to build to a zip file:
+```bash
+make dist
+```
+
+Then, on the postgres server:
+```sql
+CREATE EXTENSION bedquilt;
 ```
 
 
