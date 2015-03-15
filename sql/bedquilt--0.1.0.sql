@@ -1,8 +1,5 @@
 -- Bedquilt Extension
 
--- dependencies
-CREATE EXTENSION IF NOT EXISTS pgcrypto;
-
 
 -- bedquilt version
 CREATE OR REPLACE FUNCTION bq_version () RETURNS VARCHAR AS $$
