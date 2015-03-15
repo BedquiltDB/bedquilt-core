@@ -28,19 +28,25 @@ programmatic API that is consistent across languages
 Run the following to build the extension and install it to the local database:
 
 ```bash
+
 make install
+
 ```
 
 Run this to build to a zip file:
 
 ```bash
+
 make dist
+
 ```
 
 Then, on the postgres server:
 
 ```sql
+
 CREATE EXTENSION bedquilt;
+
 ```
 
 
