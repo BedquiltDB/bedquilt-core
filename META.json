@@ -1,7 +1,7 @@
 {
     "name": "bedquilt",
     "abstract": "A json object store",
-    "description": "todo",
+    "description": "Bedquilt is a json store built on PostgreSQL",
     "version": "0.1.0",
     "maintainer": [
         "Shane Kilkelly <shane+bedquiltdb@kilkelly.me"
