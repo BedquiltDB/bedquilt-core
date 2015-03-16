@@ -23,6 +23,13 @@ programmatic API that is consistent across languages
 - Build a tool which is actually useful for developers
 
 
+# Prerequisites
+
+- PostgreSQL >= 9.4
+- PL/pgSQL
+- The pgcrypto extension
+
+
 # Installation
 
 Run the following to build the extension and install it to the local database:
