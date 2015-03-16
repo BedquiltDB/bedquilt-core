@@ -1,6 +1,7 @@
 import psycopg2
 import os
 import getpass
+import unittest
 
 
 # CREATE DATABASE bedquilt_test
@@ -26,3 +27,11 @@ def clean_database(conn):
     if result is not None:
         for collecion in cur.fetchone():
             cur.execute("select bq_delete_collection('{}')".format(collection))
+
+
+class BedquiltTestCase(unittest.TestCase):
+
+    def setUp(self):
+        self.conn = get_pg_connection()
+        self.cur = self.conn.cursor()
+        clean_database(self.conn)

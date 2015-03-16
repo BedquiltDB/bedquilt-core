@@ -1,13 +1,7 @@
-import unittest
 import testutils
 
 
-class TestCreateCollection(unittest.TestCase):
-
-    def setUp(self):
-        self.conn = testutils.get_pg_connection()
-        self.cur = self.conn.cursor()
-        testutils.clean_database(self.conn)
+class TestCreateCollection(testutils.BedquiltTestCase):
 
     def test_creating_a_new_collection(self):
         # create a collection 'testone'
@@ -25,13 +19,17 @@ class TestCreateCollection(unittest.TestCase):
         self.assertEqual(result[0], False)
 
 
-class TestListCollections(unittest.TestCase):
+class TestListCollections(testutils.BedquiltTestCase):
 
-    def setUp(self):
-        self.conn = testutils.get_pg_connection()
-        self.cur = self.conn.cursor()
+    def test_list_collections_empty_instance(self):
 
-        testutils.clean_database(self.conn)
+        self.cur.execute("select bq_list_collections();")
+        result = self.cur.fetchone()
+
+        self.assertIsNone(result)
+
+
+class TestDeleteCollection(testutils.BedquiltTestCase):
 
     def test_list_collections_empty_instance(self):
 
