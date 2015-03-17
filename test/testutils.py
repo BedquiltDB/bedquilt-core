@@ -25,7 +25,7 @@ def clean_database(conn):
     cur.execute("select bq_list_collections();")
     result = cur.fetchone()
     if result is not None:
-        for collecion in cur.fetchone():
+        for collection in cur.fetchone():
             cur.execute("select bq_delete_collection('{}')".format(collection))
 
 

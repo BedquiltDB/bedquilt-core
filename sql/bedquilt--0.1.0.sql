@@ -6,7 +6,7 @@ CREATE OR REPLACE FUNCTION bq_version () RETURNS VARCHAR AS $$
 BEGIN
 RETURN '0.1.0';
 END
-$$ LANGUAGE plpgsql IMMUTABLE STRICT;
+$$ LANGUAGE plpgsql;
 
 
 -- Utilities
@@ -16,7 +16,26 @@ CREATE OR REPLACE FUNCTION bq_generate_id () RETURNS char(24) AS $$
 BEGIN
 RETURN CAST(encode(gen_random_bytes(12), 'hex') as char(24));
 END
-$$ LANGUAGE plpgsql IMMUTABLE STRICT;
+$$ LANGUAGE plpgsql;
+
+
+-- set key
+CREATE OR REPLACE FUNCTION bq_doc_set_key(
+    i_jdoc json,
+    i_key  text,
+    i_val  anyelement
+)
+RETURNS json
+AS $$
+BEGIN
+RETURN (SELECT concat('{', string_agg(to_json("key") || ':' || "value", ','), '}')::json
+    FROM (SELECT *
+    FROM json_each(i_jdoc)
+    WHERE key <> i_key
+    UNION ALL
+    SELECT i_key, to_json(i_val)) as "fields")::json;
+END
+$$ LANGUAGE plpgsql;
 
 
 -- collection exists
@@ -29,7 +48,7 @@ RETURN EXISTS (
 );
 
 END
-$$ LANGUAGE plpgsql IMMUTABLE STRICT;
+$$ LANGUAGE plpgsql;
 
 
 -- Collection-level operations
