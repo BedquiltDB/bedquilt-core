@@ -18,7 +18,7 @@ class TestInsertDocument(testutils.BedquiltTestCase):
         result = self.cur.fetchone()
 
         self.assertEqual(
-            result, ("user@example.com",)
+            result, ('user@example.com',)
         )
 
         self.cur.execute("select bq_list_collections();")

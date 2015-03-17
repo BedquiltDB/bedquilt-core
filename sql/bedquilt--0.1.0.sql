@@ -163,7 +163,7 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION bq_insert_document(
     i_coll text,
     i_json_data json
-) RETURNS VOID AS $$
+) RETURNS text AS $$
 BEGIN
 
 PERFORM bq_create_collection(i_coll);
@@ -173,6 +173,8 @@ EXECUTE format(
     i_coll,
     i_json_data
 );
+
+return i_json_data->>'_id';
 
 END
 $$ LANGUAGE plpgsql;
