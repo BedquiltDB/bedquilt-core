@@ -18,20 +18,22 @@ def get_pg_connection():
         database='bedquilt_test',
         user=getpass.getuser()
     )
+PG_CONN  = get_pg_connection()
 
 
 def clean_database(conn):
     cur = conn.cursor()
     cur.execute("select bq_list_collections();")
-    result = cur.fetchone()
+    result = cur.fetchall()
     if result is not None:
-        for collection in cur.fetchone():
-            cur.execute("select bq_delete_collection('{}')".format(collection))
+        for collection in result:
+            cur.execute(
+                "select bq_delete_collection('{}')".format(collection[0]))
 
 
 class BedquiltTestCase(unittest.TestCase):
 
     def setUp(self):
-        self.conn = get_pg_connection()
+        self.conn = PG_CONN
         self.cur = self.conn.cursor()
         clean_database(self.conn)

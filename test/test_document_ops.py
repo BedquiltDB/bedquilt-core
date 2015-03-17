@@ -26,3 +26,21 @@ class TestInsertDocument(testutils.BedquiltTestCase):
         self.assertIsNotNone(collections)
 
         self.assertEqual(collections, [("people",)])
+
+    def test_insert_without_id(self):
+        doc = {
+            "name": "Some User",
+            "age": 20
+        }
+        self.cur.execute("""
+            select bq_insert_document('people', '{}');
+        """.format(json.dumps(doc)))
+
+        result = self.cur.fetchone()
+
+        self.assertIsNotNone(result)
+        self.assertEqual(type(result), tuple)
+        self.assertEqual(len(result), 1)
+
+        _id = result[0]
+        self.assertIn(type(_id), {str, unicode})

@@ -70,7 +70,6 @@ THEN
     );
     COMMENT ON TABLE %1$I IS ''bedquilt.%1$s'';
     CREATE INDEX idx_%1$I_bq_jdoc ON %1$I USING gin (bq_jdoc);
-    CREATE UNIQUE INDEX idx_%1$I_bq_jdoc_id ON %1$I ((bq_jdoc->>''_id''));
     ', i_coll);
     RETURN true;
 ELSE
@@ -102,7 +101,7 @@ BEGIN
 
 IF (SELECT bq_collection_exists(i_coll))
 THEN
-    EXECUTE format('DROP TABLE %I;', i_coll);
+    EXECUTE format('DROP TABLE %I CASCADE;', i_coll);
     RETURN true;
 ELSE
     RETURN false;
@@ -164,17 +163,26 @@ CREATE OR REPLACE FUNCTION bq_insert_document(
     i_coll text,
     i_json_data json
 ) RETURNS text AS $$
+DECLARE
+  doc json;
 BEGIN
 
 PERFORM bq_create_collection(i_coll);
 
+IF (select i_json_data->'_id') is null
+THEN
+  select bq_doc_set_key(i_json_data, '_id', (select bq_generate_id())) into doc;
+ELSE
+  select i_json_data into doc;
+END IF;
+
 EXECUTE format(
     'INSERT INTO %I (bq_jdoc) VALUES (''%s'');',
     i_coll,
-    i_json_data
+    doc
 );
 
-return i_json_data->>'_id';
+return doc->>'_id';
 
 END
 $$ LANGUAGE plpgsql;
