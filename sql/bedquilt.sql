@@ -25,7 +25,7 @@ RETURNS boolean AS $$
 BEGIN
 
 RETURN EXISTS (
-SELECT relname FROM pg_class WHERE relname = format('%s', i_coll)
+    SELECT relname FROM pg_class WHERE relname = format('%s', i_coll)
 );
 
 END
@@ -41,21 +41,21 @@ BEGIN
 
 IF NOT (SELECT bq_collection_exists(i_coll))
 THEN
-  EXECUTE format('
-  CREATE TABLE IF NOT EXISTS %1$I (
-      id serial PRIMARY KEY,
-      bq_jdoc jsonb,
-      created timestamptz default current_timestamp,
-      updated timestamptz default current_timestamp,
-      CONSTRAINT validate_id CHECK ((bq_jdoc->>''_id'') IS NOT NULL)
-  );
-  COMMENT ON TABLE %1$I IS ''bedquilt.%1$s'';
-  CREATE INDEX idx_%1$I_bq_jdoc ON %1$I USING gin (bq_jdoc);
-  CREATE UNIQUE INDEX idx_%1$I_bq_jdoc_id ON %1$I ((bq_jdoc->>''_id''));
-  ', i_coll);
-  RETURN true;
+    EXECUTE format('
+    CREATE TABLE IF NOT EXISTS %1$I (
+        id serial PRIMARY KEY,
+        bq_jdoc jsonb,
+        created timestamptz default current_timestamp,
+        updated timestamptz default current_timestamp,
+        CONSTRAINT validate_id CHECK ((bq_jdoc->>''_id'') IS NOT NULL)
+    );
+    COMMENT ON TABLE %1$I IS ''bedquilt.%1$s'';
+    CREATE INDEX idx_%1$I_bq_jdoc ON %1$I USING gin (bq_jdoc);
+    CREATE UNIQUE INDEX idx_%1$I_bq_jdoc_id ON %1$I ((bq_jdoc->>''_id''));
+    ', i_coll);
+    RETURN true;
 ELSE
-  RETURN false;
+    RETURN false;
 END IF;
 
 END
@@ -83,10 +83,10 @@ BEGIN
 
 IF (SELECT bq_collection_exists(i_coll))
 THEN
-  EXECUTE format('DROP TABLE %I;', i_coll);
-  RETURN true;
+    EXECUTE format('DROP TABLE %I;', i_coll);
+    RETURN true;
 ELSE
-  RETURN false;
+    RETURN false;
 END IF;
 
 END
@@ -97,20 +97,20 @@ $$ LANGUAGE plpgsql;
 
 -- find one
 CREATE OR REPLACE FUNCTION bq_findone_document(
-i_coll text,
-i_json_query json
+    i_coll text,
+    i_json_query json
 ) RETURNS table(bq_jdoc json) AS $$
 BEGIN
 
 IF (SELECT bq_collection_exists(i_coll))
 THEN
-RETURN QUERY EXECUTE format(
-'SELECT bq_jdoc::json FROM %I
-WHERE bq_jdoc @> (''%s'')::jsonb
-LIMIT 1',
-i_coll,
-i_json_query
-);
+    RETURN QUERY EXECUTE format(
+        'SELECT bq_jdoc::json FROM %I
+        WHERE bq_jdoc @> (''%s'')::jsonb
+        LIMIT 1',
+        i_coll,
+        i_json_query
+    );
 END IF;
 
 END
@@ -119,19 +119,19 @@ $$ LANGUAGE plpgsql;
 
 -- find many documents
 CREATE OR REPLACE FUNCTION bq_find_documents(
-i_coll text,
-i_json_query json
+    i_coll text,
+    i_json_query json
 ) RETURNS table(bq_jdoc json) AS $$
 BEGIN
 
 IF (SELECT bq_collection_exists(i_coll))
 THEN
-RETURN QUERY EXECUTE format(
-'SELECT bq_jdoc::json FROM %I
-WHERE bq_jdoc @> (''%s'')::jsonb',
-i_coll,
-i_json_query
-);
+    RETURN QUERY EXECUTE format(
+        'SELECT bq_jdoc::json FROM %I
+        WHERE bq_jdoc @> (''%s'')::jsonb',
+        i_coll,
+        i_json_query
+    );
 END IF;
 
 END
@@ -142,17 +142,17 @@ $$ LANGUAGE plpgsql;
 
 -- insert document
 CREATE OR REPLACE FUNCTION bq_insert_document(
-i_coll text,
-i_json_data json
+    i_coll text,
+    i_json_data json
 ) RETURNS VOID AS $$
 BEGIN
 
 PERFORM bq_create_collection(i_coll);
 
 EXECUTE format(
-'INSERT INTO %I (bq_jdoc) VALUES (''%s'');',
-i_coll,
-i_json_data
+    'INSERT INTO %I (bq_jdoc) VALUES (''%s'');',
+    i_coll,
+    i_json_data
 );
 
 END
