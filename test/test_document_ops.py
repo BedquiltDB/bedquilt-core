@@ -68,8 +68,14 @@ class TestInsertDocument(testutils.BedquiltTestCase):
         _id = result[0]
         self.assertEqual(_id, "user_one")
 
+        self.conn.commit()
+
         with self.assertRaises(psycopg2.IntegrityError):
             self.cur.execute("""
             select bq_insert_document('people', '{}');
             """.format(json.dumps(doc)))
         self.conn.rollback()
+
+        self.cur.execute("select count(*) from people;")
+        result = self.cur.fetchone()
+        self.assertEqual(result, (1,))
