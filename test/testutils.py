@@ -30,6 +30,7 @@ def clean_database(conn):
             cur.execute(
                 "select bq_delete_collection('{}')".format(collection[0]))
 
+    conn.commit()
 
 class BedquiltTestCase(unittest.TestCase):
 
