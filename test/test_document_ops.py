@@ -1,5 +1,6 @@
 import testutils
 import json
+import string
 
 
 class TestInsertDocument(testutils.BedquiltTestCase):
@@ -44,3 +45,6 @@ class TestInsertDocument(testutils.BedquiltTestCase):
 
         _id = result[0]
         self.assertIn(type(_id), {str, unicode})
+        self.assertEqual(len(_id), 24)
+        for character in _id:
+            self.assertIn(character, string.hexdigits)
