@@ -159,6 +159,50 @@ class TestFindDocuments(testutils.BedquiltTestCase):
         self.assertIsNotNone(result)
         self.assertEqual(len(result), 0)
 
+    def test_findone_by_id(self):
+        sarah = {'_id': "sarah@example.com",
+                 'name': "Sarah",
+                 'age': 34,
+                 'likes': ['icecream', 'cats']}
+        mike = {'_id': "mike@example.com",
+                'name': "Mike",
+                'age': 32,
+                'likes': ['cats', 'crochet']}
+
+        self._insert('people', sarah)
+        self._insert('people', mike)
+
+        # find sarah
+        self.cur.execute("""
+        select bq_findone_document_by_id('people', 'sarah@example.com')
+        """)
+
+        result = self.cur.fetchall()
+        self.assertEqual(result,
+                         [
+                             (sarah,)
+                         ])
+
+        # find mike
+        self.cur.execute("""
+        select bq_findone_document_by_id('people', 'mike@example.com')
+        """)
+
+        result = self.cur.fetchall()
+        self.assertEqual(result,
+                         [
+                             (mike,)
+                         ])
+        # find no-one
+        self.cur.execute("""
+        select bq_findone_document_by_id('people', 'xxxx')
+        """)
+
+        result = self.cur.fetchall()
+        self.assertIsNotNone(result)
+        self.assertEqual(len(result), 0)
+
+
     def test_find_existing_documents(self):
 
         sarah = {'_id': "sarah@example.com",
