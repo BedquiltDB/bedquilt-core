@@ -83,6 +83,14 @@ class TestInsertDocument(testutils.BedquiltTestCase):
 
 class TestFindDocuments(testutils.BedquiltTestCase):
 
+    def _insert(self, collection, document):
+        self.cur.execute("""
+        select bq_insert_document(
+            '{coll}',
+            '{doc}'
+        );
+        """.format(coll=collection, doc=json.dumps(document)))
+
     def test_find_on_empty_collection(self):
 
         queries = [
@@ -106,3 +114,47 @@ class TestFindDocuments(testutils.BedquiltTestCase):
             """.format(query=json.dumps(q)))
             result = self.cur.fetchall()
             self.assertEqual(result, [])
+
+    def test_find_one_existing_document(self):
+
+        sarah = {'_id': "sarah@example.com",
+                 'name': "Sarah",
+                 'age': 34,
+                 'likes': ['icecream', 'cats']}
+        mike = {'_id': "mike@example.com",
+                'name': "Mike",
+                'age': 32,
+                'likes': ['cats', 'crochet']}
+
+        self._insert('people', sarah)
+        self._insert('people', mike)
+
+        # find sarah
+        self.cur.execute("""
+        select bq_findone_document('people', '{"name": "Sarah"}')
+        """)
+
+        result = self.cur.fetchall()
+        self.assertIsNotNone(result)
+        self.assertEqual(len(result), 1)
+
+        row = result[0]
+        self.assertIsNotNone(row)
+        self.assertEqual(row, (sarah,))
+
+        # find mike
+        self.cur.execute("""
+        select bq_findone_document('people', '{"name": "Mike"}')
+        """)
+
+        result = self.cur.fetchall()
+        self.assertIsNotNone(result)
+        self.assertEqual(len(result), 1)
+
+        row = result[0]
+        self.assertIsNotNone(row)
+        self.assertEqual(row, (mike,))
+
+
+
+        pass
