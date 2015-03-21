@@ -163,3 +163,30 @@ class TestFindDocuments(testutils.BedquiltTestCase):
         result = self.cur.fetchall()
         self.assertIsNotNone(result)
         self.assertEqual(len(result), 0)
+
+    def test_find_existing_documents(self):
+
+        sarah = {'_id': "sarah@example.com",
+                 'name': "Sarah",
+                 'city': "Glasgow",
+                 'age': 34,
+                 'likes': ['icecream', 'cats']}
+        mike = {'_id': "mike@example.com",
+                'name': "Mike",
+                'city': "Edinburgh",
+                'age': 32,
+                'likes': ['cats', 'crochet']}
+        jill = {'_id': "jill@example.com",
+                'name': "Jill",
+                'city': "Glasgow",
+                'age': 22,
+                'likes': ['code', 'crochet']}
+        darren = {'_id': "darren@example.com",
+                'name': "Darren",
+                'city': "Manchester"}
+
+
+        self._insert('people', sarah)
+        self._insert('people', mike)
+        self._insert('people', jill)
+        self._insert('people', darren)
