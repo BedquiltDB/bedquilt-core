@@ -61,3 +61,8 @@ CREATE EXTENSION bedquilt;
 
 Run `bin/run-tests.sh` to run the test suite. Requires a `bedquilt_test` database
 that the current user owns.
+
+
+# License
+
+Bedquilt is released under the [MIT License](./LICENSE.txt).
