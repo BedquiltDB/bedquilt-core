@@ -1,10 +1,6 @@
 #! /usr/bin/env sh
 
-
-echo ">> Installing latest version of bedquilt to localhost..."
-
-
-make install
+./bin/install.sh
 
 echo ">> Enabling bedquilt on localhost/bedquilt_test..."
 psql -d bedquilt_test \
