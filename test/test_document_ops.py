@@ -228,3 +228,16 @@ class TestFindDocuments(testutils.BedquiltTestCase):
         result = self.cur.fetchall()
         self.assertEqual(result,
                          [])
+
+        # find all
+        self.cur.execute("""
+        select bq_find_documents('people', '{}')
+        """)
+        result = self.cur.fetchall()
+        self.assertEqual(result,
+                         [
+                             (sarah,),
+                             (mike,),
+                             (jill,),
+                             (darren,)
+                         ])
