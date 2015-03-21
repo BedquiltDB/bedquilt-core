@@ -154,3 +154,12 @@ class TestFindDocuments(testutils.BedquiltTestCase):
         row = result[0]
         self.assertIsNotNone(row)
         self.assertEqual(row, (mike,))
+
+        # find no-one
+        self.cur.execute("""
+        select bq_findone_document('people', '{"name": "XXXXXXX"}')
+        """)
+
+        result = self.cur.fetchall()
+        self.assertIsNotNone(result)
+        self.assertEqual(len(result), 0)
