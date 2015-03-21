@@ -62,7 +62,7 @@ IF NOT (SELECT bq_collection_exists(i_coll))
 THEN
     EXECUTE format('
     CREATE TABLE IF NOT EXISTS %1$I (
-        id serial PRIMARY KEY,
+        _id varchar(256) PRIMARY KEY,
         bq_jdoc jsonb,
         created timestamptz default current_timestamp,
         updated timestamptz default current_timestamp,
@@ -179,8 +179,9 @@ ELSE
 END IF;
 
 EXECUTE format(
-    'INSERT INTO %I (bq_jdoc) VALUES (''%s'');',
+    'INSERT INTO %I (_id, bq_jdoc) VALUES (''%s'', ''%s'');',
     i_coll,
+    doc->>'_id',
     doc
 );
 
