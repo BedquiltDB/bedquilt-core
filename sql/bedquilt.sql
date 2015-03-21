@@ -116,7 +116,7 @@ $$ LANGUAGE plpgsql;
 -- Document Reads
 
 -- find one
-CREATE OR REPLACE FUNCTION bq_findone_document(
+CREATE OR REPLACE FUNCTION bq_find_one(
     i_coll text,
     i_json_query json
 ) RETURNS table(bq_jdoc json) AS $$
@@ -138,7 +138,7 @@ $$ LANGUAGE plpgsql;
 
 
 -- find one by id
-CREATE OR REPLACE FUNCTION bq_findone_document_by_id(
+CREATE OR REPLACE FUNCTION bq_find_one_by_id(
     i_coll text,
     i_id text
 ) RETURNS table(bq_jdoc json) AS $$
@@ -160,7 +160,7 @@ $$ LANGUAGE plpgsql;
 
 
 -- find many documents
-CREATE OR REPLACE FUNCTION bq_find_documents(
+CREATE OR REPLACE FUNCTION bq_find(
     i_coll text,
     i_json_query json
 ) RETURNS table(bq_jdoc json) AS $$
@@ -183,7 +183,7 @@ $$ LANGUAGE plpgsql;
 -- Document Writes
 
 -- insert document
-CREATE OR REPLACE FUNCTION bq_insert_document(
+CREATE OR REPLACE FUNCTION bq_insert(
     i_coll text,
     i_json_data json
 ) RETURNS text AS $$

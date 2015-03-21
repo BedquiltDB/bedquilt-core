@@ -14,7 +14,7 @@ class TestInsertDocument(testutils.BedquiltTestCase):
         }
 
         self.cur.execute("""
-            select bq_insert_document('people', '{}');
+            select bq_insert('people', '{}');
         """.format(json.dumps(doc)))
 
         result = self.cur.fetchone()
@@ -35,7 +35,7 @@ class TestInsertDocument(testutils.BedquiltTestCase):
             "age": 20
         }
         self.cur.execute("""
-            select bq_insert_document('people', '{}');
+            select bq_insert('people', '{}');
         """.format(json.dumps(doc)))
 
         result = self.cur.fetchone()
@@ -57,7 +57,7 @@ class TestInsertDocument(testutils.BedquiltTestCase):
             "age": 20
         }
         self.cur.execute("""
-            select bq_insert_document('people', '{}');
+            select bq_insert('people', '{}');
         """.format(json.dumps(doc)))
 
         result = self.cur.fetchone()
@@ -72,7 +72,7 @@ class TestInsertDocument(testutils.BedquiltTestCase):
 
         with self.assertRaises(psycopg2.IntegrityError):
             self.cur.execute("""
-            select bq_insert_document('people', '{}');
+            select bq_insert('people', '{}');
             """.format(json.dumps(doc)))
         self.conn.rollback()
 
@@ -85,7 +85,7 @@ class TestFindDocuments(testutils.BedquiltTestCase):
 
     def _insert(self, collection, document):
         self.cur.execute("""
-        select bq_insert_document(
+        select bq_insert(
             '{coll}',
             '{doc}'
         );
@@ -101,16 +101,16 @@ class TestFindDocuments(testutils.BedquiltTestCase):
         ]
 
         for q in queries:
-            # findone
+            # find_one
             self.cur.execute("""
-            select bq_findone_document('people', '{query}')
+            select bq_find_one('people', '{query}')
             """.format(query=json.dumps(q)))
             result = self.cur.fetchall()
             self.assertEqual(result, [])
 
             # find
             self.cur.execute("""
-            select bq_find_documents('people', '{query}')
+            select bq_find('people', '{query}')
             """.format(query=json.dumps(q)))
             result = self.cur.fetchall()
             self.assertEqual(result, [])
@@ -131,7 +131,7 @@ class TestFindDocuments(testutils.BedquiltTestCase):
 
         # find sarah
         self.cur.execute("""
-        select bq_findone_document('people', '{"name": "Sarah"}')
+        select bq_find_one('people', '{"name": "Sarah"}')
         """)
 
         result = self.cur.fetchall()
@@ -142,7 +142,7 @@ class TestFindDocuments(testutils.BedquiltTestCase):
 
         # find mike
         self.cur.execute("""
-        select bq_findone_document('people', '{"name": "Mike"}')
+        select bq_find_one('people', '{"name": "Mike"}')
         """)
 
         result = self.cur.fetchall()
@@ -152,14 +152,14 @@ class TestFindDocuments(testutils.BedquiltTestCase):
                          ])
         # find no-one
         self.cur.execute("""
-        select bq_findone_document('people', '{"name": "XXXXXXX"}')
+        select bq_find_one('people', '{"name": "XXXXXXX"}')
         """)
 
         result = self.cur.fetchall()
         self.assertIsNotNone(result)
         self.assertEqual(len(result), 0)
 
-    def test_findone_by_id(self):
+    def test_find_one_by_id(self):
         sarah = {'_id': "sarah@example.com",
                  'name': "Sarah",
                  'age': 34,
@@ -174,7 +174,7 @@ class TestFindDocuments(testutils.BedquiltTestCase):
 
         # find sarah
         self.cur.execute("""
-        select bq_findone_document_by_id('people', 'sarah@example.com')
+        select bq_find_one_by_id('people', 'sarah@example.com')
         """)
 
         result = self.cur.fetchall()
@@ -185,7 +185,7 @@ class TestFindDocuments(testutils.BedquiltTestCase):
 
         # find mike
         self.cur.execute("""
-        select bq_findone_document_by_id('people', 'mike@example.com')
+        select bq_find_one_by_id('people', 'mike@example.com')
         """)
 
         result = self.cur.fetchall()
@@ -195,7 +195,7 @@ class TestFindDocuments(testutils.BedquiltTestCase):
                          ])
         # find no-one
         self.cur.execute("""
-        select bq_findone_document_by_id('people', 'xxxx')
+        select bq_find_one_by_id('people', 'xxxx')
         """)
 
         result = self.cur.fetchall()
@@ -232,7 +232,7 @@ class TestFindDocuments(testutils.BedquiltTestCase):
 
         # find matching an _id
         self.cur.execute("""
-        select bq_find_documents('people', '{"_id": "jill@example.com"}')
+        select bq_find('people', '{"_id": "jill@example.com"}')
         """)
         result = self.cur.fetchall()
         self.assertEqual(result,
@@ -242,7 +242,7 @@ class TestFindDocuments(testutils.BedquiltTestCase):
 
         # find by match on the city field
         self.cur.execute("""
-        select bq_find_documents('people', '{"city": "Glasgow"}')
+        select bq_find('people', '{"city": "Glasgow"}')
         """)
         result = self.cur.fetchall()
         self.assertEqual(result,
@@ -251,7 +251,7 @@ class TestFindDocuments(testutils.BedquiltTestCase):
                              (jill,)
                          ])
         self.cur.execute("""
-        select bq_find_documents('people', '{"city": "Edinburgh"}')
+        select bq_find('people', '{"city": "Edinburgh"}')
         """)
         result = self.cur.fetchall()
         self.assertEqual(result,
@@ -259,7 +259,7 @@ class TestFindDocuments(testutils.BedquiltTestCase):
                              (mike,),
                          ])
         self.cur.execute("""
-        select bq_find_documents('people', '{"city": "Manchester"}')
+        select bq_find('people', '{"city": "Manchester"}')
         """)
         result = self.cur.fetchall()
         self.assertEqual(result,
@@ -267,7 +267,7 @@ class TestFindDocuments(testutils.BedquiltTestCase):
                              (darren,),
                          ])
         self.cur.execute("""
-        select bq_find_documents('people', '{"city": "New York"}')
+        select bq_find('people', '{"city": "New York"}')
         """)
         result = self.cur.fetchall()
         self.assertEqual(result,
@@ -275,7 +275,7 @@ class TestFindDocuments(testutils.BedquiltTestCase):
 
         # find all
         self.cur.execute("""
-        select bq_find_documents('people', '{}')
+        select bq_find('people', '{}')
         """)
         result = self.cur.fetchall()
         self.assertEqual(result,
