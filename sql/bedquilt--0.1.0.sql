@@ -62,8 +62,8 @@ IF NOT (SELECT bq_collection_exists(i_coll))
 THEN
     EXECUTE format('
     CREATE TABLE IF NOT EXISTS %1$I (
-        _id varchar(256) PRIMARY KEY,
-        bq_jdoc jsonb,
+        _id varchar(256) PRIMARY KEY NOT NULL,
+        bq_jdoc jsonb NOT NULL,
         created timestamptz default current_timestamp,
         updated timestamptz default current_timestamp,
         CONSTRAINT validate_id CHECK ((bq_jdoc->>''_id'') IS NOT NULL)
