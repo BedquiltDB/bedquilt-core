@@ -137,6 +137,28 @@ END
 $$ LANGUAGE plpgsql;
 
 
+-- find one by id
+CREATE OR REPLACE FUNCTION bq_findone_document_by_id(
+    i_coll text,
+    i_id text
+) RETURNS table(bq_jdoc json) AS $$
+BEGIN
+
+IF (SELECT bq_collection_exists(i_coll))
+THEN
+    RETURN QUERY EXECUTE format(
+        'SELECT bq_jdoc::json FROM %I
+        WHERE _id = ''%s''
+        LIMIT 1',
+        i_coll,
+        i_id
+    );
+END IF;
+
+END
+$$ LANGUAGE plpgsql;
+
+
 -- find many documents
 CREATE OR REPLACE FUNCTION bq_find_documents(
     i_coll text,
