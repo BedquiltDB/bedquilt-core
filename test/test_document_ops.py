@@ -79,3 +79,30 @@ class TestInsertDocument(testutils.BedquiltTestCase):
         self.cur.execute("select count(*) from people;")
         result = self.cur.fetchone()
         self.assertEqual(result, (1,))
+
+
+class TestFindDocuments(testutils.BedquiltTestCase):
+
+    def test_find_on_empty_collection(self):
+
+        queries = [
+            {},
+            {"likes": ["icecream"]},
+            {"name": "Mike"},
+            {"_id": "mike"}
+        ]
+
+        for q in queries:
+            # findone
+            self.cur.execute("""
+            select bq_findone_document('people', '{query}')
+            """.format(query=json.dumps(q)))
+            result = self.cur.fetchall()
+            self.assertEqual(result, [])
+
+            # find
+            self.cur.execute("""
+            select bq_find_documents('people', '{query}')
+            """.format(query=json.dumps(q)))
+            result = self.cur.fetchall()
+            self.assertEqual(result, [])
