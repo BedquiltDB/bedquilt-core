@@ -135,12 +135,10 @@ class TestFindDocuments(testutils.BedquiltTestCase):
         """)
 
         result = self.cur.fetchall()
-        self.assertIsNotNone(result)
-        self.assertEqual(len(result), 1)
-
-        row = result[0]
-        self.assertIsNotNone(row)
-        self.assertEqual(row, (sarah,))
+        self.assertEqual(result,
+                         [
+                             (sarah,)
+                         ])
 
         # find mike
         self.cur.execute("""
@@ -148,13 +146,10 @@ class TestFindDocuments(testutils.BedquiltTestCase):
         """)
 
         result = self.cur.fetchall()
-        self.assertIsNotNone(result)
-        self.assertEqual(len(result), 1)
-
-        row = result[0]
-        self.assertIsNotNone(row)
-        self.assertEqual(row, (mike,))
-
+        self.assertEqual(result,
+                         [
+                             (mike,)
+                         ])
         # find no-one
         self.cur.execute("""
         select bq_findone_document('people', '{"name": "XXXXXXX"}')
@@ -190,3 +185,13 @@ class TestFindDocuments(testutils.BedquiltTestCase):
         self._insert('people', mike)
         self._insert('people', jill)
         self._insert('people', darren)
+
+        # find matching an _id
+        self.cur.execute("""
+        select bq_find_documents('people', '{"_id": "jill@example.com"}')
+        """)
+        result = self.cur.fetchall()
+        self.assertEqual(result,
+                         [
+                             (jill,)
+                         ])
