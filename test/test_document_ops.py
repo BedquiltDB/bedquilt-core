@@ -154,7 +154,3 @@ class TestFindDocuments(testutils.BedquiltTestCase):
         row = result[0]
         self.assertIsNotNone(row)
         self.assertEqual(row, (mike,))
-
-
-
-        pass
