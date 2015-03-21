@@ -174,7 +174,7 @@ class TestFindDocuments(testutils.BedquiltTestCase):
         jill = {'_id': "jill@example.com",
                 'name': "Jill",
                 'city': "Glasgow",
-                'age': 22,
+                'age': 32,
                 'likes': ['code', 'crochet']}
         darren = {'_id': "darren@example.com",
                 'name': "Darren",
@@ -195,3 +195,36 @@ class TestFindDocuments(testutils.BedquiltTestCase):
                          [
                              (jill,)
                          ])
+
+        # find by match on the city field
+        self.cur.execute("""
+        select bq_find_documents('people', '{"city": "Glasgow"}')
+        """)
+        result = self.cur.fetchall()
+        self.assertEqual(result,
+                         [
+                             (sarah,),
+                             (jill,)
+                         ])
+        self.cur.execute("""
+        select bq_find_documents('people', '{"city": "Edinburgh"}')
+        """)
+        result = self.cur.fetchall()
+        self.assertEqual(result,
+                         [
+                             (mike,),
+                         ])
+        self.cur.execute("""
+        select bq_find_documents('people', '{"city": "Manchester"}')
+        """)
+        result = self.cur.fetchall()
+        self.assertEqual(result,
+                         [
+                             (darren,),
+                         ])
+        self.cur.execute("""
+        select bq_find_documents('people', '{"city": "New York"}')
+        """)
+        result = self.cur.fetchall()
+        self.assertEqual(result,
+                         [])
