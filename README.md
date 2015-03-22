@@ -23,42 +23,6 @@ programmatic API that is consistent across languages
 - Build a tool which is actually useful for developers
 
 
-# Prerequisites
-
-- PostgreSQL >= 9.4
-- PL/pgSQL
-- The pgcrypto extension
-
-
-# Installation
-
-First, clone this repositroy:
-
-```
-$ git clone https://github.com/BedquiltDB/bedquilt-core.git
-$ cd bedquilt-core
-```
-
-Run the following to build the extension and install it to the local database:
-
-```
-$ make install
-```
-
-Run this to build to a zip file:
-
-```
-$ make dist
-```
-
-Then, on the postgres server:
-
-```PLpgSQL
-CREATE EXTENSION IF NOT EXISTS pgcrypto;
-CREATE EXTENSION bedquilt;
-```
-
-
 # Examples
 
 This extension provides the core functionality of BedquiltDB, and can be used from ordinary SQL queries,
@@ -101,6 +65,42 @@ select bq_create_collection('things');
 
 -- Get a list of existing collections
 select bq_list_collections();
+```
+
+
+# Prerequisites
+
+- PostgreSQL >= 9.4
+- PL/pgSQL
+- The pgcrypto extension
+
+
+# Installation
+
+First, clone this repositroy:
+
+```
+$ git clone https://github.com/BedquiltDB/bedquilt-core.git
+$ cd bedquilt-core
+```
+
+Run the following to build the extension and install it to the local database:
+
+```
+$ make install
+```
+
+Run this to build to a zip file:
+
+```
+$ make dist
+```
+
+Then, on the postgres server:
+
+```PLpgSQL
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+CREATE EXTENSION bedquilt;
 ```
 
 
