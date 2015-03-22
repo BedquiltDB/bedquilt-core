@@ -32,28 +32,75 @@ programmatic API that is consistent across languages
 
 # Installation
 
+First, clone this repositroy:
+
+```
+$ git clone https://github.com/BedquiltDB/bedquilt-core.git
+$ cd bedquilt-core
+```
+
 Run the following to build the extension and install it to the local database:
 
-```bash
-
-make install
-
+```
+$ make install
 ```
 
 Run this to build to a zip file:
 
-```bash
-
-make dist
-
+```
+$ make dist
 ```
 
 Then, on the postgres server:
 
-```sql
-
+```
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
 CREATE EXTENSION bedquilt;
+```
 
+
+# Examples
+
+This extension provides the core functionality of BedquiltDB, and can be used from ordinary SQL queries,
+though it is recommended to use one of the driver libraries for you favourite programming language instead.
+
+```
+-- Insert two documents into the 'people' collection.
+select bq_insert(
+    'people',
+    '{"_id": "sarah@example.com", "name": "Sarah", "likes": ["icecream", "code"]}'
+);
+select bq_insert(
+    'people',
+    '{"name": "Mike", "likes": ["code", "rabbits"]}'
+);
+
+
+-- Find a single document, where the "name" field is the string value "Mike".
+select bq_find_one(
+    'people',
+    '{"name":  "Mike"}'
+);
+
+
+-- Find all documents in the 'people' collection
+select bq_find('people', '{}');
+
+
+-- Find all people who like icecream
+select bq_find('people', '{"likes": ["icecream"]}');
+
+
+-- Find a single document by its "_id" field. This query hits the primary key index on the _id field
+select bq_find_one_by_id('people', 'sarah@example.com');
+
+
+-- Create an empty collection
+select bq_create_collection('things');
+
+
+-- Get a list of existing collections
+select bq_list_collections();
 ```
 
 
