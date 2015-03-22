@@ -222,7 +222,7 @@ END
 $$ LANGUAGE plpgsql;
 
 
--- remove document
+-- remove documents
 CREATE OR REPLACE FUNCTION bq_remove(i_coll text, i_json_data json)
 RETURNS setof integer as $$
 BEGIN
@@ -243,6 +243,8 @@ END IF;
 END
 $$ LANGUAGE plpgsql;
 
+
+-- remove one document
 CREATE OR REPLACE FUNCTION bq_remove_one(i_coll text, i_json_data json)
 RETURNS setof integer as $$
 BEGIN
