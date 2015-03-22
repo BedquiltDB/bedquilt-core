@@ -83,14 +83,6 @@ class TestInsertDocument(testutils.BedquiltTestCase):
 
 class TestFindDocuments(testutils.BedquiltTestCase):
 
-    def _insert(self, collection, document):
-        self.cur.execute("""
-        select bq_insert(
-            '{coll}',
-            '{doc}'
-        );
-        """.format(coll=collection, doc=json.dumps(document)))
-
     def test_find_on_empty_collection(self):
 
         queries = [
@@ -285,3 +277,82 @@ class TestFindDocuments(testutils.BedquiltTestCase):
                              (jill,),
                              (darren,)
                          ])
+
+
+class TestRemoveDocumnts(testutils.BedquiltTestCase):
+
+    def test_remove_on_empty_collection(self):
+        self.cur.execute("""
+        select bq_create_collection('people');
+        """)
+        _ = self.cur.fetchall()
+
+        self.cur.execute("""
+        select bq_remove('people', '{"age": 22}', true)
+        """)
+        result = self.cur.fetchall()
+        self.assertEqual(result,
+                         [
+                             (0,)
+                         ])
+
+    def test_remove_on_non_existant_collection(self):
+        self.cur.execute("""
+        select bq_remove('people', '{"age": 22}', true)
+        """)
+        result = self.cur.fetchall()
+        self.assertEqual(result,
+                         [
+                             (0,)
+                         ])
+
+    def test_remove_multi_single_document(self):
+
+        sarah = {'_id': "sarah@example.com",
+                 'name': "Sarah",
+                 'city': "Glasgow",
+                 'age': 34,
+                 'likes': ['icecream', 'cats']}
+        mike = {'_id': "mike@example.com",
+                'name': "Mike",
+                'city': "Edinburgh",
+                'age': 32,
+                'likes': ['cats', 'crochet']}
+        jill = {'_id': "jill@example.com",
+                'name': "Jill",
+                'city': "Glasgow",
+                'age': 32,
+                'likes': ['code', 'crochet']}
+        darren = {'_id': "darren@example.com",
+                'name': "Darren",
+                'city': "Manchester"}
+
+        self._insert('people', sarah)
+        self._insert('people', mike)
+        self._insert('people', jill)
+        self._insert('people', darren)
+
+        self.cur.execute("""
+        select bq_remove('people', '{"age": 34}', true);
+        """)
+        result = self.cur.fetchall()
+
+        self.assertEqual(result,
+                         [
+                             (1,)
+                         ])
+
+        self.cur.execute("""
+        select bq_find('people', '{}');
+        """)
+        result = self.cur.fetchall()
+        self.assertEqual(result,
+                         [
+                             (mike,),
+                             (jill,),
+                             (darren,)
+                         ])
+
+
+    def test_remove_many_documents(self):
+        pass

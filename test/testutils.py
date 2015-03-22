@@ -2,6 +2,7 @@ import psycopg2
 import os
 import getpass
 import unittest
+import json
 
 
 # CREATE DATABASE bedquilt_test
@@ -33,6 +34,14 @@ def clean_database(conn):
     conn.commit()
 
 class BedquiltTestCase(unittest.TestCase):
+
+    def _insert(self, collection, document):
+        self.cur.execute("""
+        select bq_insert(
+            '{coll}',
+            '{doc}'
+        );
+        """.format(coll=collection, doc=json.dumps(document)))
 
     def setUp(self):
         self.conn = PG_CONN
