@@ -232,7 +232,7 @@ THEN
     RETURN QUERY EXECUTE format('
     WITH
       deleted AS
-
+      (DELETE FROM %I WHERE bq_jdoc @> (''%s'')::jsonb RETURNING _id)
     SELECT count(*)::integer FROM deleted
     ', i_coll, i_json_data);
 
