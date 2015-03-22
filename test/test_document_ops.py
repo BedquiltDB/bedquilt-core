@@ -353,6 +353,52 @@ class TestRemoveDocumnts(testutils.BedquiltTestCase):
                              (darren,)
                          ])
 
+    def test_remove_multi_many_document(self):
 
-    def test_remove_many_documents(self):
+        sarah = {'_id': "sarah@example.com",
+                 'name': "Sarah",
+                 'city': "Glasgow",
+                 'age': 34,
+                 'likes': ['icecream', 'cats']}
+        mike = {'_id': "mike@example.com",
+                'name': "Mike",
+                'city': "Edinburgh",
+                'age': 32,
+                'likes': ['cats', 'crochet']}
+        jill = {'_id': "jill@example.com",
+                'name': "Jill",
+                'city': "Glasgow",
+                'age': 32,
+                'likes': ['code', 'crochet']}
+        darren = {'_id': "darren@example.com",
+                'name': "Darren",
+                'city': "Manchester"}
+
+        self._insert('people', sarah)
+        self._insert('people', mike)
+        self._insert('people', jill)
+        self._insert('people', darren)
+
+        self.cur.execute("""
+        select bq_remove('people', '{"age": 32}', true);
+        """)
+        result = self.cur.fetchall()
+
+        self.assertEqual(result,
+                         [
+                             (2,)
+                         ])
+
+        self.cur.execute("""
+        select bq_find('people', '{}');
+        """)
+        result = self.cur.fetchall()
+        self.assertEqual(result,
+                         [
+                             (sarah,),
+                             (darren,)
+                         ])
+
+
+    def test_remove_single_documents(self):
         pass
