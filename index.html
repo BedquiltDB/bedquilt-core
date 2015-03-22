@@ -1,0 +1,153 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Bedquilt-core by BedquiltDB</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Bedquilt-core</h1>
+        <p>A JSON store on PostgreSQL</p>
+
+        <p class="view"><a href="https://github.com/BedquiltDB/bedquilt-core">View the Project on GitHub <small>BedquiltDB/bedquilt-core</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/BedquiltDB/bedquilt-core/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/BedquiltDB/bedquilt-core/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/BedquiltDB/bedquilt-core">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>
+<a id="bedquilt" class="anchor" href="#bedquilt" aria-hidden="true"><span class="octicon octicon-link"></span></a>Bedquilt</h1>
+
+<p><img src="https://raw.githubusercontent.com/BedquiltDB/bedquilt-core/master/resources/bedquilt_logo_tile.png" alt="BedquiltDB"></p>
+
+<p>A JSON store on PostgreSQL.</p>
+
+<h1>
+<a id="warning" class="anchor" href="#warning" aria-hidden="true"><span class="octicon octicon-link"></span></a>Warning</h1>
+
+<p>Bedquilt is currently worse-than-alpha quality and should not be used in production,
+or anywhere else for that matter. If Bedquilt kills your database, just imagine me
+whispering "told you so" and think hard about how you got yourself into this
+mess.</p>
+
+<h1>
+<a id="goals" class="anchor" href="#goals" aria-hidden="true"><span class="octicon octicon-link"></span></a>Goals</h1>
+
+<ul>
+<li>Borrow some of the good ideas and positive attributes of json
+object-stores and bring them to PostgreSQL</li>
+<li>Harness the new jsonb functionality of PostgreSQL and wrap it in a nice
+programmatic API that is consistent across languages</li>
+<li>Make use of SQL strong-points, such as schema constraints and table joins</li>
+<li>Build a tool which is actually useful for developers</li>
+</ul>
+
+<h1>
+<a id="examples" class="anchor" href="#examples" aria-hidden="true"><span class="octicon octicon-link"></span></a>Examples</h1>
+
+<p>This extension provides the core functionality of BedquiltDB, and can be used from ordinary SQL queries,
+though it is recommended to use one of the driver libraries for you favourite programming language instead.</p>
+
+<div class="highlight highlight-PLpgSQL"><pre><span class="pl-c">-- Insert two documents into the 'people' collection.</span>
+<span class="pl-k">select</span> bq_insert(
+    <span class="pl-s"><span class="pl-pds">'</span>people<span class="pl-pds">'</span></span>,
+    <span class="pl-s"><span class="pl-pds">'</span>{"_id": "sarah@example.com", "name": "Sarah", "likes": ["icecream", "code"]}<span class="pl-pds">'</span></span>
+);
+<span class="pl-k">select</span> bq_insert(
+    <span class="pl-s"><span class="pl-pds">'</span>people<span class="pl-pds">'</span></span>,
+    <span class="pl-s"><span class="pl-pds">'</span>{"name": "Mike", "likes": ["code", "rabbits"]}<span class="pl-pds">'</span></span>
+);
+
+
+<span class="pl-c">-- Find a single document, where the "name" field is the string value "Mike".</span>
+<span class="pl-k">select</span> bq_find_one(
+    <span class="pl-s"><span class="pl-pds">'</span>people<span class="pl-pds">'</span></span>,
+    <span class="pl-s"><span class="pl-pds">'</span>{"name":  "Mike"}<span class="pl-pds">'</span></span>
+);
+
+
+<span class="pl-c">-- Find all documents in the 'people' collection</span>
+<span class="pl-k">select</span> bq_find(<span class="pl-s"><span class="pl-pds">'</span>people<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>{}<span class="pl-pds">'</span></span>);
+
+
+<span class="pl-c">-- Find all people who like icecream</span>
+<span class="pl-k">select</span> bq_find(<span class="pl-s"><span class="pl-pds">'</span>people<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>{"likes": ["icecream"]}<span class="pl-pds">'</span></span>);
+
+
+<span class="pl-c">-- Find a single document by its "_id" field. This query hits the primary key index on the _id field</span>
+<span class="pl-k">select</span> bq_find_one_by_id(<span class="pl-s"><span class="pl-pds">'</span>people<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>sarah@example.com<span class="pl-pds">'</span></span>);
+
+
+<span class="pl-c">-- Create an empty collection</span>
+<span class="pl-k">select</span> bq_create_collection(<span class="pl-s"><span class="pl-pds">'</span>things<span class="pl-pds">'</span></span>);
+
+
+<span class="pl-c">-- Get a list of existing collections</span>
+<span class="pl-k">select</span> bq_list_collections();</pre></div>
+
+<h1>
+<a id="prerequisites" class="anchor" href="#prerequisites" aria-hidden="true"><span class="octicon octicon-link"></span></a>Prerequisites</h1>
+
+<ul>
+<li>PostgreSQL &gt;= 9.4</li>
+<li>PL/pgSQL</li>
+<li>The pgcrypto extension</li>
+</ul>
+
+<h1>
+<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installation</h1>
+
+<p>First, clone this repositroy:</p>
+
+<pre><code>$ git clone https://github.com/BedquiltDB/bedquilt-core.git
+$ cd bedquilt-core
+</code></pre>
+
+<p>Run the following to build the extension and install it to the local database:</p>
+
+<pre><code>$ make install
+</code></pre>
+
+<p>Run this to build to a zip file:</p>
+
+<pre><code>$ make dist
+</code></pre>
+
+<p>Then, on the postgres server:</p>
+
+<div class="highlight highlight-PLpgSQL"><pre>CREATE EXTENSION IF NOT EXISTS pgcrypto;
+CREATE EXTENSION bedquilt;</pre></div>
+
+<h1>
+<a id="tests" class="anchor" href="#tests" aria-hidden="true"><span class="octicon octicon-link"></span></a>Tests</h1>
+
+<p>Run <code>bin/run-tests.sh</code> to run the test suite. Requires a <code>bedquilt_test</code> database
+that the current user owns.</p>
+
+<h1>
+<a id="license" class="anchor" href="#license" aria-hidden="true"><span class="octicon octicon-link"></span></a>License</h1>
+
+<p>Bedquilt is released under the <a href="./LICENSE.txt">MIT License</a>.</p>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/BedquiltDB">BedquiltDB</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
