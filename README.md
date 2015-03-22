@@ -53,7 +53,7 @@ $ make dist
 
 Then, on the postgres server:
 
-```
+```PLpgSQL
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 CREATE EXTENSION bedquilt;
 ```
@@ -64,7 +64,7 @@ CREATE EXTENSION bedquilt;
 This extension provides the core functionality of BedquiltDB, and can be used from ordinary SQL queries,
 though it is recommended to use one of the driver libraries for you favourite programming language instead.
 
-```
+```PLpgSQL
 -- Insert two documents into the 'people' collection.
 select bq_insert(
     'people',
