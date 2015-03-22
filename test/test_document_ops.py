@@ -288,7 +288,22 @@ class TestRemoveDocumnts(testutils.BedquiltTestCase):
         _ = self.cur.fetchall()
 
         self.cur.execute("""
-        select bq_remove('people', '{"age": 22}', true)
+        select bq_remove('people', '{"age": 22}')
+        """)
+        result = self.cur.fetchall()
+        self.assertEqual(result,
+                         [
+                             (0,)
+                         ])
+
+    def test_remove_one_on_empty_collection(self):
+        self.cur.execute("""
+        select bq_create_collection('people');
+        """)
+        _ = self.cur.fetchall()
+
+        self.cur.execute("""
+        select bq_remove_one('people', '{"age": 22}')
         """)
         result = self.cur.fetchall()
         self.assertEqual(result,
@@ -298,7 +313,7 @@ class TestRemoveDocumnts(testutils.BedquiltTestCase):
 
     def test_remove_on_non_existant_collection(self):
         self.cur.execute("""
-        select bq_remove('people', '{"age": 22}', true)
+        select bq_remove('people', '{"age": 22}')
         """)
         result = self.cur.fetchall()
         self.assertEqual(result,
@@ -306,7 +321,17 @@ class TestRemoveDocumnts(testutils.BedquiltTestCase):
                              (0,)
                          ])
 
-    def test_remove_multi_hitting_single_document(self):
+    def test_remove_one_on_non_existant_collection(self):
+        self.cur.execute("""
+        select bq_remove_one('people', '{"age": 22}')
+        """)
+        result = self.cur.fetchall()
+        self.assertEqual(result,
+                         [
+                             (0,)
+                         ])
+
+    def test_remove_hitting_single_document(self):
 
         sarah = {'_id': "sarah@example.com",
                  'name': "Sarah",
@@ -333,7 +358,7 @@ class TestRemoveDocumnts(testutils.BedquiltTestCase):
         self._insert('people', darren)
 
         self.cur.execute("""
-        select bq_remove('people', '{"age": 34}', true);
+        select bq_remove('people', '{"age": 34}');
         """)
         result = self.cur.fetchall()
 
@@ -353,7 +378,7 @@ class TestRemoveDocumnts(testutils.BedquiltTestCase):
                              (darren,)
                          ])
 
-    def test_remove_multi_hitting_many_document(self):
+    def test_remove_hitting_many_document(self):
 
         sarah = {'_id': "sarah@example.com",
                  'name': "Sarah",
@@ -380,7 +405,7 @@ class TestRemoveDocumnts(testutils.BedquiltTestCase):
         self._insert('people', darren)
 
         self.cur.execute("""
-        select bq_remove('people', '{"age": 32}', true);
+        select bq_remove('people', '{"age": 32}');
         """)
         result = self.cur.fetchall()
 
@@ -400,7 +425,7 @@ class TestRemoveDocumnts(testutils.BedquiltTestCase):
                          ])
 
 
-    def test_remove_single_documents(self):
+    def test_remove_one_documents(self):
 
         sarah = {'_id': "sarah@example.com",
                  'name': "Sarah",
@@ -426,9 +451,9 @@ class TestRemoveDocumnts(testutils.BedquiltTestCase):
         self._insert('people', jill)
         self._insert('people', darren)
 
-        # remove a single document matching a wide query
+        # remove_one a single document matching a wide query
         self.cur.execute("""
-        select bq_remove('people', '{"age": 32}', false);
+        select bq_remove_one('people', '{"age": 32}');
         """)
         result = self.cur.fetchall()
 
@@ -448,9 +473,9 @@ class TestRemoveDocumnts(testutils.BedquiltTestCase):
                              (darren,)
                          ])
 
-        # remove a single document matching a specific query
+        # remove_one a single document matching a specific query
         self.cur.execute("""
-        select bq_remove('people', '{"name": "Darren"}', false);
+        select bq_remove_one('people', '{"name": "Darren"}');
         """)
         result = self.cur.fetchall()
 
@@ -469,9 +494,9 @@ class TestRemoveDocumnts(testutils.BedquiltTestCase):
                              (jill,)
                          ])
 
-        # remove a single document matching an _id
+        # remove_one a single document matching an _id
         self.cur.execute("""
-        select bq_remove('people', '{"_id": "jill@example.com"}', false);
+        select bq_remove_one('people', '{"_id": "jill@example.com"}');
         """)
         result = self.cur.fetchall()
 

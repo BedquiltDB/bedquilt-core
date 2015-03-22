@@ -223,28 +223,39 @@ $$ LANGUAGE plpgsql;
 
 
 -- remove document
-CREATE OR REPLACE FUNCTION bq_remove(i_coll text, i_json_data json, i_multi boolean)
+CREATE OR REPLACE FUNCTION bq_remove(i_coll text, i_json_data json)
 RETURNS setof integer as $$
 BEGIN
 
 IF (SELECT bq_collection_exists(i_coll))
 THEN
-    IF i_multi
-    THEN
-        RETURN QUERY EXECUTE format('
-        WITH deleted AS (DELETE FROM %I WHERE bq_jdoc @> (''%s'')::jsonb
-        RETURNING _id)
-        SELECT count(*)::integer FROM deleted
-        ', i_coll, i_json_data);
-    ELSE
-        RETURN QUERY EXECUTE format('
-        WITH candidates AS
-             (SELECT _id from %1$I WHERE bq_jdoc @> (''%2s'')::jsonb LIMIT 1),
-             deleted AS
-             (DELETE FROM %1$I WHERE _id IN (select _id from candidates) RETURNING _id)
-        SELECT count(*)::integer FROM deleted
-        ', i_coll, i_json_data);
-    END IF;
+    RETURN QUERY EXECUTE format('
+    WITH deleted AS (DELETE FROM %I WHERE bq_jdoc @> (''%s'')::jsonb
+    RETURNING _id)
+    SELECT count(*)::integer FROM deleted
+    ', i_coll, i_json_data);
+
+ELSE
+    RETURN QUERY SELECT 0;
+END IF;
+
+END
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION bq_remove_one(i_coll text, i_json_data json)
+RETURNS setof integer as $$
+BEGIN
+
+IF (SELECT bq_collection_exists(i_coll))
+THEN
+    RETURN QUERY EXECUTE format('
+      WITH
+        candidates AS
+        (SELECT _id from %1$I WHERE bq_jdoc @> (''%2s'')::jsonb LIMIT 1),
+        deleted AS
+        (DELETE FROM %1$I WHERE _id IN (select _id from candidates) RETURNING _id)
+      SELECT count(*)::integer FROM deleted
+    ', i_coll, i_json_data);
 ELSE
     RETURN QUERY SELECT 0;
 END IF;
