@@ -220,3 +220,21 @@ return doc->>'_id';
 
 END
 $$ LANGUAGE plpgsql;
+
+
+-- remove document
+CREATE OR REPLACE FUNCTION bq_remove(i_coll text, i_json_data json, i_multi boolean)
+RETURNS VOID as $$
+BEGIN
+
+IF i_multi
+THEN
+    EXECUTE format('
+    DELETE FROM %I WHERE bq_jdoc @> (''%s'')::jsonb
+    ', i_coll, i_json_data);
+ELSE
+  RAISE NOTICE 'NO';
+END IF;
+
+END
+$$ LANGUAGE plpgsql;
