@@ -426,6 +426,7 @@ class TestRemoveDocumnts(testutils.BedquiltTestCase):
         self._insert('people', jill)
         self._insert('people', darren)
 
+        # remove a single document matching a wide query
         self.cur.execute("""
         select bq_remove('people', '{"age": 32}', false);
         """)
@@ -445,4 +446,45 @@ class TestRemoveDocumnts(testutils.BedquiltTestCase):
                              (sarah,),
                              (jill,),
                              (darren,)
+                         ])
+
+        # remove a single document matching a specific query
+        self.cur.execute("""
+        select bq_remove('people', '{"name": "Darren"}', false);
+        """)
+        result = self.cur.fetchall()
+
+        self.assertEqual(result,
+                         [
+                             (1,)
+                         ])
+
+        self.cur.execute("""
+        select bq_find('people', '{}');
+        """)
+        result = self.cur.fetchall()
+        self.assertEqual(result,
+                         [
+                             (sarah,),
+                             (jill,)
+                         ])
+
+        # remove a single document matching an _id
+        self.cur.execute("""
+        select bq_remove('people', '{"_id": "jill@example.com"}', false);
+        """)
+        result = self.cur.fetchall()
+
+        self.assertEqual(result,
+                         [
+                             (1,)
+                         ])
+
+        self.cur.execute("""
+        select bq_find('people', '{}');
+        """)
+        result = self.cur.fetchall()
+        self.assertEqual(result,
+                         [
+                             (sarah,)
                          ])
