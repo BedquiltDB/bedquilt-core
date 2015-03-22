@@ -513,3 +513,14 @@ class TestRemoveDocumnts(testutils.BedquiltTestCase):
                          [
                              (sarah,)
                          ])
+
+    def test_remove_one_by_id_on_empty_collection(self):
+        self.cur.execute("""
+        select bq_remove_one_by_id('people', 'jill@example.com');
+        """)
+        result = self.cur.fetchall()
+        self.assertEqual(result, [ (0,) ])
+
+    def test_remove_one_by_id(self):
+
+        pass
