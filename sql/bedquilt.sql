@@ -224,16 +224,24 @@ $$ LANGUAGE plpgsql;
 
 -- remove document
 CREATE OR REPLACE FUNCTION bq_remove(i_coll text, i_json_data json, i_multi boolean)
-RETURNS VOID as $$
+RETURNS setof integer as $$
 BEGIN
 
 IF i_multi
 THEN
-    EXECUTE format('
-    DELETE FROM %I WHERE bq_jdoc @> (''%s'')::jsonb
+    RETURN QUERY EXECUTE format('
+    WITH deleted AS (DELETE FROM %I WHERE bq_jdoc @> (''%s'')::jsonb
+    RETURNING _id)
+    SELECT count(*)::integer FROM deleted
     ', i_coll, i_json_data);
 ELSE
-  RAISE NOTICE 'NO';
+    RETURN QUERY EXECUTE format('
+    WITH candidates AS
+         (SELECT _id from %1$I WHERE bq_jdoc @> (''%2s'')::jsonb LIMIT 1),
+         deleted AS
+         (DELETE FROM %1$I WHERE _id IN (select _id from candidates) RETURNING _id)
+    SELECT count(*)::integer FROM deleted
+    ', i_coll, i_json_data);
 END IF;
 
 END
