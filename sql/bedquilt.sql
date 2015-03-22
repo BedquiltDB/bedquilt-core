@@ -1,5 +1,6 @@
+-- # -- # -- # -- # -- #
 -- Bedquilt Extension
-
+-- # -- # -- # -- # -- #
 
 -- bedquilt version
 CREATE OR REPLACE FUNCTION bq_version () RETURNS VARCHAR AS $$
@@ -9,7 +10,9 @@ END
 $$ LANGUAGE plpgsql;
 
 
+-- # -- # -- # -- # -- #
 -- Utilities
+-- # -- # -- # -- # -- #
 
 -- generate id
 CREATE OR REPLACE FUNCTION bq_generate_id () RETURNS char(24) AS $$
@@ -51,7 +54,9 @@ END
 $$ LANGUAGE plpgsql;
 
 
+-- # -- # -- # -- # -- #
 -- Collection-level operations
+-- # -- # -- # -- # -- #
 
 -- create collection
 CREATE OR REPLACE FUNCTION bq_create_collection(i_coll text)
@@ -113,7 +118,9 @@ END
 $$ LANGUAGE plpgsql;
 
 
+-- # -- # -- # -- # -- #
 -- Document Reads
+-- # -- # -- # -- # -- #
 
 -- find one
 CREATE OR REPLACE FUNCTION bq_find_one(
@@ -180,7 +187,9 @@ END
 $$ LANGUAGE plpgsql;
 
 
+-- # -- # -- # -- # -- #
 -- Document Writes
+-- # -- # -- # -- # -- #
 
 -- insert document
 CREATE OR REPLACE FUNCTION bq_insert(
