@@ -244,6 +244,7 @@ Examples:
 removed = coll.remove({"likes": ["pears"]}, multi=True)
 ```
 
+
 ### Update
 
 Update documents in collection with new data.
