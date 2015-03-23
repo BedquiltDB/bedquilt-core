@@ -306,17 +306,17 @@ PERFORM bq_create_collection(i_coll);
 
 IF (SELECT i_json_data->'_id') IS NULL
 THEN
-    IF NOT EXISTS (EXECUTE format('SELECT _id from %I where _id = %1$s',
+    IF NOT EXISTS (SELECT format(' _id from %I where _id = %1$s',
                                   i_coll, i_json_data))
     THEN
-      bq_insert(i_coll, i_json_data);
+      SELECT bq_insert(i_coll, i_json_data);
     ELSE
       EXECUTE format('
       UPDATE %1$I SET bq_jdoc = ''%2$s''::jsonb WHERE _id = ''%3$s''
-      ', i_coll, i_json_data, i_json_data->'_id')
+      ', i_coll, i_json_data, i_json_data->'_id');
     END IF;
 ELSE
-  EXECUTE bq_insert(i_coll, i_json_data);
+  SELECT bq_insert(i_coll, i_json_data);
 END IF;
 
 END
