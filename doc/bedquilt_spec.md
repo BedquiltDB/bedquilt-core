@@ -255,7 +255,6 @@ The operations map supports the following update operations:
 Params:
 - query::Map
 - operations::Map
-- multi::Boolean (default False)
 
 Examples:
 ```
@@ -268,3 +267,13 @@ coll.update({"likes": ["jazz"]},
 coll.update({"likes": ["pineapple"]},
             {"$unset": {"goodPerson": 1}})
 ```
+
+
+### Update One
+
+Todo
+
+
+### Update One By Id
+
+Todo
