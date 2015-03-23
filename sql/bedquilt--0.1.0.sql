@@ -224,7 +224,7 @@ $$ LANGUAGE plpgsql;
 
 -- remove documents
 CREATE OR REPLACE FUNCTION bq_remove(i_coll text, i_json_data json)
-RETURNS setof integer as $$
+RETURNS setof integer AS $$
 BEGIN
 
 IF (SELECT bq_collection_exists(i_coll))
@@ -246,7 +246,7 @@ $$ LANGUAGE plpgsql;
 
 -- remove one document
 CREATE OR REPLACE FUNCTION bq_remove_one(i_coll text, i_json_data json)
-RETURNS setof integer as $$
+RETURNS setof integer AS $$
 BEGIN
 
 IF (SELECT bq_collection_exists(i_coll))
@@ -269,7 +269,7 @@ $$ LANGUAGE plpgsql;
 
 -- remove one document
 CREATE OR REPLACE FUNCTION bq_remove_one_by_id(i_coll text, i_id text)
-RETURNS setof boolean as $$
+RETURNS setof boolean AS $$
 BEGIN
 
 IF (SELECT bq_collection_exists(i_coll))
@@ -286,3 +286,37 @@ END IF;
 
 END
 $$ LANGUAGE plpgsql;
+
+
+CREATE OR REPLACE FUNCTION bq_save(i_coll text, i_json_data json)
+RETURNS void AS $$
+BEGIN
+
+-- check if doc has _id
+-- then
+--   if _id not in collection
+--     insert doc
+--   else
+--     update set jdoc where _id = _id
+-- else
+--   insert doc
+-- endif
+
+IF (SELECT i_json_data->'_id') IS NULL
+THEN
+
+ELSE
+  EXECUTE bq_insert(i_coll, i_json_data);
+END IF;
+
+END
+$$ LANGUAGE plpgsql;
+
+-- update
+-- TODO
+
+-- update one
+-- TODO
+
+-- update one by id
+-- TODO
