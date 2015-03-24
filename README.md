@@ -32,15 +32,19 @@ though it is recommended to use one of the driver libraries for you favourite pr
 -- Insert two documents into the 'people' collection.
 select bq_insert(
     'people',
-    '{"_id": "sarah@example.com", "name": "Sarah", "likes": ["icecream", "code"]}'
+    '{"_id": "sarah@example.com",
+      "name": "Sarah",
+      "likes": ["icecream", "code"]}'
 );
 select bq_insert(
     'people',
-    '{"name": "Mike", "likes": ["code", "rabbits"]}'
+    '{"name": "Mike",
+      "likes": ["code", "rabbits"]}'
 );
 
 
--- Find a single document, where the "name" field is the string value "Mike".
+-- Find a single document,
+-- where the "name" field is the string value "Mike".
 select bq_find_one(
     'people',
     '{"name":  "Mike"}'
@@ -55,7 +59,8 @@ select bq_find('people', '{}');
 select bq_find('people', '{"likes": ["icecream"]}');
 
 
--- Find a single document by its "_id" field. This query hits the primary key index on the _id field
+-- Find a single document by its "_id" field.
+-- This query hits the primary key index on the _id field
 select bq_find_one_by_id('people', 'sarah@example.com');
 
 
