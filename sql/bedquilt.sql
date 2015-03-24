@@ -290,34 +290,35 @@ $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION bq_save(i_coll text, i_json_data json)
 RETURNS text AS $$
+DECLARE
+  o_id text;
+  ex integer;
 BEGIN
-
--- check if doc has _id
--- then
---   if _id not in collection
---     insert doc
---   else
---     update set jdoc where _id = _id
--- else
---   insert doc
--- endif
 
 PERFORM bq_create_collection(i_coll);
 
 IF (SELECT i_json_data->'_id') IS NOT NULL
 THEN
-    IF NOT EXISTS (SELECT format(' _id from %I where _id = %1$s',
-                                  i_coll, i_json_data->'_id'))
+
+
+  EXECUTE format('select * from %I where _id = ''%s'' ', i_coll, i_json_data->>'_id');
+  GET DIAGNOSTICS ex := ROW_COUNT;
+  IF ex > 0
     THEN
-      SELECT bq_insert(i_coll, i_json_data);
-    ELSE
+      raise notice '>> exists, update';
       EXECUTE format('
-      UPDATE %1$I SET bq_jdoc = ''%2$s''::jsonb WHERE _id = ''%3$s''
-      ', i_coll, i_json_data, i_json_data->'_id'::text);
+      UPDATE %I SET bq_jdoc = ''%s''::jsonb WHERE _id = ''%s''
+      ', i_coll, i_json_data, i_json_data->>'_id');
       return i_json_data->'_id'::text;
+    ELSE
+      raise notice '>> not exists, insert';
+      SELECT bq_insert(i_coll, i_json_data) INTO o_id;
+      RETURN o_id;
     END IF;
 ELSE
-  SELECT bq_insert(i_coll, i_json_data);
+  raise notice '>> no _id, insert';
+  SELECT bq_insert(i_coll, i_json_data) INTO o_id;
+  RETURN o_id;
 END IF;
 
 END
