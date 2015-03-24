@@ -64,15 +64,19 @@ though it is recommended to use one of the driver libraries for you favourite pr
 <div class="highlight highlight-PLpgSQL"><pre><span class="pl-c">-- Insert two documents into the 'people' collection.</span>
 <span class="pl-k">select</span> bq_insert(
     <span class="pl-s"><span class="pl-pds">'</span>people<span class="pl-pds">'</span></span>,
-    <span class="pl-s"><span class="pl-pds">'</span>{"_id": "sarah@example.com", "name": "Sarah", "likes": ["icecream", "code"]}<span class="pl-pds">'</span></span>
+    <span class="pl-s"><span class="pl-pds">'</span>{"_id": "sarah@example.com",</span>
+<span class="pl-s">      "name": "Sarah",</span>
+<span class="pl-s">      "likes": ["icecream", "code"]}<span class="pl-pds">'</span></span>
 );
 <span class="pl-k">select</span> bq_insert(
     <span class="pl-s"><span class="pl-pds">'</span>people<span class="pl-pds">'</span></span>,
-    <span class="pl-s"><span class="pl-pds">'</span>{"name": "Mike", "likes": ["code", "rabbits"]}<span class="pl-pds">'</span></span>
+    <span class="pl-s"><span class="pl-pds">'</span>{"name": "Mike",</span>
+<span class="pl-s">      "likes": ["code", "rabbits"]}<span class="pl-pds">'</span></span>
 );
 
 
-<span class="pl-c">-- Find a single document, where the "name" field is the string value "Mike".</span>
+<span class="pl-c">-- Find a single document,</span>
+<span class="pl-c">-- where the "name" field is the string value "Mike".</span>
 <span class="pl-k">select</span> bq_find_one(
     <span class="pl-s"><span class="pl-pds">'</span>people<span class="pl-pds">'</span></span>,
     <span class="pl-s"><span class="pl-pds">'</span>{"name":  "Mike"}<span class="pl-pds">'</span></span>
@@ -87,7 +91,8 @@ though it is recommended to use one of the driver libraries for you favourite pr
 <span class="pl-k">select</span> bq_find(<span class="pl-s"><span class="pl-pds">'</span>people<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>{"likes": ["icecream"]}<span class="pl-pds">'</span></span>);
 
 
-<span class="pl-c">-- Find a single document by its "_id" field. This query hits the primary key index on the _id field</span>
+<span class="pl-c">-- Find a single document by its "_id" field.</span>
+<span class="pl-c">-- This query hits the primary key index on the _id field</span>
 <span class="pl-k">select</span> bq_find_one_by_id(<span class="pl-s"><span class="pl-pds">'</span>people<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>sarah@example.com<span class="pl-pds">'</span></span>);
 
 
