@@ -307,8 +307,8 @@ THEN
     THEN
       raise notice '>> exists, update';
       EXECUTE format('
-      UPDATE %1$I SET bq_jdoc = ''%2$s''::jsonb WHERE _id = ''%3$s''
-      ', i_coll, i_json_data, i_json_data->'_id'::text);
+      UPDATE %I SET bq_jdoc = ''%s''::jsonb WHERE _id = ''%s''
+      ', i_coll, i_json_data, i_json_data->>'_id');
       return i_json_data->'_id'::text;
     ELSE
       raise notice '>> not exists, insert';
