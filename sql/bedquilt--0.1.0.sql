@@ -299,24 +299,19 @@ PERFORM bq_create_collection(i_coll);
 
 IF (SELECT i_json_data->'_id') IS NOT NULL
 THEN
-
-
   EXECUTE format('select * from %I where _id = ''%s'' ', i_coll, i_json_data->>'_id');
   GET DIAGNOSTICS ex := ROW_COUNT;
   IF ex > 0
     THEN
-      raise notice '>> exists, update';
       EXECUTE format('
       UPDATE %I SET bq_jdoc = ''%s''::jsonb WHERE _id = ''%s''
       ', i_coll, i_json_data, i_json_data->>'_id');
       return i_json_data->'_id'::text;
     ELSE
-      raise notice '>> not exists, insert';
       SELECT bq_insert(i_coll, i_json_data) INTO o_id;
       RETURN o_id;
     END IF;
 ELSE
-  raise notice '>> no _id, insert';
   SELECT bq_insert(i_coll, i_json_data) INTO o_id;
   RETURN o_id;
 END IF;
