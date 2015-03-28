@@ -293,21 +293,21 @@ CREATE OR REPLACE FUNCTION bq_save(i_coll text, i_jdoc json)
 RETURNS text AS $$
 DECLARE
   o_id text;
-  ex integer;
+  existing_id_count integer;
 BEGIN
 
 PERFORM bq_create_collection(i_coll);
 
 IF (SELECT i_jdoc->'_id') IS NOT NULL
 THEN
-  EXECUTE format('select * from %I where _id = ''%s'' ', i_coll, i_jdoc->>'_id');
-  GET DIAGNOSTICS ex := ROW_COUNT;
-  IF ex > 0
+  EXECUTE format('select count(*) from %I where _id = ''%s'' ', i_coll, i_jdoc->>'_id')
+  into existing_id_count;
+  IF existing_id_count > 0
     THEN
       EXECUTE format('
       UPDATE %I SET bq_jdoc = ''%s''::jsonb WHERE _id = ''%s''
       ', i_coll, i_jdoc, i_jdoc->>'_id');
-      return i_jdoc->'_id'::text;
+      RETURN i_jdoc->>'_id';
     ELSE
       SELECT bq_insert(i_coll, i_jdoc) INTO o_id;
       RETURN o_id;
