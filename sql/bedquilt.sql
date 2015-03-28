@@ -305,9 +305,9 @@ THEN
   IF existing_id_count > 0
     THEN
       EXECUTE format('
-      UPDATE %I SET bq_jdoc = ''%s''::jsonb WHERE _id = ''%s''
-      ', i_coll, i_jdoc, i_jdoc->>'_id');
-      RETURN i_jdoc->>'_id';
+      UPDATE %I SET bq_jdoc = ''%s''::jsonb WHERE _id = ''%s'' returning _id
+      ', i_coll, i_jdoc, i_jdoc->>'_id') INTO o_id;
+      RETURN o_id;
     ELSE
       SELECT bq_insert(i_coll, i_jdoc) INTO o_id;
       RETURN o_id;
