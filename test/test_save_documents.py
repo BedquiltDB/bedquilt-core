@@ -48,11 +48,14 @@ class TestSaveDocuments(testutils.BedquiltTestCase):
         """)
         _ = self.cur.fetchall()
 
+        dud = {'_id': 'dud', 'name': 'dud'}
         doc = {
             "_id": "aaa",
             "name": "spanner"
         }
 
+        self._insert('things', dud)
+        _ = self.cur.fetchall()
         self._insert('things', doc)
         _ = self.cur.fetchall()
 
@@ -62,9 +65,11 @@ class TestSaveDocuments(testutils.BedquiltTestCase):
 
         self.assertEqual(result,
                          [
+                             (dud,),
                              (doc,)
                          ])
 
+        # Mutate and save
         doc['name'] = 'fish'
         doc['color'] = 'blue'
 
@@ -78,5 +83,25 @@ class TestSaveDocuments(testutils.BedquiltTestCase):
 
         self.assertEqual(result,
                          [
+                             (dud,),
+                             (doc,)
+                         ])
+
+        # Mutate and save again
+        doc['name'] = 'trout'
+        doc['color'] = 'pink'
+        doc['count'] = 22
+
+        self._query("""
+        select bq_save('things', '{}');
+        """.format(json.dumps(doc)))
+
+        result = self._query("""
+        select bq_find('things', '{}');
+        """)
+
+        self.assertEqual(result,
+                         [
+                             (dud,),
                              (doc,)
                          ])
