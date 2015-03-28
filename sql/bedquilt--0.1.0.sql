@@ -54,6 +54,18 @@ END
 $$ LANGUAGE plpgsql;
 
 
+-- ensure _id is string
+CREATE OR REPLACE FUNCTION bq_check_id_type(i_jdoc json)
+RETURNS VOID AS $$
+BEGIN
+  IF (SELECT json_typeof(i_jdoc->'_id')) <> 'string'
+  THEN
+    RAISE EXCEPTION 'The _id field is not a string: % ', i_jdoc->'_id'
+    USING HINT = 'The _id field must be a string';
+  END IF;
+END
+$$ LANGUAGE plpgsql;
+
 -- # -- # -- # -- # -- #
 -- Collection-level operations
 -- # -- # -- # -- # -- #
@@ -206,6 +218,7 @@ IF (select i_jdoc->'_id') is null
 THEN
   select bq_doc_set_key(i_jdoc, '_id', (select bq_generate_id())) into doc;
 ELSE
+  PERFORM bq_check_id_type(i_jdoc);
   select i_jdoc into doc;
 END IF;
 
