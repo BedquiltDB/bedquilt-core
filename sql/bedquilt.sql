@@ -288,6 +288,7 @@ END
 $$ LANGUAGE plpgsql;
 
 
+-- save document
 CREATE OR REPLACE FUNCTION bq_save(i_coll text, i_json_data json)
 RETURNS text AS $$
 DECLARE
