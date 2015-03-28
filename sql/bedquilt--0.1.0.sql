@@ -86,10 +86,8 @@ THEN
         updated timestamptz default current_timestamp,
         CONSTRAINT validate_id CHECK ((bq_jdoc->>''_id'') IS NOT NULL)
     );
-    COMMENT ON TABLE %1$I IS ''bedquilt.%1$s'';
     CREATE INDEX idx_%1$I_bq_jdoc ON %1$I USING gin (bq_jdoc);
     CREATE UNIQUE INDEX idx_%1$I_bq_jdoc_id ON %1$I ((bq_jdoc->>''_id''));
-
     ', i_coll);
     RETURN true;
 ELSE
