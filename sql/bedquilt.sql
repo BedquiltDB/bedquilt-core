@@ -194,7 +194,7 @@ $$ LANGUAGE plpgsql;
 -- insert document
 CREATE OR REPLACE FUNCTION bq_insert(
     i_coll text,
-    i_json_data json
+    i_jdoc json
 ) RETURNS text AS $$
 DECLARE
   doc json;
@@ -202,11 +202,11 @@ BEGIN
 
 PERFORM bq_create_collection(i_coll);
 
-IF (select i_json_data->'_id') is null
+IF (select i_jdoc->'_id') is null
 THEN
-  select bq_doc_set_key(i_json_data, '_id', (select bq_generate_id())) into doc;
+  select bq_doc_set_key(i_jdoc, '_id', (select bq_generate_id())) into doc;
 ELSE
-  select i_json_data into doc;
+  select i_jdoc into doc;
 END IF;
 
 EXECUTE format(
@@ -223,7 +223,7 @@ $$ LANGUAGE plpgsql;
 
 
 -- remove documents
-CREATE OR REPLACE FUNCTION bq_remove(i_coll text, i_json_data json)
+CREATE OR REPLACE FUNCTION bq_remove(i_coll text, i_jdoc json)
 RETURNS setof integer AS $$
 BEGIN
 
@@ -234,7 +234,7 @@ THEN
       deleted AS
       (DELETE FROM %I WHERE bq_jdoc @> (''%s'')::jsonb RETURNING _id)
     SELECT count(*)::integer FROM deleted
-    ', i_coll, i_json_data);
+    ', i_coll, i_jdoc);
 
 ELSE
     RETURN QUERY SELECT 0;
@@ -245,7 +245,7 @@ $$ LANGUAGE plpgsql;
 
 
 -- remove one document
-CREATE OR REPLACE FUNCTION bq_remove_one(i_coll text, i_json_data json)
+CREATE OR REPLACE FUNCTION bq_remove_one(i_coll text, i_jdoc json)
 RETURNS setof integer AS $$
 BEGIN
 
@@ -258,7 +258,7 @@ THEN
         deleted AS
         (DELETE FROM %1$I WHERE _id IN (select _id from candidates) RETURNING _id)
       SELECT count(*)::integer FROM deleted
-    ', i_coll, i_json_data);
+    ', i_coll, i_jdoc);
 ELSE
     RETURN QUERY SELECT 0;
 END IF;
@@ -289,7 +289,7 @@ $$ LANGUAGE plpgsql;
 
 
 -- save document
-CREATE OR REPLACE FUNCTION bq_save(i_coll text, i_json_data json)
+CREATE OR REPLACE FUNCTION bq_save(i_coll text, i_jdoc json)
 RETURNS text AS $$
 DECLARE
   o_id text;
@@ -298,22 +298,22 @@ BEGIN
 
 PERFORM bq_create_collection(i_coll);
 
-IF (SELECT i_json_data->'_id') IS NOT NULL
+IF (SELECT i_jdoc->'_id') IS NOT NULL
 THEN
-  EXECUTE format('select * from %I where _id = ''%s'' ', i_coll, i_json_data->>'_id');
+  EXECUTE format('select * from %I where _id = ''%s'' ', i_coll, i_jdoc->>'_id');
   GET DIAGNOSTICS ex := ROW_COUNT;
   IF ex > 0
     THEN
       EXECUTE format('
       UPDATE %I SET bq_jdoc = ''%s''::jsonb WHERE _id = ''%s''
-      ', i_coll, i_json_data, i_json_data->>'_id');
-      return i_json_data->'_id'::text;
+      ', i_coll, i_jdoc, i_jdoc->>'_id');
+      return i_jdoc->'_id'::text;
     ELSE
-      SELECT bq_insert(i_coll, i_json_data) INTO o_id;
+      SELECT bq_insert(i_coll, i_jdoc) INTO o_id;
       RETURN o_id;
     END IF;
 ELSE
-  SELECT bq_insert(i_coll, i_json_data) INTO o_id;
+  SELECT bq_insert(i_coll, i_jdoc) INTO o_id;
   RETURN o_id;
 END IF;
 
