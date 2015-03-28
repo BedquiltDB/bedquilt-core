@@ -314,8 +314,9 @@ PERFORM bq_create_collection(i_coll);
 
 IF (SELECT i_jdoc->'_id') IS NOT NULL
 THEN
-  EXECUTE format('select count(*) from %I where _id = ''%s'' ', i_coll, i_jdoc->>'_id')
-  INTO existing_id_count;
+  EXECUTE format('select count(*) from %I where _id = ''%s'' ',
+                 i_coll, i_jdoc->>'_id')
+    INTO existing_id_count;
   IF existing_id_count > 0
     THEN
       EXECUTE format('
