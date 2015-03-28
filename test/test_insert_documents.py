@@ -30,17 +30,38 @@ class TestInsertDocument(testutils.BedquiltTestCase):
         self.assertEqual(collections, [("people",)])
 
     def test_with_non_string_id(self):
-        doc = {
-            "_id": 42,
-            "name": "Penguin",
-            "age": "penguin@example.com"
-        }
-
-        with self.assertRaises(psycopg2.InternalError):
-            self.cur.execute("""
-            select bq_insert('people', '{}');
-            """.format(json.dumps(doc)))
-        self.conn.rollback()
+        docs = [
+            {
+                "_id": 42,
+                "name": "Penguin",
+                "age": "penguin@example.com"
+            },
+            {
+                "_id": ['derp'],
+                "name": "Penguin",
+                "age": "penguin@example.com"
+            },
+            {
+                "_id": {"name": "Penguin"},
+                "age": "penguin@example.com"
+            },
+            {
+                "_id": False,
+                "name": "Penguin",
+                "age": "penguin@example.com"
+            },
+            {
+                "_id": None,
+                "name": "Penguin",
+                "age": "penguin@example.com"
+            }
+        ]
+        for doc in docs:
+            with self.assertRaises(psycopg2.InternalError):
+                self.cur.execute("""
+                select bq_insert('people', '{}');
+                """.format(json.dumps(doc)))
+            self.conn.rollback()
 
     def test_insert_without_id(self):
         doc = {
