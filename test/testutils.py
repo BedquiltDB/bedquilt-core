@@ -43,6 +43,10 @@ class BedquiltTestCase(unittest.TestCase):
         );
         """.format(coll=collection, doc=json.dumps(document)))
 
+    def _query(self, query):
+        self.cur.execute(query)
+        return self.cur.fetchall()
+
     def setUp(self):
         self.conn = PG_CONN
         self.cur = self.conn.cursor()
