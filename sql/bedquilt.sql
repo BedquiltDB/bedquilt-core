@@ -24,12 +24,19 @@ CREATE OR REPLACE FUNCTION bq_doc_set_key(
 RETURNS json
 AS $$
 BEGIN
-RETURN (SELECT concat('{', string_agg(to_json("key") || ':' || "value", ','), '}')::json
-    FROM (SELECT *
-    FROM json_each(i_jdoc)
-    WHERE key <> i_key
-    UNION ALL
-    SELECT i_key, to_json(i_val)) as "fields")::json;
+RETURN (
+  SELECT concat(
+      '{',
+      string_agg(to_json("key")
+        || ':'
+        || "value", ','),
+      '}'
+    )::json
+  FROM (SELECT *
+  FROM json_each(i_jdoc)
+  WHERE key <> i_key
+  UNION ALL
+  SELECT i_key, to_json(i_val)) as "fields")::json;
 END
 $$ LANGUAGE plpgsql;
 
