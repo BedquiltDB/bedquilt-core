@@ -1,6 +1,22 @@
 import testutils
 
 
+class TestBasics(testutils.BedquiltTestCase):
+
+    def test_extension_presence(self):
+        result = self._query("""
+        select * from pg_catalog.pg_extension
+        where extname = 'bedquilt';
+        """)
+
+        self.assertIsNotNone(result)
+        self.assertEqual(len(result), 1)
+
+        row = result[0]
+        self.assertTrue(len(row) > 0)
+        self.assertEqual(row[0], 'bedquilt')
+
+
 class TestCreateCollection(testutils.BedquiltTestCase):
 
     def test_creating_a_new_collection(self):
