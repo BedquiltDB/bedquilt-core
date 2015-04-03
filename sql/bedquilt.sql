@@ -95,7 +95,7 @@ ELSE
 END IF;
 
 END
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
 
 
 -- list collections
@@ -109,7 +109,7 @@ RETURN QUERY SELECT table_name::text
        AND data_type = 'jsonb';
 
 END
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
 
 
 -- delete collection
@@ -126,7 +126,7 @@ ELSE
 END IF;
 
 END
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
 
 
 -- # -- # -- # -- # -- #
