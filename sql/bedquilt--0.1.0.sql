@@ -218,7 +218,7 @@ THEN
   select bq_doc_set_key(i_jdoc, '_id', (select bq_generate_id())) into doc;
 ELSE
   PERFORM bq_check_id_type(i_jdoc);
-  select i_jdoc into doc;
+  doc := i_jdoc;
 END IF;
 
 EXECUTE format(
