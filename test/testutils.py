@@ -36,7 +36,7 @@ def clean_database(conn):
 class BedquiltTestCase(unittest.TestCase):
 
     def _insert(self, collection, document):
-        self.cur.execute("""
+        return self._query("""
         select bq_insert(
             '{coll}',
             '{doc}'
@@ -45,6 +45,7 @@ class BedquiltTestCase(unittest.TestCase):
 
     def _query(self, query):
         self.cur.execute(query)
+        self.conn.commit()
         return self.cur.fetchall()
 
     def setUp(self):
