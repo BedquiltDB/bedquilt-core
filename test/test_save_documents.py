@@ -20,7 +20,7 @@ class TestSaveDocuments(testutils.BedquiltTestCase):
 
     def test_save_with_no_id(self):
         _ = self._query("""
-        select bq_create_collection('thing');
+        select bq_create_collection('things');
         """)
 
         doc = {
