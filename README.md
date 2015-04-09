@@ -111,7 +111,7 @@ CREATE EXTENSION bedquilt;
 
 # Tests
 
-Run `bin/run-tests.sh` to run the test suite. Requires a `bedquilt_test` database
+Run `make test` to run the test suite. Requires a `bedquilt_test` database
 that the current user owns.
 
 
