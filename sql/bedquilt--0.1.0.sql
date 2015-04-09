@@ -7,6 +7,7 @@
 -- Utilities
 -- # -- # -- # -- # -- #
 
+
 -- generate id
 CREATE OR REPLACE FUNCTION bq_generate_id () RETURNS char(24) AS $$
 BEGIN
@@ -45,11 +46,9 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION bq_collection_exists (i_coll text)
 RETURNS boolean AS $$
 BEGIN
-
 RETURN EXISTS (
     SELECT relname FROM pg_class WHERE relname = format('%s', i_coll)
 );
-
 END
 $$ LANGUAGE plpgsql;
 
@@ -71,11 +70,11 @@ $$ LANGUAGE plpgsql;
 -- Collection-level operations
 -- # -- # -- # -- # -- #
 
+
 -- create collection
 CREATE OR REPLACE FUNCTION bq_create_collection(i_coll text)
 RETURNS BOOLEAN AS $$
 BEGIN
-
 IF NOT (SELECT bq_collection_exists(i_coll))
 THEN
     EXECUTE format('
@@ -93,7 +92,6 @@ THEN
 ELSE
     RETURN false;
 END IF;
-
 END
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
@@ -116,7 +114,6 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 CREATE OR REPLACE FUNCTION bq_delete_collection(i_coll text)
 RETURNS BOOLEAN AS $$
 BEGIN
-
 IF (SELECT bq_collection_exists(i_coll))
 THEN
     EXECUTE format('DROP TABLE %I CASCADE;', i_coll);
@@ -124,7 +121,6 @@ THEN
 ELSE
     RETURN false;
 END IF;
-
 END
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
@@ -139,7 +135,6 @@ CREATE OR REPLACE FUNCTION bq_find_one(
     i_json_query json
 ) RETURNS table(bq_jdoc json) AS $$
 BEGIN
-
 IF (SELECT bq_collection_exists(i_coll))
 THEN
     RETURN QUERY EXECUTE format(
@@ -150,7 +145,6 @@ THEN
         i_json_query
     );
 END IF;
-
 END
 $$ LANGUAGE plpgsql;
 
@@ -161,7 +155,6 @@ CREATE OR REPLACE FUNCTION bq_find_one_by_id(
     i_id text
 ) RETURNS table(bq_jdoc json) AS $$
 BEGIN
-
 IF (SELECT bq_collection_exists(i_coll))
 THEN
     RETURN QUERY EXECUTE format(
@@ -172,7 +165,6 @@ THEN
         i_id
     );
 END IF;
-
 END
 $$ LANGUAGE plpgsql;
 
@@ -183,7 +175,6 @@ CREATE OR REPLACE FUNCTION bq_find(
     i_json_query json
 ) RETURNS table(bq_jdoc json) AS $$
 BEGIN
-
 IF (SELECT bq_collection_exists(i_coll))
 THEN
     RETURN QUERY EXECUTE format(
@@ -193,7 +184,6 @@ THEN
         i_json_query
     );
 END IF;
-
 END
 $$ LANGUAGE plpgsql;
 
@@ -210,9 +200,7 @@ CREATE OR REPLACE FUNCTION bq_insert(
 DECLARE
   doc json;
 BEGIN
-
 PERFORM bq_create_collection(i_coll);
-
 IF (select i_jdoc->'_id') is null
 THEN
   select bq_doc_set_key(i_jdoc, '_id', (select bq_generate_id())) into doc;
@@ -220,16 +208,13 @@ ELSE
   PERFORM bq_check_id_type(i_jdoc);
   doc := i_jdoc;
 END IF;
-
 EXECUTE format(
     'INSERT INTO %I (_id, bq_jdoc) VALUES (''%s'', ''%s'');',
     i_coll,
     doc->>'_id',
     doc
 );
-
 return doc->>'_id';
-
 END
 $$ LANGUAGE plpgsql;
 
@@ -238,7 +223,6 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION bq_remove(i_coll text, i_jdoc json)
 RETURNS setof integer AS $$
 BEGIN
-
 IF (SELECT bq_collection_exists(i_coll))
 THEN
     RETURN QUERY EXECUTE format('
@@ -251,7 +235,6 @@ THEN
 ELSE
     RETURN QUERY SELECT 0;
 END IF;
-
 END
 $$ LANGUAGE plpgsql;
 
@@ -260,7 +243,6 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION bq_remove_one(i_coll text, i_jdoc json)
 RETURNS setof integer AS $$
 BEGIN
-
 IF (SELECT bq_collection_exists(i_coll))
 THEN
     RETURN QUERY EXECUTE format('
@@ -274,7 +256,6 @@ THEN
 ELSE
     RETURN QUERY SELECT 0;
 END IF;
-
 END
 $$ LANGUAGE plpgsql;
 
@@ -283,7 +264,6 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION bq_remove_one_by_id(i_coll text, i_id text)
 RETURNS setof boolean AS $$
 BEGIN
-
 IF (SELECT bq_collection_exists(i_coll))
 THEN
     RETURN QUERY EXECUTE format('
@@ -295,7 +275,6 @@ THEN
 ELSE
 RETURN QUERY SELECT false;
 END IF;
-
 END
 $$ LANGUAGE plpgsql;
 
@@ -307,9 +286,7 @@ DECLARE
   o_id text;
   existing_id_count integer;
 BEGIN
-
 PERFORM bq_create_collection(i_coll);
-
 IF (SELECT i_jdoc->'_id') IS NOT NULL
 THEN
   EXECUTE format('select count(*) from %I where _id = ''%s'' ',
@@ -329,15 +306,17 @@ ELSE
   SELECT bq_insert(i_coll, i_jdoc) INTO o_id;
   RETURN o_id;
 END IF;
-
 END
 $$ LANGUAGE plpgsql;
+
 
 -- update
 -- TODO
 
+
 -- update one
 -- TODO
+
 
 -- update one by id
 -- TODO
