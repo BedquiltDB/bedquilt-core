@@ -115,6 +115,17 @@ Run `bin/run-tests.sh` to run the test suite. Requires a `bedquilt_test` databas
 that the current user owns.
 
 
+# Documentation
+
+Project documnetation hosted at [Read The Docs](http://bedquiltdb.readthedocs.org).
+
+To build documentation, install the `mkdocs` utility and run:
+```
+$ make docs
+```
+
+
+
 # License
 
 Bedquilt is released under the [MIT License](./LICENSE.txt).
