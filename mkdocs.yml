@@ -3,4 +3,6 @@ theme: readthedocs
 pages:
   - [index.md, Home]
   - [getting_started.md, Getting Started]
+  - [api_docs.md, Core API]
   - [spec.md, Spec]
+  
