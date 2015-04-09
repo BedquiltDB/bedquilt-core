@@ -1,0 +1,6 @@
+site_name: BedquiltDB Docs
+theme: readthedocs
+pages:
+  - [index.md, Home]
+  - [getting_started.md, Getting Started]
+  - [spec.md, Spec]
