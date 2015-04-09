@@ -15,7 +15,7 @@ MAGIC_LINE = '---- ---- ---- ----'
 
 FUNCTION_NAME_REGEX = 'FUNCTION ([a-z_]+)\('
 LANGUAGE_REGEX = 'LANGUAGE ([a-z]+)'
-RETURNS_REGEX = 'RETURNS ([a-z\s]+) AS'
+RETURNS_REGEX = 'RETURNS (.+) AS'
 PARAMS_REGEX = 'FUNCTION [a-z_]+\(([a-z_, ]+)'
 
 def main():
@@ -60,6 +60,8 @@ def main():
 
 # Helpers
 def md_escape(st):
+    if st is None:
+        return None
     return st.replace('_', '\_')
 
 
@@ -88,6 +90,7 @@ def parse(st):
     if params_string:
         params = params_string.split(', ')
         params = [param.split(' ') for param in params]
+        params = params_string
 
     return {
         'name': function_name,
@@ -101,21 +104,22 @@ def to_md(doc):
     return (
 """
 
-### {}
+### {name}
 
-language: {}
+params: {params}
 
-params: {}
+returns: {returns}
 
-returns: {}
+language: {language}
 
 
-""".format(
-    md_escape(doc['name']),
-    doc['language'],
-    doc['params'],
-    doc['returns'])
-    )
+
+""".format(**{
+    'name': md_escape(doc['name']),
+    'language': md_escape(doc['language']),
+    'params': md_escape(doc['params']),
+    'returns': md_escape(doc['returns'])})
+        )
 
 
 # Run if main

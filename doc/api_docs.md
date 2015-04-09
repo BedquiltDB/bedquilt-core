@@ -10,118 +10,131 @@ This page describes the sql functions which make up the bedquilt extension.
 
 ### bq\_doc\_set\_key
 
+params: i\_jdoc json, i\_key text, i\_val anyelement
+
+returns: json
+
 language: plpgsql
 
-params: None
-
-returns: None
 
 
 
 
 ### bq\_check\_id\_type
 
+params: i\_jdoc json
+
+returns: VOID
+
 language: plpgsql
 
-params: [['i_jdoc', 'json']]
-
-returns: None
 
 
 
 
 ### bq\_create\_collection
 
+params: i\_coll text
+
+returns: BOOLEAN
+
 language: plpgsql
 
-params: [['i_coll', 'text']]
-
-returns: None
 
 
 
 
 ### bq\_list\_collections
 
-language: plpgsql
-
 params: None
 
-returns: None
+returns: table(collection\_name text)
+
+language: plpgsql
+
 
 
 
 
 ### bq\_delete\_collection
 
+params: i\_coll text
+
+returns: BOOLEAN
+
 language: plpgsql
 
-params: [['i_coll', 'text']]
-
-returns: None
 
 
 
 
 ### bq\_find\_one\_by\_id
 
+params: i\_coll text, i\_id text
+
+returns: table(bq\_jdoc json)
+
 language: plpgsql
 
-params: None
-
-returns: None
 
 
 
 
 ### bq\_find
 
+params: i\_coll text, i\_json\_query json
+
+returns: table(bq\_jdoc json)
+
 language: plpgsql
 
-params: None
-
-returns: None
 
 
 
 
 ### bq\_remove
 
-language: plpgsql
-
-params: [['i_coll', 'text'], ['i_jdoc', 'json']]
+params: i\_coll text, i\_jdoc json
 
 returns: setof integer
+
+language: plpgsql
+
 
 
 
 
 ### bq\_remove\_one
 
-language: plpgsql
-
-params: [['i_coll', 'text'], ['i_jdoc', 'json']]
+params: i\_coll text, i\_jdoc json
 
 returns: setof integer
+
+language: plpgsql
+
 
 
 
 
 ### bq\_remove\_one\_by\_id
 
-language: plpgsql
-
-params: [['i_coll', 'text'], ['i_id', 'text']]
+params: i\_coll text, i\_id text
 
 returns: setof boolean
+
+language: plpgsql
+
 
 
 
 
 ### bq\_save
 
-language: plpgsql
-
-params: [['i_coll', 'text'], ['i_jdoc', 'json']]
+params: i\_coll text, i\_jdoc json
 
 returns: text
+
+language: plpgsql
+
+
+

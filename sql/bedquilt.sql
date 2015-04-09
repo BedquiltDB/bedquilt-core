@@ -17,13 +17,8 @@ $$ LANGUAGE plpgsql;
 
 
 -- set key
-CREATE OR REPLACE FUNCTION bq_doc_set_key(
-    i_jdoc json,
-    i_key  text,
-    i_val  anyelement
-)
-RETURNS json
-AS $$
+CREATE OR REPLACE FUNCTION bq_doc_set_key(i_jdoc json, i_key text, i_val anyelement)
+RETURNS json AS $$
 BEGIN
 RETURN (
   SELECT concat(
@@ -150,10 +145,8 @@ $$ LANGUAGE plpgsql;
 
 
 -- find one by id
-CREATE OR REPLACE FUNCTION bq_find_one_by_id(
-    i_coll text,
-    i_id text
-) RETURNS table(bq_jdoc json) AS $$
+CREATE OR REPLACE FUNCTION bq_find_one_by_id(i_coll text, i_id text)
+RETURNS table(bq_jdoc json) AS $$
 BEGIN
 IF (SELECT bq_collection_exists(i_coll))
 THEN
@@ -170,10 +163,8 @@ $$ LANGUAGE plpgsql;
 
 
 -- find many documents
-CREATE OR REPLACE FUNCTION bq_find(
-    i_coll text,
-    i_json_query json
-) RETURNS table(bq_jdoc json) AS $$
+CREATE OR REPLACE FUNCTION bq_find(i_coll text, i_json_query json)
+RETURNS table(bq_jdoc json) AS $$
 BEGIN
 IF (SELECT bq_collection_exists(i_coll))
 THEN
@@ -193,10 +184,8 @@ $$ LANGUAGE plpgsql;
 -- # -- # -- # -- # -- #
 
 -- insert document
-CREATE OR REPLACE FUNCTION bq_insert(
-    i_coll text,
-    i_jdoc json
-) RETURNS text AS $$
+CREATE OR REPLACE FUNCTION bq_insert(i_coll text, i_jdoc json)
+RETURNS text AS $$
 DECLARE
   doc json;
 BEGIN
