@@ -34,7 +34,7 @@ dist:
 
 
 docs:
-	python bin/generate_docs.py && mkdocs build
+	python bin/generate_docs.py && mkdocs build --clean
 
 test: install
 	bin/run-tests.sh

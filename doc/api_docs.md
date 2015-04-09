@@ -8,7 +8,7 @@ This page describes the sql functions which make up the bedquilt extension.
 
 
 
-### bq\_generate\_id () RETURNS char
+### bq\_generate\_id 
 
 params: None
 
