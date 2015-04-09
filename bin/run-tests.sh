@@ -1,6 +1,6 @@
 #! /usr/bin/env sh
 
-./bin/install.sh
+#./bin/install.sh
 
 echo ">> Enabling bedquilt on localhost/bedquilt_test..."
 psql -d bedquilt_test \

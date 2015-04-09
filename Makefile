@@ -33,7 +33,7 @@ dist:
 # /PGXN stuff
 
 
-test:
+test: install
 	bin/run-tests.sh
 
 
