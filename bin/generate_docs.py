@@ -14,9 +14,9 @@ MAGIC_LINE = '---- ---- ---- ----'
 
 
 FUNCTION_NAME_REGEX = 'FUNCTION (.+)\('
-LANGUAGE_REGEX = 'LANGUAGE (.+);'
+LANGUAGE_REGEX = 'LANGUAGE (\w+)'
 RETURNS_REGEX = 'RETURNS (.+) AS'
-PARAMS_REGEX = 'FUNCTION [a-z_]+\((.+)'
+PARAMS_REGEX = 'FUNCTION [a-z_]+\((.+)\)'
 
 def main():
     # BedquiltClient
@@ -104,21 +104,18 @@ def to_md(doc):
     return (
 """
 
-### {name}
+## {name}
 
-params: {params}
-
-returns: {returns}
-
-language: {language}
-
+- params: `{params}`
+- returns: `{returns}`
+- language: `{language}`
 
 
 """.format(**{
     'name': md_escape(doc['name']),
-    'language': md_escape(doc['language']),
-    'params': md_escape(doc['params']),
-    'returns': md_escape(doc['returns'])})
+    'language': doc['language'],
+    'params': doc['params'],
+    'returns': doc['returns']})
         )
 
 
