@@ -33,6 +33,9 @@ dist:
 # /PGXN stuff
 
 
+docs:
+	python bin/generate_docs.py && mkdocs build
+
 test: install
 	bin/run-tests.sh
 

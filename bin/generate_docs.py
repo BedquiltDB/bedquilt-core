@@ -13,10 +13,10 @@ SOURCE_FILE_PATH = 'sql/bedquilt.sql'
 MAGIC_LINE = '---- ---- ---- ----'
 
 
-FUNCTION_NAME_REGEX = 'FUNCTION ([a-z_]+)\('
-LANGUAGE_REGEX = 'LANGUAGE ([a-z]+)'
+FUNCTION_NAME_REGEX = 'FUNCTION (.+)\('
+LANGUAGE_REGEX = 'LANGUAGE (.+);'
 RETURNS_REGEX = 'RETURNS (.+) AS'
-PARAMS_REGEX = 'FUNCTION [a-z_]+\(([a-z_, ]+)'
+PARAMS_REGEX = 'FUNCTION [a-z_]+\((.+)'
 
 def main():
     # BedquiltClient
