@@ -8,7 +8,7 @@ import re
 from pprint import pprint
 
 
-TARGET_FILE_PATH = 'docs/api_docs.md'
+TARGET_FILE_PATH = 'doc/api_docs.md'
 SOURCE_FILE_PATH = 'sql/bedquilt.sql'
 MAGIC_LINE = '---- ---- ---- ----'
 
@@ -32,28 +32,10 @@ def main():
 
     details = [parse(x) for x in function_blocks]
 
-    pprint(details)
-
-
-
-    return
-
-    final_string = (
-"""
-
-## BedquiltClient
-
-{}
-
-## BedquiltCollection
-
-{}
-
-""".format(
-    "\n".join(map(to_md, client_docs)),
-    "\n".join(map(to_md, collection_docs))
-)
-    )
+    final_string = "\n\n"
+    for detail in details:
+        if detail['name'] is not None:
+            final_string = final_string + to_md(detail)
 
     contents = None
     with open(TARGET_FILE_PATH, 'r') as target:
@@ -121,10 +103,18 @@ def to_md(doc):
 
 ### {}
 
-```
-{}
-```
-""".format(md_escape(doc['name']), doc['docstring'])
+language: {}
+
+params: {}
+
+returns: {}
+
+
+""".format(
+    md_escape(doc['name']),
+    doc['language'],
+    doc['params'],
+    doc['returns'])
     )
 
 
