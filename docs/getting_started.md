@@ -38,5 +38,11 @@ CREATE EXTENSION IF NOT EXISTS pgcrypto;
 CREATE EXTENSION bedquilt;
 ```
 
-Now, the various functions that make up `bedquilt` should be available
+The various functions that make up `bedquilt` should be available
 on the database, and you are ready to connect a client driver.
+
+
+## Next steps
+
+Now you can install a client library
+(such as [pybedquilt](http://pybedquilt.readthedocs.org)), and start using BedquiltDB.
