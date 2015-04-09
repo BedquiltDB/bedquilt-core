@@ -18,6 +18,7 @@ LANGUAGE_REGEX = 'LANGUAGE (\w+)'
 RETURNS_REGEX = 'RETURNS (.+) AS'
 PARAMS_REGEX = 'FUNCTION [a-z_]+\((.+)\)'
 
+
 def main():
     # BedquiltClient
     with open(SOURCE_FILE_PATH, 'r') as source_file:
