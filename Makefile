@@ -35,3 +35,6 @@ dist:
 
 test:
 	bin/run-tests.sh
+
+
+.PHONY: test installdocs

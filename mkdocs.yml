@@ -1,5 +1,6 @@
 site_name: BedquiltDB Docs
 theme: readthedocs
+docs_dir: doc
 pages:
   - [index.md, Home]
   - [getting_started.md, Getting Started]
