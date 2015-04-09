@@ -1,3 +1,4 @@
+# PGXN stuff
 EXTENSION = $(shell grep -m 1 '"name":' META.json | \
 	sed -e 's/[[:space:]]*"name":[[:space:]]*"\([^"]*\)",/\1/')
 
@@ -29,3 +30,8 @@ endif
 
 dist:
 	git archive --format zip --prefix=$(EXTENSION)-$(EXTVERSION)/ -o $(EXTENSION)-$(EXTVERSION).zip HEAD
+# /PGXN stuff
+
+
+test:
+	bin/run-tests.sh
