@@ -80,6 +80,14 @@ select bq_list_collections();
 - The pgcrypto extension
 
 
+## Development prerequisites
+
+- python >=2.7
+- a local installation of PostgreSQL, with pgxs
+- mkdocs
+- gnu make
+
+
 # Installation
 
 First, clone this repositroy:
