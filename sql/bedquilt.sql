@@ -8,7 +8,9 @@
 -- # -- # -- # -- # -- #
 
 
--- generate id
+/* Generate a random string ID.
+ * Used by the insert function to populate the '_id' field if missing.
+ */
 CREATE OR REPLACE FUNCTION bq_generate_id ()
 RETURNS char(24) AS $$
 BEGIN
@@ -17,7 +19,8 @@ END
 $$ LANGUAGE plpgsql;
 
 
--- set key
+/* Set a key in a json document.
+ */
 CREATE OR REPLACE FUNCTION bq_doc_set_key(i_jdoc json, i_key text, i_val anyelement)
 RETURNS json AS $$
 BEGIN
@@ -38,7 +41,9 @@ END
 $$ LANGUAGE plpgsql;
 
 
--- collection exists
+/* Check if a collection exists.
+ * Currently does a simple check for a table with the specified name.
+*/
 CREATE OR REPLACE FUNCTION bq_collection_exists (i_coll text)
 RETURNS boolean AS $$
 BEGIN
@@ -49,7 +54,10 @@ END
 $$ LANGUAGE plpgsql;
 
 
--- ensure _id is string
+/* Ensure the _id field of the supplied json document is a string value.
+ * If it's not, an exception is raised. Ideally, the client should validate
+ * this is the case before submitting to the server.
+ */
 CREATE OR REPLACE FUNCTION bq_check_id_type(i_jdoc json)
 RETURNS VOID AS $$
 BEGIN
@@ -67,7 +75,8 @@ $$ LANGUAGE plpgsql;
 -- # -- # -- # -- # -- #
 
 
--- create collection
+/* Create a collection with the specified name
+ */
 CREATE OR REPLACE FUNCTION bq_create_collection(i_coll text)
 RETURNS BOOLEAN AS $$
 BEGIN
@@ -92,7 +101,9 @@ END
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 
--- list collections
+/* Get a list of existing collections.
+ * This checks information_schema for tables matching the expected structure.
+ */
 CREATE OR REPLACE FUNCTION bq_list_collections()
 RETURNS table(collection_name text) AS $$
 BEGIN
@@ -106,7 +117,9 @@ END
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 
--- delete collection
+/* Delete/drop a collection.
+ * At the moment, this just drops whatever table matches the collection name.
+ */
 CREATE OR REPLACE FUNCTION bq_delete_collection(i_coll text)
 RETURNS BOOLEAN AS $$
 BEGIN
@@ -125,7 +138,8 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 -- Document Reads
 -- # -- # -- # -- # -- #
 
--- find one
+/* find one
+ */
 CREATE OR REPLACE FUNCTION bq_find_one(
     i_coll text,
     i_json_query json
@@ -163,7 +177,8 @@ END
 $$ LANGUAGE plpgsql;
 
 
--- find many documents
+/* find many documents
+ */
 CREATE OR REPLACE FUNCTION bq_find(i_coll text, i_json_query json)
 RETURNS table(bq_jdoc json) AS $$
 BEGIN
@@ -184,7 +199,9 @@ $$ LANGUAGE plpgsql;
 -- Document Writes
 -- # -- # -- # -- # -- #
 
--- insert document
+
+/* insert document
+ */
 CREATE OR REPLACE FUNCTION bq_insert(i_coll text, i_jdoc json)
 RETURNS text AS $$
 DECLARE
@@ -209,7 +226,8 @@ END
 $$ LANGUAGE plpgsql;
 
 
--- remove documents
+/* remove documents
+ */
 CREATE OR REPLACE FUNCTION bq_remove(i_coll text, i_jdoc json)
 RETURNS setof integer AS $$
 BEGIN
@@ -229,7 +247,8 @@ END
 $$ LANGUAGE plpgsql;
 
 
--- remove one document
+/* remove one document
+ */
 CREATE OR REPLACE FUNCTION bq_remove_one(i_coll text, i_jdoc json)
 RETURNS setof integer AS $$
 BEGIN
@@ -250,7 +269,8 @@ END
 $$ LANGUAGE plpgsql;
 
 
--- remove one document
+/* remove one document
+ */
 CREATE OR REPLACE FUNCTION bq_remove_one_by_id(i_coll text, i_id text)
 RETURNS setof boolean AS $$
 BEGIN
@@ -269,7 +289,8 @@ END
 $$ LANGUAGE plpgsql;
 
 
--- save document
+/* save document
+ */
 CREATE OR REPLACE FUNCTION bq_save(i_coll text, i_jdoc json)
 RETURNS text AS $$
 DECLARE
@@ -298,15 +319,3 @@ ELSE
 END IF;
 END
 $$ LANGUAGE plpgsql;
-
-
--- update
--- TODO
-
-
--- update one
--- TODO
-
-
--- update one by id
--- TODO
