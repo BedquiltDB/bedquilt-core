@@ -14,6 +14,10 @@ This page describes the sql functions which make up the bedquilt extension.
 - returns: `char(24)`
 - language: `plpgsql`
 
+Generate a random string ID.
+Used by the insert function to populate the '_id' field if missing.
+
+
 
 
 
@@ -22,6 +26,9 @@ This page describes the sql functions which make up the bedquilt extension.
 - params: `i_jdoc json, i_key text, i_val anyelement`
 - returns: `json`
 - language: `plpgsql`
+
+Set a key in a json document.
+
 
 
 
@@ -32,6 +39,9 @@ This page describes the sql functions which make up the bedquilt extension.
 - returns: `boolean`
 - language: `plpgsql`
 
+Check if a collection exists.
+Currently does a simple check for a table with the specified name.
+
 
 
 
@@ -40,6 +50,11 @@ This page describes the sql functions which make up the bedquilt extension.
 - params: `i_jdoc json`
 - returns: `VOID`
 - language: `plpgsql`
+
+Ensure the _id field of the supplied json document is a string value.
+If it's not, an exception is raised. Ideally, the client should validate
+this is the case before submitting to the server.
+
 
 
 
@@ -50,6 +65,9 @@ This page describes the sql functions which make up the bedquilt extension.
 - returns: `BOOLEAN`
 - language: `plpgsql`
 
+Create a collection with the specified name
+
+
 
 
 
@@ -59,6 +77,10 @@ This page describes the sql functions which make up the bedquilt extension.
 - returns: `table(collection_name text)`
 - language: `plpgsql`
 
+Get a list of existing collections.
+This checks information_schema for tables matching the expected structure.
+
+
 
 
 
@@ -67,6 +89,10 @@ This page describes the sql functions which make up the bedquilt extension.
 - params: `i_coll text`
 - returns: `BOOLEAN`
 - language: `plpgsql`
+
+Delete/drop a collection.
+At the moment, this just drops whatever table matches the collection name.
+
 
 
 
@@ -80,11 +106,28 @@ This page describes the sql functions which make up the bedquilt extension.
 
 
 
+
+
 ## bq\_find
 
 - params: `i_coll text, i_json_query json`
 - returns: `table(bq_jdoc json)`
 - language: `plpgsql`
+
+find many documents
+
+
+
+
+
+## bq\_insert
+
+- params: `i_coll text, i_jdoc json`
+- returns: `text`
+- language: `plpgsql`
+
+insert document
+
 
 
 
@@ -95,6 +138,9 @@ This page describes the sql functions which make up the bedquilt extension.
 - returns: `setof integer`
 - language: `plpgsql`
 
+remove documents
+
+
 
 
 
@@ -103,6 +149,9 @@ This page describes the sql functions which make up the bedquilt extension.
 - params: `i_coll text, i_jdoc json`
 - returns: `setof integer`
 - language: `plpgsql`
+
+remove one document
+
 
 
 
@@ -113,6 +162,9 @@ This page describes the sql functions which make up the bedquilt extension.
 - returns: `setof boolean`
 - language: `plpgsql`
 
+remove one document
+
+
 
 
 
@@ -121,5 +173,8 @@ This page describes the sql functions which make up the bedquilt extension.
 - params: `i_coll text, i_jdoc json`
 - returns: `text`
 - language: `plpgsql`
+
+save document
+
 
 

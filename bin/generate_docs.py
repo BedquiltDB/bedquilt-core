@@ -92,13 +92,31 @@ def parse(st):
         params = params_string.split(', ')
         params = [param.split(' ') for param in params]
         params = params_string
+    doc_comment = get_doc_comment(st)
 
     return {
         'name': function_name,
         'language': language,
         'params': params,
-        'returns': return_type
+        'returns': return_type,
+        'doc_comment': doc_comment
     }
+
+
+def get_doc_comment(st):
+    result = ''
+    lines = st.splitlines()
+    comment_starts = ['/* ', ' * ', ' */']
+    if lines:
+        if lines[0].startswith('/* '):
+            comment_lines = []
+            for line in lines:
+                if line[:3] in comment_starts:
+                    comment_lines.append(line[3:])
+                if line[:3] == comment_starts[-1]:
+                    break
+            result = "\n".join(comment_lines)
+    return result
 
 
 def to_md(doc):
@@ -111,12 +129,15 @@ def to_md(doc):
 - returns: `{returns}`
 - language: `{language}`
 
+{doc_comment}
+
 
 """.format(**{
     'name': md_escape(doc['name']),
     'language': doc['language'],
     'params': doc['params'],
-    'returns': doc['returns']})
+    'returns': doc['returns'],
+    'doc_comment': doc['doc_comment']})
         )
 
 
