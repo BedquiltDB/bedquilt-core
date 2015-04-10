@@ -83,8 +83,9 @@ select bq_list_collections();
 ## Development prerequisites
 
 - python >=2.7
+- psycopg2 python library (`pip install pyscopg2`)
 - a local installation of PostgreSQL, with pgxs
-- mkdocs
+- mkdocs, for building documentation
 - gnu make
 
 
