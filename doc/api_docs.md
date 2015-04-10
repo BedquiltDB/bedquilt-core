@@ -97,6 +97,18 @@ At the moment, this just drops whatever table matches the collection name.
 
 
 
+## bq\_find\_one
+
+- params: `None`
+- returns: `table(bq_jdoc json)`
+- language: `plpgsql`
+
+find one
+
+
+
+
+
 ## bq\_find\_one\_by\_id
 
 - params: `i_coll text, i_id text`

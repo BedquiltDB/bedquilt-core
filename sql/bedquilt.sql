@@ -138,6 +138,7 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 -- Document Reads
 -- # -- # -- # -- # -- #
 
+
 /* find one
  */
 CREATE OR REPLACE FUNCTION bq_find_one(
