@@ -107,12 +107,10 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 CREATE OR REPLACE FUNCTION bq_list_collections()
 RETURNS table(collection_name text) AS $$
 BEGIN
-
 RETURN QUERY SELECT table_name::text
        FROM information_schema.columns
        WHERE column_name = 'bq_jdoc'
        AND data_type = 'jsonb';
-
 END
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
@@ -141,10 +139,8 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 /* find one
  */
-CREATE OR REPLACE FUNCTION bq_find_one(
-    i_coll text,
-    i_json_query json
-) RETURNS table(bq_jdoc json) AS $$
+CREATE OR REPLACE FUNCTION bq_find_one(i_coll text, i_json_query json)
+RETURNS table(bq_jdoc json) AS $$
 BEGIN
 IF (SELECT bq_collection_exists(i_coll))
 THEN
