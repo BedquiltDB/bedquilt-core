@@ -45,6 +45,7 @@ Currently does a simple check for a table with the specified name.
 
 
 
+
 ## bq\_check\_id\_type
 
 - params: `i_jdoc json`
