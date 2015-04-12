@@ -6,7 +6,7 @@
     "maintainer": [
         "Shane Kilkelly <shane+bedquiltdb@kilkelly.me>"
     ],
-    "license": "MIT",
+    "license": "mit",
     "provides": {
         "bedquilt": {
             "abstract": "A json object store",
