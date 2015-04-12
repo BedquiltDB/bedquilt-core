@@ -9,6 +9,7 @@
     "license": "mit",
     "provides": {
         "bedquilt": {
+            "file": "sql/bedquilt.sql",
             "abstract": "A json object store",
             "docfile": "doc/api_docs.md",
             "version": "0.1.1"
