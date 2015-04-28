@@ -19,6 +19,16 @@ class TestCollectionCount(testutils.BedquiltTestCase):
         """)
         self.assertEqual(result, [(0,)])
 
+    def test_count_with_one_doc(self):
+        _ = self._query("""
+        select bq_insert('things', '{"a": 1}')
+        """)
+
+        result = self._query("""
+        select bq_count('things')
+        """)
+        self.assertEqual(result, [(1,)])
+
 class TestFindDocuments(testutils.BedquiltTestCase):
 
     def test_find_on_empty_collection(self):
