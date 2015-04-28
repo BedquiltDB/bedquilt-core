@@ -4,6 +4,21 @@ import string
 import psycopg2
 
 
+class TestCollectionCount(testutils.BedquiltTestCase):
+
+    def test_count_on_empty_collection(self):
+        _ = self._query("select bq_create_collection('people');")
+        result = self._query("""
+        select bq_count('people');
+        """)
+        self.assertEqual(result, [(0,)])
+
+    def test_count_on_non_exsistant_collection(self):
+        result = self._query("""
+        select bq_count('people')
+        """)
+        self.assertEqual(result, [(0,)])
+
 class TestFindDocuments(testutils.BedquiltTestCase):
 
     def test_find_on_empty_collection(self):

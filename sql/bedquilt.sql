@@ -192,6 +192,26 @@ END
 $$ LANGUAGE plpgsql;
 
 
+/* count documents in collection
+ */
+CREATE OR REPLACE FUNCTION bq_count(i_coll text)
+RETURNS integer AS $$
+DECLARE
+  o_value int;
+BEGIN
+IF (SELECT bq_collection_exists(i_coll))
+THEN
+  EXECUTE format(
+    'SELECT COUNT(*) from %I', i_coll
+  ) INTO o_value;
+  RETURN o_value;
+ELSE
+  return 0;
+END IF;
+END
+$$ LANGUAGE plpgsql;
+
+
 -- # -- # -- # -- # -- #
 -- Document Writes
 -- # -- # -- # -- # -- #
