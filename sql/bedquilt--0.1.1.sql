@@ -194,7 +194,7 @@ $$ LANGUAGE plpgsql;
 
 /* count documents in collection
  */
-CREATE OR REPLACE FUNCTION bq_count(i_coll text)
+CREATE OR REPLACE FUNCTION bq_count(i_coll text, i_doc json)
 RETURNS integer AS $$
 DECLARE
   o_value int;
@@ -202,7 +202,10 @@ BEGIN
 IF (SELECT bq_collection_exists(i_coll))
 THEN
   EXECUTE format(
-    'SELECT COUNT(_id) from %I', i_coll
+    'SELECT COUNT(_id) from %I
+    WHERE bq_jdoc @> (''%s'')::jsonb',
+     i_coll,
+     i_doc
   ) INTO o_value;
   RETURN o_value;
 ELSE
