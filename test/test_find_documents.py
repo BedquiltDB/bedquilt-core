@@ -41,6 +41,47 @@ class TestCollectionCount(testutils.BedquiltTestCase):
         self.assertEqual(result, [(100,)])
 
 
+    def test_count_with_query(self):
+        sarah = {'_id': "sarah@example.com",
+                 'name': "Sarah",
+                 'city': "Glasgow",
+                 'age': 34,
+                 'likes': ['icecream', 'cats']}
+        mike = {'_id': "mike@example.com",
+                'name': "Mike",
+                'city': "Edinburgh",
+                'age': 32,
+                'likes': ['cats', 'crochet']}
+        jill = {'_id': "jill@example.com",
+                'name': "Jill",
+                'city': "Glasgow",
+                'age': 32,
+                'likes': ['code', 'crochet']}
+        darren = {'_id': "darren@example.com",
+                'name': "Darren",
+                'city': "Manchester"}
+
+        self._insert('people', sarah)
+        self._insert('people', mike)
+        self._insert('people', jill)
+        self._insert('people', darren)
+
+        result = self._query("""
+        select bq_count('people', '{"city": "Glasgow"}')
+        """)
+        self.assertEqual(result, [(2,)])
+
+        result = self._query("""
+        select bq_count('people', '{"city": "Yarnham"}')
+        """)
+        self.assertEqual(result, [(0,)])
+
+        result = self._query("""
+        select bq_count('people', '{"likes": ["crochet"]}')
+        """)
+        self.assertEqual(result, [(2,)])
+
+
 class TestFindDocuments(testutils.BedquiltTestCase):
 
     def test_find_on_empty_collection(self):
