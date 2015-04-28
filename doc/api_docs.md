@@ -133,6 +133,18 @@ find many documents
 
 
 
+## bq\_count
+
+- params: `i_coll text, i_doc json`
+- returns: `integer`
+- language: `plpgsql`
+
+count documents in collection
+
+
+
+
+
 ## bq\_insert
 
 - params: `i_coll text, i_jdoc json`
