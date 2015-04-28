@@ -202,7 +202,7 @@ BEGIN
 IF (SELECT bq_collection_exists(i_coll))
 THEN
   EXECUTE format(
-    'SELECT COUNT(*) from %I', i_coll
+    'SELECT COUNT(_id) from %I', i_coll
   ) INTO o_value;
   RETURN o_value;
 ELSE
