@@ -292,7 +292,7 @@ $$ LANGUAGE plpgsql;
 /* remove one document
  */
 CREATE OR REPLACE FUNCTION bq_remove_one_by_id(i_coll text, i_id text)
-RETURNS setof boolean AS $$
+RETURNS setof integer AS $$
 BEGIN
 IF (SELECT bq_collection_exists(i_coll))
 THEN
@@ -300,10 +300,10 @@ THEN
     WITH
     deleted AS
     (DELETE FROM %1$I WHERE _id = ''%2$s'' RETURNING _id)
-    SELECT (select count(*)::integer FROM deleted) = 1
+    SELECT count(*)::integer FROM deleted
     ', i_coll, i_id);
 ELSE
-RETURN QUERY SELECT false;
+RETURN QUERY SELECT 0;
 END IF;
 END
 $$ LANGUAGE plpgsql;
