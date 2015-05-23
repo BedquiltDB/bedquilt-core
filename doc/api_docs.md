@@ -184,7 +184,7 @@ remove one document
 ## bq\_remove\_one\_by\_id
 
 - params: `i_coll text, i_id text`
-- returns: `setof boolean`
+- returns: `setof integer`
 - language: `plpgsql`
 
 remove one document
