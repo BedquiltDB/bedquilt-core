@@ -84,6 +84,17 @@ class TestInsertDocument(testutils.BedquiltTestCase):
         for character in _id:
             self.assertIn(character, string.hexdigits)
 
+    def test_with_single_quotes_in_field(self):
+        doc = {
+            "description": "Something I've eaten"
+        }
+        self.cur.execute("""
+            select bq_insert('things', $${}$$::json);
+        """.format(json.dumps(doc)))
+
+        result = self.cur.fetchone()
+        self.assertIsNotNone(result)
+
     def test_insert_with_repeat_id(self):
         doc = {
             "_id": "user_one",

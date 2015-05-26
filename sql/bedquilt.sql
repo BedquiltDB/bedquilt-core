@@ -146,10 +146,10 @@ IF (SELECT bq_collection_exists(i_coll))
 THEN
     RETURN QUERY EXECUTE format(
         'SELECT bq_jdoc::json FROM %I
-        WHERE bq_jdoc @> (''%s'')::jsonb
+        WHERE bq_jdoc @> (%s)::jsonb
         LIMIT 1',
         i_coll,
-        i_json_query
+        quote_literal(i_json_query)
     );
 END IF;
 END
@@ -164,10 +164,10 @@ IF (SELECT bq_collection_exists(i_coll))
 THEN
     RETURN QUERY EXECUTE format(
         'SELECT bq_jdoc::json FROM %I
-        WHERE _id = ''%s''
+        WHERE _id = %s
         LIMIT 1',
         i_coll,
-        i_id
+        quote_literal(i_id)
     );
 END IF;
 END
@@ -183,9 +183,9 @@ IF (SELECT bq_collection_exists(i_coll))
 THEN
     RETURN QUERY EXECUTE format(
         'SELECT bq_jdoc::json FROM %I
-        WHERE bq_jdoc @> (''%s'')::jsonb',
+        WHERE bq_jdoc @> (%s)::jsonb',
         i_coll,
-        i_json_query
+        quote_literal(i_json_query)
     );
 END IF;
 END
@@ -203,9 +203,9 @@ IF (SELECT bq_collection_exists(i_coll))
 THEN
   EXECUTE format(
     'SELECT COUNT(_id) from %I
-    WHERE bq_jdoc @> (''%s'')::jsonb',
+    WHERE bq_jdoc @> (%s)::jsonb',
      i_coll,
-     i_doc
+     quote_literal(i_doc)
   ) INTO o_value;
   RETURN o_value;
 ELSE
@@ -236,10 +236,10 @@ ELSE
   doc := i_jdoc;
 END IF;
 EXECUTE format(
-    'INSERT INTO %I (_id, bq_jdoc) VALUES (''%s'', ''%s'');',
+    'INSERT INTO %I (_id, bq_jdoc) VALUES (%s, %s);',
     i_coll,
-    doc->>'_id',
-    doc
+    quote_literal(doc->>'_id'),
+    quote_literal(doc)
 );
 return doc->>'_id';
 END
@@ -256,9 +256,9 @@ THEN
     RETURN QUERY EXECUTE format('
     WITH
       deleted AS
-      (DELETE FROM %I WHERE bq_jdoc @> (''%s'')::jsonb RETURNING _id)
+      (DELETE FROM %I WHERE bq_jdoc @> (%s)::jsonb RETURNING _id)
     SELECT count(*)::integer FROM deleted
-    ', i_coll, i_jdoc);
+    ', i_coll, quote_literal(i_jdoc));
 
 ELSE
     RETURN QUERY SELECT 0;
@@ -277,11 +277,11 @@ THEN
     RETURN QUERY EXECUTE format('
       WITH
         candidates AS
-        (SELECT _id from %1$I WHERE bq_jdoc @> (''%2s'')::jsonb LIMIT 1),
+        (SELECT _id from %1$I WHERE bq_jdoc @> (%2s)::jsonb LIMIT 1),
         deleted AS
         (DELETE FROM %1$I WHERE _id IN (select _id from candidates) RETURNING _id)
       SELECT count(*)::integer FROM deleted
-    ', i_coll, i_jdoc);
+    ', i_coll, quote_literal(i_jdoc));
 ELSE
     RETURN QUERY SELECT 0;
 END IF;
@@ -299,9 +299,9 @@ THEN
     RETURN QUERY EXECUTE format('
     WITH
     deleted AS
-    (DELETE FROM %1$I WHERE _id = ''%2$s'' RETURNING _id)
+    (DELETE FROM %1$I WHERE _id = %2$s RETURNING _id)
     SELECT count(*)::integer FROM deleted
-    ', i_coll, i_id);
+    ', i_coll, quote_literal(i_id));
 ELSE
 RETURN QUERY SELECT 0;
 END IF;
@@ -320,14 +320,16 @@ BEGIN
 PERFORM bq_create_collection(i_coll);
 IF (SELECT i_jdoc->'_id') IS NOT NULL
 THEN
-  EXECUTE format('select count(*) from %I where _id = ''%s'' ',
-                 i_coll, i_jdoc->>'_id')
+  EXECUTE format('select count(*) from %I where _id = %s',
+                 i_coll, quote_literal(i_jdoc->>'_id'))
     INTO existing_id_count;
   IF existing_id_count > 0
     THEN
       EXECUTE format('
-      UPDATE %I SET bq_jdoc = ''%s''::jsonb WHERE _id = ''%s'' returning _id
-      ', i_coll, i_jdoc, i_jdoc->>'_id') INTO o_id;
+      UPDATE %I SET bq_jdoc = %s::jsonb WHERE _id = %s returning _id',
+      i_coll,
+      quote_literal(i_jdoc),
+      quote_literal(i_jdoc->>'_id')) INTO o_id;
       RETURN o_id;
     ELSE
       SELECT bq_insert(i_coll, i_jdoc) INTO o_id;
