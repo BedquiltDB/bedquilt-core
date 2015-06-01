@@ -1,2 +1,3 @@
 *.pyc
 site/
+sql/bedquilt--HEAD.sql
