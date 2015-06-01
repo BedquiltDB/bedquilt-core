@@ -32,11 +32,13 @@ dist:
 	git archive --format zip --prefix=$(EXTENSION)-$(EXTVERSION)/ -o $(EXTENSION)-$(EXTVERSION).zip HEAD
 # /PGXN stuff
 
+install-head:
+	make install EXTVERSION="HEAD"
 
 docs:
 	python bin/generate_docs.py && mkdocs build --clean
 
-test: install
+test: install-head
 	bin/run-tests.sh
 
 
