@@ -341,3 +341,18 @@ ELSE
 END IF;
 END
 $$ LANGUAGE plpgsql;
+
+
+-- # -- # -- # -- # -- #
+-- Constraints
+-- # -- # -- # -- # -- #
+
+
+/* add a constraint
+ */
+CREATE OR REPLACE FUNCTION bq_add_constraint(i_coll, text, i_jdoc json)
+RETURNS boolean AS $$
+BEGIN
+  RETURN false;
+END
+$$ LANGUAGE plpgsql;
