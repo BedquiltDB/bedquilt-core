@@ -8,7 +8,7 @@ class TestConstraints(testutils.BedquiltTestCase):
         select bq_add_constraint('things', '{}');
         """.format(json.dumps({'name': {'$required': True}})))
 
-        self.assertEqual(result, True)
+        self.assertEqual(result, [(True,)])
 
 class TestBasics(testutils.BedquiltTestCase):
 
