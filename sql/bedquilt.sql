@@ -352,7 +352,14 @@ $$ LANGUAGE plpgsql;
  */
 CREATE OR REPLACE FUNCTION bq_add_constraint(i_coll text, i_jdoc json)
 RETURNS boolean AS $$
+DECLARE
+  jdoc_keys RECORD;
 BEGIN
+  FOR jdoc_keys in
+    select * from json_object_keys(i_jdoc) loop
+    raise notice 'working on key %', jdoc_keys.json_object_keys;
+  end loop;
+
   RETURN false;
 END
 $$ LANGUAGE plpgsql;
