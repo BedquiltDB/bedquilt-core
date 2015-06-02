@@ -1,5 +1,14 @@
 import testutils
+import json
 
+class TestConstraints(testutils.BedquiltTestCase):
+
+    def test_add_required_constraint(self):
+        result = self._query("""
+        select bq_add_constraint('things', '{}');
+        """.format(json.dumps({'name': {'$required': True}})))
+
+        self.assertEqual(result, True)
 
 class TestBasics(testutils.BedquiltTestCase):
 
