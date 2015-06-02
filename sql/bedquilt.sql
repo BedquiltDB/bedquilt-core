@@ -354,10 +354,12 @@ CREATE OR REPLACE FUNCTION bq_add_constraint(i_coll text, i_jdoc json)
 RETURNS boolean AS $$
 DECLARE
   jdoc_keys RECORD;
+  spec json;
 BEGIN
-  FOR jdoc_keys in
-    select * from json_object_keys(i_jdoc) loop
+  FOR jdoc_keys in select * from json_object_keys(i_jdoc) loop
+    spec := i_jdoc->jdoc_keys.json_object_keys;
     raise notice 'working on key %', jdoc_keys.json_object_keys;
+    raise notice '-- %', spec;
   end loop;
 
   RETURN false;
