@@ -1,6 +1,6 @@
 # bedquilt extension
 comment = 'A json document store'
-default_version = '0.2.0'
+default_version = 'HEAD'
 module_pathname = '$libdir/bedquilt'
 relocatable = true
 requires = 'plpgsql, pgcrypto'
