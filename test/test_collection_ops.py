@@ -10,6 +10,13 @@ class TestConstraints(testutils.BedquiltTestCase):
 
         self.assertEqual(result, [(True,)])
 
+        # adding again should be false
+        result = self._query("""
+        select bq_add_constraint('things', '{}');
+        """.format(json.dumps({'name': {'$required': True}})))
+
+        self.assertEqual(result, [(False,)])
+
 class TestBasics(testutils.BedquiltTestCase):
 
     def test_extension_presence(self):
