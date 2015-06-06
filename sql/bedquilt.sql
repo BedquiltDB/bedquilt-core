@@ -377,10 +377,7 @@ BEGIN
           'bqcn__bq_jdoc__%s__required',
           field_name);
         PERFORM bq_create_collection(i_coll);
-        if not exists(
-          select * from information_schema.constraint_column_usage
-          where table_name = i_coll
-          and constraint_name = new_constraint_name)
+        if not bq_constraint_name_exists(i_coll, new_constraint_name)
         then
           execute format(
             'alter table %I
@@ -398,5 +395,17 @@ BEGIN
   end loop;
 
   RETURN result;
+END
+$$ LANGUAGE plpgsql;
+
+
+CREATE OR REPLACE FUNCTION bq_constraint_name_exists(i_coll text, i_name text)
+RETURNS boolean AS $$
+BEGIN
+  return exists(
+    select * from information_schema.constraint_column_usage
+    where table_name = i_coll
+    and constraint_name = i_name
+  );
 END
 $$ LANGUAGE plpgsql;
