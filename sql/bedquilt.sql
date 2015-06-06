@@ -358,7 +358,7 @@ DECLARE
   spec json;
   spec_keys RECORD;
   op text;
-  constraint_name text;
+  new_constraint_name text;
 BEGIN
   -- loop over the field names
   FOR jdoc_keys in select * from json_object_keys(i_jdoc) loop
@@ -371,13 +371,20 @@ BEGIN
       if op = '$required'
       then
         raise notice 'field required: %', field_name;
-        constraint_name = format('bqcn__bq_jdoc__%s__required', field_name);
+        new_constraint_name = format(
+          'bqcn__bq_jdoc__%s__required',
+          field_name);
         PERFORM bq_create_collection(i_coll);
+        if not exists(
+          select * from information_schema.constraint_column_usage
+          where table_name = i_coll and constraint_name = new_constraint_name)
+        then
         execute format(
             'alter table %I add constraint %s check (bq_jdoc ? ''%s'');',
             i_coll,
-            constraint_name,
+            new_constraint_name,
             field_name);
+        end if;
       end if;
 
     end loop;
