@@ -359,7 +359,9 @@ DECLARE
   spec_keys RECORD;
   op text;
   new_constraint_name text;
+  result boolean;
 BEGIN
+  result := false;
   -- loop over the field names
   FOR jdoc_keys in select * from json_object_keys(i_jdoc) loop
     field_name := jdoc_keys.json_object_keys;
@@ -379,11 +381,12 @@ BEGIN
           select * from information_schema.constraint_column_usage
           where table_name = i_coll and constraint_name = new_constraint_name)
         then
-        execute format(
+          execute format(
             'alter table %I add constraint %s check (bq_jdoc ? ''%s'');',
             i_coll,
             new_constraint_name,
             field_name);
+          result := true;
         end if;
       end if;
 
@@ -391,6 +394,6 @@ BEGIN
 
   end loop;
 
-  RETURN false;
+  RETURN result;
 END
 $$ LANGUAGE plpgsql;
