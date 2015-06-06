@@ -370,9 +370,9 @@ BEGIN
     -- for each field name, loop over the constrant ops
     for spec_keys in select * from json_object_keys(spec) loop
       op := spec_keys.json_object_keys;
-      -- $required : the key must be present in the json object
-      if op = '$required'
-      then
+      case op
+      when '$required'
+      then -- $required : the key must be present in the json object
         new_constraint_name = format(
           'bqcn__bq_jdoc__%s__required',
           field_name);
@@ -391,7 +391,7 @@ BEGIN
             field_name);
           result := true;
         end if;
-      end if;
+      end case;
 
     end loop;
 
