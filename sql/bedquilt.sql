@@ -354,12 +354,34 @@ CREATE OR REPLACE FUNCTION bq_add_constraint(i_coll text, i_jdoc json)
 RETURNS boolean AS $$
 DECLARE
   jdoc_keys RECORD;
+  field_name text;
   spec json;
+  spec_keys RECORD;
+  op text;
+  constraint_name text;
 BEGIN
+  -- loop over the field names
   FOR jdoc_keys in select * from json_object_keys(i_jdoc) loop
-    spec := i_jdoc->jdoc_keys.json_object_keys;
-    raise notice 'working on key %', jdoc_keys.json_object_keys;
-    raise notice '-- %', spec;
+    field_name := jdoc_keys.json_object_keys;
+    spec := i_jdoc->field_name;
+
+    -- for each field name, loop over the constrant ops
+    for spec_keys in select * from json_object_keys(spec) loop
+      op := spec_keys.json_object_keys;
+      if op = '$required'
+      then
+        raise notice 'field required: %', field_name;
+        constraint_name = format('bqcn__bq_jdoc__%s__required', field_name);
+        PERFORM bq_create_collection(i_coll);
+        execute format(
+            'alter table %I add constraint %s check (bq_jdoc ? ''%s'');',
+            i_coll,
+            constraint_name,
+            field_name);
+      end if;
+
+    end loop;
+
   end loop;
 
   RETURN false;
