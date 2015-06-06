@@ -370,19 +370,22 @@ BEGIN
     -- for each field name, loop over the constrant ops
     for spec_keys in select * from json_object_keys(spec) loop
       op := spec_keys.json_object_keys;
+      -- $required : the key must be present in the json object
       if op = '$required'
       then
-        raise notice 'field required: %', field_name;
         new_constraint_name = format(
           'bqcn__bq_jdoc__%s__required',
           field_name);
         PERFORM bq_create_collection(i_coll);
         if not exists(
           select * from information_schema.constraint_column_usage
-          where table_name = i_coll and constraint_name = new_constraint_name)
+          where table_name = i_coll
+          and constraint_name = new_constraint_name)
         then
           execute format(
-            'alter table %I add constraint %s check (bq_jdoc ? ''%s'');',
+            'alter table %I
+            add constraint %s
+            check (bq_jdoc ? ''%s'');',
             i_coll,
             new_constraint_name,
             field_name);
