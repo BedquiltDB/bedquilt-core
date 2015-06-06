@@ -1,5 +1,7 @@
 import testutils
 import json
+import psycopg2
+
 
 class TestConstraints(testutils.BedquiltTestCase):
 
@@ -15,6 +17,29 @@ class TestConstraints(testutils.BedquiltTestCase):
         result = self._query(q)
 
         self.assertEqual(result, [(False,)])
+
+        # should insist on the name field being present
+        doc = {
+            'derp': 1
+        }
+        with self.assertRaises(psycopg2.IntegrityError):
+            self.cur.execute("""
+            select bq_insert('things', '{}');
+            """.format(json.dumps(doc)))
+        self.conn.rollback()
+
+        # should be fine with a name key
+        doc = {
+            'name': 'steve',
+            'age': 24
+        }
+        result = self._query("""
+        select bq_insert('things', '{}')
+        """.format(json.dumps(doc)))
+
+        self.assertIsNotNone(result)
+
+
 
 class TestBasics(testutils.BedquiltTestCase):
 
