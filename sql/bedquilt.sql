@@ -371,13 +371,14 @@ BEGIN
     for spec_keys in select * from json_object_keys(spec) loop
       op := spec_keys.json_object_keys;
       case op
+      -- $required : the key must be present in the json object
       when '$required'
-      then -- $required : the key must be present in the json object
-        new_constraint_name = format(
+      then
+        new_constraint_name := format(
           'bqcn__bq_jdoc__%s__required',
           field_name);
         PERFORM bq_create_collection(i_coll);
-        if not bq_constraint_name_exists(i_coll, new_constraint_name)
+        if bq_constraint_name_exists(i_coll, new_constraint_name) = false
         then
           execute format(
             'alter table %I
@@ -385,6 +386,29 @@ BEGIN
             check (bq_jdoc ? ''%s'');',
             i_coll,
             new_constraint_name,
+            field_name);
+          result := true;
+        end if;
+      -- $notNull : the key must be present in the json object
+      when  '$notNull'
+      then
+        new_constraint_name := format(
+          'bqcn__bq_jdoc__%s__notnull',
+          field_name);
+        raise notice 'C: %', new_constraint_name;
+        PERFORM bq_create_collection(i_coll);
+        if bq_constraint_name_exists(i_coll, new_constraint_name) = false
+        then
+          execute format(
+            'alter table %I
+            add constraint %s
+            check (
+              jsonb_typeof((bq_jdoc->''%s'')::jsonb) is not null
+              and jsonb_typeof((bq_jdoc->''%s'')::jsonb) <> ''null''
+            );',
+            i_coll,
+            new_constraint_name,
+            field_name,
             field_name);
           result := true;
         end if;
