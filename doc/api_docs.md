@@ -203,3 +203,26 @@ save document
 
 
 
+
+
+## bq\_add\_constraint
+
+- params: `i_coll text, i_jdoc json`
+- returns: `boolean`
+- language: `plpgsql`
+
+add a constraint to the collection
+
+
+
+
+
+## bq\_constraint\_name\_exists
+
+- params: `i_coll text, i_name text`
+- returns: `boolean`
+- language: `plpgsql`
+
+
+
+
