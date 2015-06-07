@@ -92,6 +92,26 @@ class TestConstraints(testutils.BedquiltTestCase):
         result = self._query("""
         select bq_add_constraint('things', '{}');
         """.format(json.dumps({
-            'name': {'$type': 'string'}
+            'age': {'$type': 'number'}
         })))
         self.assertEqual(result, [(True,)])
+
+        # should reject non-number fields for age
+        for val in ['wat', [2], {'wat': 2}, False]:
+            doc = {
+                'age': val
+            }
+            with self.assertRaises(psycopg2.IntegrityError):
+                self._query("""
+                select bq_insert('things', '{}');
+                """.format(json.dumps(doc)))
+            self.conn.rollback()
+
+        # should be ok if age is a number
+        doc = {
+            'age': 22
+        }
+        result = self._query("""
+        select bq_insert('things', '{}')
+        """.format(json.dumps(doc)))
+        self.assertIsNotNone(result)
