@@ -348,7 +348,7 @@ $$ LANGUAGE plpgsql;
 -- # -- # -- # -- # -- #
 
 
-/* add a constraint
+/* add a constraint to the collection
  */
 CREATE OR REPLACE FUNCTION bq_add_constraint(i_coll text, i_jdoc json)
 RETURNS boolean AS $$
