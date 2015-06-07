@@ -5,6 +5,11 @@
 A JSON store on PostgreSQL.
 
 
+# Releases
+
+Release packages for BedquiltDB can be found on [pgxn](http://pgxn.org/dist/bedquilt/).
+
+
 # Warning
 
 Bedquilt is currently worse-than-alpha quality and should not be used in production,
