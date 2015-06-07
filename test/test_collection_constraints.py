@@ -88,7 +88,7 @@ class TestConstraints(testutils.BedquiltTestCase):
         """.format(json.dumps(doc)))
         self.assertIsNotNone(result)
 
-    def test_type_constraint(self):
+    def test_basic_type_constraint(self):
         result = self._query("""
         select bq_add_constraint('things', '{}');
         """.format(json.dumps({
@@ -110,6 +110,23 @@ class TestConstraints(testutils.BedquiltTestCase):
         # should be ok if age is a number
         doc = {
             'age': 22
+        }
+        result = self._query("""
+        select bq_insert('things', '{}')
+        """.format(json.dumps(doc)))
+        self.assertIsNotNone(result)
+
+    def test_type_constraint_on_missing_value(self):
+        result = self._query("""
+        select bq_add_constraint('things', '{}');
+        """.format(json.dumps({
+            'age': {'$type': 'number'}
+        })))
+        self.assertEqual(result, [(True,)])
+
+        # should be ok if the field is absent entirely
+        doc = {
+            'name': 'paul'
         }
         result = self._query("""
         select bq_insert('things', '{}')
