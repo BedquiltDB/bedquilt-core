@@ -376,7 +376,7 @@ BEGIN
       when '$required'
       then
         new_constraint_name := format(
-          'bqcn__bq_jdoc__%s__required',
+          'bqcn__%s__required',
           field_name);
         PERFORM bq_create_collection(i_coll);
         if bq_constraint_name_exists(i_coll, new_constraint_name) = false
@@ -394,7 +394,7 @@ BEGIN
       when  '$notNull'
       then
         new_constraint_name := format(
-          'bqcn__bq_jdoc__%s__notnull',
+          'bqcn__%s__notnull',
           field_name);
         PERFORM bq_create_collection(i_coll);
         if bq_constraint_name_exists(i_coll, new_constraint_name) = false
@@ -419,7 +419,7 @@ BEGIN
       then
         s_type := spec->>op;
         new_constraint_name := format(
-          'bqcn__bq_jdoc__%s__type__%s',
+          'bqcn__%s__type__%s',
           field_name, s_type);
         PERFORM bq_create_collection(i_coll);
         if bq_constraint_name_exists(i_coll, new_constraint_name) = false
