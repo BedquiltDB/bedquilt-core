@@ -11,21 +11,9 @@ To use BedquiltDB, you will need the following:
 
 ## Installation
 
-First, clone the `bedquilt-core` git repository, and `cd` into it's directory:
-```
-$ git clone git@github.com:BedquiltDB/bedquilt-core.git
-$ cd bedquilt-core
-```
-
-Then run the install task to install to the local PostgreSQL installation:
+Download the latest release from [pgxn](http://pgxn.org/dist/bedquilt/), unzip it, then run the install task to install to the local PostgreSQL installation:
 ```
 $ make install
-```
-
-Alternatively, you can build a zip file contianing the extension and use that to
-install on a PostgreSQL server:
-```
-$ make dist
 ```
 
 
