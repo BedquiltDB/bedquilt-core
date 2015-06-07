@@ -359,6 +359,7 @@ DECLARE
   spec_keys RECORD;
   op text;
   new_constraint_name text;
+  s_type text;
   result boolean;
 BEGIN
   result := false;
@@ -395,7 +396,6 @@ BEGIN
         new_constraint_name := format(
           'bqcn__bq_jdoc__%s__notnull',
           field_name);
-        raise notice 'C: %', new_constraint_name;
         PERFORM bq_create_collection(i_coll);
         if bq_constraint_name_exists(i_coll, new_constraint_name) = false
         then
@@ -410,6 +410,37 @@ BEGIN
             new_constraint_name,
             field_name,
             field_name);
+          result := true;
+        end if;
+      -- $type: enforce type of the specified field
+      --   valid values are:
+      --   'string' | 'number' | 'object' | 'array' | 'boolean'
+      when '$type'
+      then
+        s_type := spec->>op;
+        new_constraint_name := format(
+          'bqcn__bq_jdoc__%s__type__%s',
+          field_name, s_type);
+        PERFORM bq_create_collection(i_coll);
+        if bq_constraint_name_exists(i_coll, new_constraint_name) = false
+        then
+          if s_type not in ('string','object','array','boolean','number')
+          then
+            raise exception
+            'Invalid $type ("%") specified for field "%"',
+            s_type, field_name
+            using hint = 'Please specify the name of a json type';
+          end if;
+          execute format(
+            'alter table %I
+            add constraint %s
+            check (
+              jsonb_typeof(bq_jdoc->''%s'') = ''%s''
+            );',
+            i_coll,
+            new_constraint_name,
+            field_name,
+            s_type);
           result := true;
         end if;
       end case;
