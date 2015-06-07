@@ -87,3 +87,11 @@ class TestConstraints(testutils.BedquiltTestCase):
         select bq_insert('things', '{}')
         """.format(json.dumps(doc)))
         self.assertIsNotNone(result)
+
+    def test_type_constraint(self):
+        result = self._query("""
+        select bq_add_constraint('things', '{}');
+        """.format(json.dumps({
+            'name': {'$type': 'string'}
+        })))
+        self.assertEqual(result, [(True,)])
