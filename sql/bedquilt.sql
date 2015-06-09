@@ -461,3 +461,83 @@ BEGIN
   );
 END
 $$ LANGUAGE plpgsql;
+
+/* remove constraints from collection
+ */
+CREATE OR REPLACE FUNCTION bq_remove_constraint(i_coll text, i_jdoc json)
+RETURNS boolean AS $$
+DECLARE
+  jdoc_keys RECORD;
+  field_name text;
+  spec json;
+  spec_keys RECORD;
+  op text;
+  target_constraint text;
+  s_type text;
+  result boolean;
+BEGIN
+
+  result := false;
+  -- loop over the field names
+  FOR jdoc_keys in select * from json_object_keys(i_jdoc) loop
+    field_name := jdoc_keys.json_object_keys;
+    spec := i_jdoc->field_name;
+
+    -- for each field name, loop over the constrant ops
+    for spec_keys in select * from json_object_keys(spec) loop
+      op := spec_keys.json_object_keys;
+      case op
+      -- $required : the key must be present in the json object
+      when '$required' then
+        target_constraint := format(
+          'bqcn__%s__required',
+          field_name);
+        if bq_constraint_name_exists(i_coll, target_constraint)
+        then
+          execute format(
+            'alter table %I
+            drop constraint %s;',
+            i_coll,
+            target_constraint
+          );
+          result := true;
+        end if;
+
+      when '$notNull' then
+        target_constraint := format(
+          'bqcn__%s__notnull',
+          field_name);
+        if bq_constraint_name_exists(i_coll, target_constraint)
+        then
+          execute format(
+            'alter table %I
+            drop constraint %s;',
+            i_coll,
+            target_constraint
+          );
+          result := true;
+        end if;
+
+      when '$type' then
+        s_type := spec->>op;
+        target_constraint := format(
+          'bqcn__%s__type__%s',
+          field_name, s_type);
+        if bq_constraint_name_exists(i_coll, target_constraint)
+        then
+          execute format(
+            'alter table %I
+            drop constraint %s;',
+            i_coll,
+            target_constraint
+          );
+          result := true;
+        end if;
+      end case;
+
+    end loop;
+  end loop;
+
+  return result;
+END
+$$ LANGUAGE plpgsql;
