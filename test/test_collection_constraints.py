@@ -5,46 +5,54 @@ import psycopg2
 class TestRemoveConstraints(testutils.BedquiltTestCase):
 
     def test_remove_required_constraint(self):
-        doc = {
-            'derp': 1
-        }
+        tests = [
+            ({'name': {'$required': True}}, {'derp': 1}),
+            ({'name': {'$notNull': True}}, {'name': None}),
+            ({'age': {'$type': 'number'}}, {'age': ['fish']})
+        ]
+        for constraint, example in tests:
+            testutils.clean_database(self.conn)
+            # remove constraint without even applying it
+            result = self._query("""
+            select bq_remove_constraint('things', '{}');
+            """.format(json.dumps(constraint)))
 
-        result = self._query("""
-        select bq_remove_constraint('things', '{}');
-        """.format(json.dumps({
-            'name': {'$required': True}
-        })))
-        self.assertEqual(result, [(False,)])
+            self.assertEqual(result, [(False,)])
 
-        result = self._query("""
-        select bq_add_constraint('things', '{}');
-        """.format(json.dumps({'name': {'$required': True}})))
-        self.assertEqual(result, [(True,)])
+            # add the constraint
+            result = self._query("""
+            select bq_add_constraint('things', '{}');
+            """.format(json.dumps(constraint)))
 
-        with self.assertRaises(psycopg2.IntegrityError):
-            self.cur.execute("""
-            select bq_insert('things', '{}');
-            """.format(json.dumps(doc)))
-        self.conn.rollback()
+            self.assertEqual(result, [(True,)])
 
-        result = self._query("""
-        select bq_remove_constraint('things', '{}');
-        """.format(json.dumps({
-            'name': {'$required': True}
-        })))
-        self.assertEqual(result, [(True,)])
+            # example should fail to insert
+            with self.assertRaises(psycopg2.IntegrityError):
+                self.cur.execute("""
+                select bq_insert('things', '{}');
+                """.format(json.dumps(example)))
+            self.conn.rollback()
 
-        result = self._query("""
-        select bq_remove_constraint('things', '{}');
-        """.format(json.dumps({
-            'name': {'$required': True}
-        })))
-        self.assertEqual(result, [(False,)])
+            # remove the constraint
+            result = self._query("""
+            select bq_remove_constraint('things', '{}');
+            """.format(json.dumps(constraint)))
 
-        result = self._query("""
-        select bq_insert('things', '{}')
-        """.format(json.dumps(doc)))
-        self.assertIsNotNone(result)
+            self.assertEqual(result, [(True,)])
+
+            # remove again
+            result = self._query("""
+            select bq_remove_constraint('things', '{}');
+            """.format(json.dumps(constraint)))
+
+            self.assertEqual(result, [(False,)])
+
+            # example should insert fine
+            result = self._query("""
+            select bq_insert('things', '{}')
+            """.format(json.dumps(example)))
+
+            self.assertIsNotNone(result)
 
 
 class TestConstraints(testutils.BedquiltTestCase):
