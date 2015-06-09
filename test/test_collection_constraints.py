@@ -2,6 +2,35 @@ import testutils
 import json
 import psycopg2
 
+class TestRemoveConstraints(testutils.BedquiltTestCase):
+
+    def test_remove_required_constraint(self):
+        result = self._query("""
+        select bq_remove_constraint('things', '{}');
+        """.format(json.dumps({
+            'name': {'$required': True}
+        })))
+        self.assertEqual(result, [(False,)])
+
+        result = self._query("""
+        select bq_add_constraint('things', '{}');
+        """.format(json.dumps({'name': {'$required': True}})))
+        self.assertEqual(result, [(True,)])
+
+        result = self._query("""
+        select bq_remove_constraint('things', '{}');
+        """.format(json.dumps({
+            'name': {'$required': True}
+        })))
+        self.assertEqual(result, [(True,)])
+
+        result = self._query("""
+        select bq_remove_constraint('things', '{}');
+        """.format(json.dumps({
+            'name': {'$required': True}
+        })))
+        self.assertEqual(result, [(False,)])
+
 
 class TestConstraints(testutils.BedquiltTestCase):
 
