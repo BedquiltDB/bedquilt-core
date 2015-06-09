@@ -6,9 +6,18 @@ class TestRemoveConstraints(testutils.BedquiltTestCase):
 
     def test_remove_constraint(self):
         tests = [
-            ({'name': {'$required': True}}, {'derp': 1}),
-            ({'name': {'$notNull': True}}, {'name': None}),
-            ({'age': {'$type': 'number'}}, {'age': ['fish']})
+            ({'name': {'$required': True}},
+             {'derp': 1}),
+            ({'name': {'$notNull': True}},
+             {'name': None}),
+            ({'age': {'$type': 'number'}},
+             {'age': ['fish']}),
+            ({'name': {'$required': True,
+                       '$notNull': True,
+                       '$type': 'string'},
+              'age': {'$type': 'number'}},
+             {'name': None, 'age': {}})
+
         ]
         for constraint, example in tests:
             testutils.clean_database(self.conn)
