@@ -261,3 +261,20 @@ class TestAddConstraints(testutils.BedquiltTestCase):
         select bq_insert('things', '{}')
         """.format(json.dumps(doc)))
         self.assertIsNotNone(result)
+
+    def test_contradictory_type_constraints(self):
+        # age type is number
+        result = self._query("""
+        select bq_add_constraint('things', '{}');
+        """.format(json.dumps({
+            'age': {'$type': 'number'}
+        })))
+        self.assertEqual(result, [(True,)])
+
+        # then try to set type as string
+        result = self._query("""
+        select bq_add_constraint('things', '{}');
+        """.format(json.dumps({
+            'age': {'$type': 'string'}
+        })))
+        self.assertEqual(result, [(False,)])
