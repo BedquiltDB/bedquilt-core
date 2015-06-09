@@ -462,6 +462,7 @@ BEGIN
 END
 $$ LANGUAGE plpgsql;
 
+
 /* remove constraints from collection
  */
 CREATE OR REPLACE FUNCTION bq_remove_constraint(i_coll text, i_jdoc json)
@@ -540,6 +541,7 @@ BEGIN
   return result;
 END
 $$ LANGUAGE plpgsql;
+
 
 /* get a list of constraints on this collection
  */
