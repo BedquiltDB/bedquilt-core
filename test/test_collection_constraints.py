@@ -2,6 +2,44 @@ import testutils
 import json
 import psycopg2
 
+
+class TestListConstraints(testutils.BedquiltTestCase):
+
+    def test_list_constraints(self):
+        result = self._query("""
+        select bq_list_constraints('things')
+        """)
+        self.assertEqual(len(result), 0)
+
+        result = self._query("""
+        select bq_add_constraint('things', '{}')
+        """.format(json.dumps({
+            'name': {'$required': True}
+        })))
+
+        result = self._query("""
+        select bq_list_constraints('things')
+        """)
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result, [("name:required",)])
+        pass
+
+        result = self._query("""
+        select bq_add_constraint('things', '{}')
+        """.format(json.dumps({
+            'name': {'$type': 'string'}
+        })))
+
+        result = self._query("""
+        select bq_list_constraints('things')
+        """)
+        self.assertEqual(
+            result,
+            [("name:required",),
+             ("name:type:string",)]
+        )
+        pass
+
 class TestRemoveConstraints(testutils.BedquiltTestCase):
 
     def test_remove_constraint(self):
