@@ -132,7 +132,7 @@ class TestRemoveConstraints(testutils.BedquiltTestCase):
             self.assertIsNotNone(result)
 
 
-class TestConstraints(testutils.BedquiltTestCase):
+class TestAddConstraints(testutils.BedquiltTestCase):
 
     def test_add_required_constraint(self):
         q = """
