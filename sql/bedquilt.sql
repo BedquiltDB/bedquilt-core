@@ -373,8 +373,7 @@ BEGIN
       op := spec_keys.json_object_keys;
       case op
       -- $required : the key must be present in the json object
-      when '$required'
-      then
+      when '$required' then
         new_constraint_name := format(
           'bqcn__%s__required',
           field_name);
@@ -391,8 +390,7 @@ BEGIN
           result := true;
         end if;
       -- $notNull : the key must be present in the json object
-      when  '$notNull'
-      then
+      when '$notNull' then
         new_constraint_name := format(
           'bqcn__%s__notnull',
           field_name);
@@ -415,8 +413,7 @@ BEGIN
       -- $type: enforce type of the specified field
       --   valid values are:
       --   'string' | 'number' | 'object' | 'array' | 'boolean'
-      when '$type'
-      then
+      when '$type' then
         s_type := spec->>op;
         new_constraint_name := format(
           'bqcn__%s__type__%s',
