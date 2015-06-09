@@ -272,9 +272,18 @@ class TestAddConstraints(testutils.BedquiltTestCase):
         self.assertEqual(result, [(True,)])
 
         # then try to set type as string
+        with self.assertRaises(psycopg2.InternalError):
+            self._query("""
+            select bq_add_constraint('things', '{}');
+            """.format(json.dumps({
+                'age': {'$type': 'string'}
+            })))
+        self.conn.rollback()
+
+        # should be ok with a constraint on a different field
         result = self._query("""
         select bq_add_constraint('things', '{}');
         """.format(json.dumps({
-            'age': {'$type': 'string'}
+            'name': {'$type': 'string'}
         })))
-        self.assertEqual(result, [(False,)])
+        self.assertEqual(result, [(True,)])

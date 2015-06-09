@@ -429,24 +429,28 @@ BEGIN
             using hint = 'Please specify the name of a json type';
           end if;
           -- check if we've got a type constraint already
-          if not exists(
+          if exists(
             select constraint_name
             from information_schema.constraint_column_usage
             where table_name = i_coll
-            and constraint_name like 'bqcn%__type__%')
+            and constraint_name like 'bqcn__' || field_name ||'__type__%')
           then
-            execute format(
-              'alter table %I
-              add constraint %s
-              check (
-                jsonb_typeof(bq_jdoc->''%s'') = ''%s''
-              );',
-              i_coll,
-              new_constraint_name,
-              field_name,
-              s_type);
-            result := true;
+            raise exception
+            'Contradictory $type "%" constraint on field "%"',
+            s_type, field_name
+            using hint = 'Please remove existing $type constraint';
           end if;
+          execute format(
+            'alter table %I
+            add constraint %s
+            check (
+              jsonb_typeof(bq_jdoc->''%s'') = ''%s''
+            );',
+            i_coll,
+            new_constraint_name,
+            field_name,
+            s_type);
+          result := true;
         end if;
       end case;
 
