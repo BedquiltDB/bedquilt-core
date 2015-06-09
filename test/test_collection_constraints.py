@@ -4,7 +4,7 @@ import psycopg2
 
 class TestRemoveConstraints(testutils.BedquiltTestCase):
 
-    def test_remove_required_constraint(self):
+    def test_remove_constraint(self):
         tests = [
             ({'name': {'$required': True}}, {'derp': 1}),
             ({'name': {'$notNull': True}}, {'name': None}),
