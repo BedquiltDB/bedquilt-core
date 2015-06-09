@@ -5,6 +5,10 @@ import psycopg2
 class TestRemoveConstraints(testutils.BedquiltTestCase):
 
     def test_remove_required_constraint(self):
+        doc = {
+            'derp': 1
+        }
+
         result = self._query("""
         select bq_remove_constraint('things', '{}');
         """.format(json.dumps({
@@ -16,6 +20,12 @@ class TestRemoveConstraints(testutils.BedquiltTestCase):
         select bq_add_constraint('things', '{}');
         """.format(json.dumps({'name': {'$required': True}})))
         self.assertEqual(result, [(True,)])
+
+        with self.assertRaises(psycopg2.IntegrityError):
+            self.cur.execute("""
+            select bq_insert('things', '{}');
+            """.format(json.dumps(doc)))
+        self.conn.rollback()
 
         result = self._query("""
         select bq_remove_constraint('things', '{}');
@@ -33,9 +43,7 @@ class TestRemoveConstraints(testutils.BedquiltTestCase):
 
         result = self._query("""
         select bq_insert('things', '{}')
-        """.format(json.dumps({
-            'derp': 1
-        })))
+        """.format(json.dumps(doc)))
         self.assertIsNotNone(result)
 
 
