@@ -38,6 +38,22 @@ class TestListConstraints(testutils.BedquiltTestCase):
             [("name:required",),
              ("name:type:string",)]
         )
+
+        result = self._query("""
+        select bq_add_constraint('things', '{}')
+        """.format(json.dumps({
+            'age': {'$notNull': True}
+        })))
+
+        result = self._query("""
+        select bq_list_constraints('things')
+        """)
+        self.assertEqual(
+            result,
+            [("name:required",),
+             ("name:type:string",),
+             ("age:notnull",)]
+        )
         pass
 
 class TestRemoveConstraints(testutils.BedquiltTestCase):
