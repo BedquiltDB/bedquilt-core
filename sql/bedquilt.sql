@@ -487,7 +487,6 @@ BEGIN
     for spec_keys in select * from json_object_keys(spec) loop
       op := spec_keys.json_object_keys;
       case op
-      -- $required : the key must be present in the json object
       when '$required' then
         target_constraint := format(
           'bqcn__%s__required',
