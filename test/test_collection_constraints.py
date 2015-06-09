@@ -31,6 +31,13 @@ class TestRemoveConstraints(testutils.BedquiltTestCase):
         })))
         self.assertEqual(result, [(False,)])
 
+        result = self._query("""
+        select bq_insert('things', '{}')
+        """.format(json.dumps({
+            'derp': 1
+        })))
+        self.assertIsNotNone(result)
+
 
 class TestConstraints(testutils.BedquiltTestCase):
 
