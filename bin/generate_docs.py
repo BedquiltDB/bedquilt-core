@@ -93,7 +93,7 @@ def parse(st):
         params = [param.split(' ') for param in params]
         params = params_string
     doc_comment = get_doc_comment(st)
-    if doc_comment.strip()[:9] == 'private - ':
+    if doc_comment.strip()[:9] == 'private -':
         return None
 
     return {

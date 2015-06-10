@@ -21,18 +21,6 @@ Used by the insert function to populate the '_id' field if missing.
 
 
 
-## bq\_doc\_set\_key
-
-- params: `i_jdoc json, i_key text, i_val anyelement`
-- returns: `json`
-- language: `plpgsql`
-
-Set a key in a json document.
-
-
-
-
-
 ## bq\_collection\_exists 
 
 - params: `None`
@@ -41,20 +29,6 @@ Set a key in a json document.
 
 Check if a collection exists.
 Currently does a simple check for a table with the specified name.
-
-
-
-
-
-## bq\_check\_id\_type
-
-- params: `i_jdoc json`
-- returns: `VOID`
-- language: `plpgsql`
-
-Ensure the _id field of the supplied json document is a string value.
-If it's not, an exception is raised. Ideally, the client should validate
-this is the case before submitting to the server.
 
 
 

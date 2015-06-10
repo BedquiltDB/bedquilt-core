@@ -54,7 +54,8 @@ END
 $$ LANGUAGE plpgsql;
 
 
-/* Ensure the _id field of the supplied json document is a string value.
+/* private - Ensure the _id field of the supplied json document
+ * is a string value.
  * If it's not, an exception is raised. Ideally, the client should validate
  * this is the case before submitting to the server.
  */
