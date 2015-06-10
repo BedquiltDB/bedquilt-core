@@ -401,8 +401,7 @@ BEGIN
             'alter table %I
             add constraint %s
             check (
-              jsonb_typeof((bq_jdoc->''%s'')::jsonb) is not null
-              and jsonb_typeof((bq_jdoc->''%s'')::jsonb) <> ''null''
+              jsonb_typeof((bq_jdoc->''%s'')::jsonb) <> ''null''
             );',
             i_coll,
             new_constraint_name,
