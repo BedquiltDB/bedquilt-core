@@ -19,7 +19,7 @@ END
 $$ LANGUAGE plpgsql;
 
 
-/* Set a key in a json document.
+/* private - Set a key in a json document.
  */
 CREATE OR REPLACE FUNCTION bq_doc_set_key(i_jdoc json, i_key text, i_val anyelement)
 RETURNS json AS $$
@@ -462,7 +462,7 @@ END
 $$ LANGUAGE plpgsql;
 
 
-/* private
+/* private - check if a constraint name exists
  */
 CREATE OR REPLACE FUNCTION bq_constraint_name_exists(i_coll text, i_name text)
 RETURNS boolean AS $$
