@@ -131,8 +131,9 @@ def to_md(doc):
 - returns: `{returns}`
 - language: `{language}`
 
+```python
 {doc_comment}
-
+```
 
 """.format(**{
     'name': md_escape(doc['name']),

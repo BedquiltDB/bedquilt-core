@@ -14,10 +14,11 @@ This page describes the sql functions which make up the bedquilt extension.
 - returns: `char(24)`
 - language: `plpgsql`
 
+```python
 Generate a random string ID.
 Used by the insert function to populate the '_id' field if missing.
 
-
+```
 
 
 
@@ -27,10 +28,11 @@ Used by the insert function to populate the '_id' field if missing.
 - returns: `boolean`
 - language: `plpgsql`
 
+```python
 Check if a collection exists.
 Currently does a simple check for a table with the specified name.
 
-
+```
 
 
 
@@ -40,9 +42,10 @@ Currently does a simple check for a table with the specified name.
 - returns: `BOOLEAN`
 - language: `plpgsql`
 
+```python
 Create a collection with the specified name
 
-
+```
 
 
 
@@ -52,10 +55,11 @@ Create a collection with the specified name
 - returns: `table(collection_name text)`
 - language: `plpgsql`
 
+```python
 Get a list of existing collections.
 This checks information_schema for tables matching the expected structure.
 
-
+```
 
 
 
@@ -65,10 +69,11 @@ This checks information_schema for tables matching the expected structure.
 - returns: `BOOLEAN`
 - language: `plpgsql`
 
+```python
 Delete/drop a collection.
 At the moment, this just drops whatever table matches the collection name.
 
-
+```
 
 
 
@@ -78,9 +83,10 @@ At the moment, this just drops whatever table matches the collection name.
 - returns: `table(bq_jdoc json)`
 - language: `plpgsql`
 
+```python
 find one
 
-
+```
 
 
 
@@ -90,8 +96,9 @@ find one
 - returns: `table(bq_jdoc json)`
 - language: `plpgsql`
 
+```python
 
-
+```
 
 
 
@@ -101,9 +108,10 @@ find one
 - returns: `table(bq_jdoc json)`
 - language: `plpgsql`
 
+```python
 find many documents
 
-
+```
 
 
 
@@ -113,9 +121,10 @@ find many documents
 - returns: `integer`
 - language: `plpgsql`
 
+```python
 count documents in collection
 
-
+```
 
 
 
@@ -125,9 +134,10 @@ count documents in collection
 - returns: `text`
 - language: `plpgsql`
 
+```python
 insert document
 
-
+```
 
 
 
@@ -137,9 +147,10 @@ insert document
 - returns: `setof integer`
 - language: `plpgsql`
 
+```python
 remove documents
 
-
+```
 
 
 
@@ -149,9 +160,10 @@ remove documents
 - returns: `setof integer`
 - language: `plpgsql`
 
+```python
 remove one document
 
-
+```
 
 
 
@@ -161,9 +173,10 @@ remove one document
 - returns: `setof integer`
 - language: `plpgsql`
 
+```python
 remove one document
 
-
+```
 
 
 
@@ -173,9 +186,10 @@ remove one document
 - returns: `text`
 - language: `plpgsql`
 
+```python
 save document
 
-
+```
 
 
 
@@ -185,9 +199,18 @@ save document
 - returns: `boolean`
 - language: `plpgsql`
 
-add a constraint to the collection
+```python
+Add a set of constraints to the collection.
+The supplied json document should be in the form {field: constraint_spec},
+for example: {"age": {"$required": 1, "$notnull": 1, "$type": "number"}}.
+Valid constraints are: $required, $notnull and $type.
+- $required: the field must be present in all documents
+- $notnull: if the field is present, its value must not be null
+- $type: if the field is present and has a non-null value, then the type
+    of that value must match the specified type.
+    Valid types are "string", "number", "object", "array", "boolean".
 
-
+```
 
 
 
@@ -197,9 +220,10 @@ add a constraint to the collection
 - returns: `boolean`
 - language: `plpgsql`
 
+```python
 remove constraints from collection
 
-
+```
 
 
 
@@ -209,7 +233,8 @@ remove constraints from collection
 - returns: `setof text`
 - language: `plpgsql`
 
+```python
 get a list of constraints on this collection
 
-
+```
 
