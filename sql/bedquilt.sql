@@ -389,8 +389,8 @@ BEGIN
             field_name);
           result := true;
         end if;
-      -- $notNull : the key must be present in the json object
-      when '$notNull' then
+      -- $notnull : the key must be present in the json object
+      when '$notnull' then
         new_constraint_name := format(
           'bqcn__%s__notnull',
           field_name);
@@ -515,7 +515,7 @@ BEGIN
           result := true;
         end if;
 
-      when '$notNull' then
+      when '$notnull' then
         target_constraint := format(
           'bqcn__%s__notnull',
           field_name);

@@ -42,7 +42,7 @@ class TestListConstraints(testutils.BedquiltTestCase):
         result = self._query("""
         select bq_add_constraint('things', '{}')
         """.format(json.dumps({
-            'age': {'$notNull': True}
+            'age': {'$notnull': True}
         })))
 
         result = self._query("""
@@ -57,7 +57,7 @@ class TestListConstraints(testutils.BedquiltTestCase):
         result = self._query("""
         select bq_remove_constraint('things', '{}')
         """.format(json.dumps({
-            'age': {'$notNull': True}
+            'age': {'$notnull': True}
         })))
 
         result = self._query("""
@@ -76,12 +76,12 @@ class TestRemoveConstraints(testutils.BedquiltTestCase):
         tests = [
             ({'name': {'$required': True}},
              {'derp': 1}),
-            ({'name': {'$notNull': True}},
+            ({'name': {'$notnull': True}},
              {'name': None}),
             ({'age': {'$type': 'number'}},
              {'age': ['fish']}),
             ({'name': {'$required': True,
-                       '$notNull': True,
+                       '$notnull': True,
                        '$type': 'string'},
               'age': {'$type': 'number'}},
              {'name': None, 'age': {}})
@@ -178,11 +178,11 @@ class TestAddConstraints(testutils.BedquiltTestCase):
 
         self.assertIsNotNone(result)
 
-    def test_notNull_constraint(self):
+    def test_notnull_constraint(self):
         result = self._query("""
         select bq_add_constraint('things', '{}');
         """.format(json.dumps({
-            'name': {'$notNull': 1}
+            'name': {'$notnull': 1}
         })))
         self.assertEqual(result, [(True,)])
 
