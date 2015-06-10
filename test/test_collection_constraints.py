@@ -186,14 +186,54 @@ class TestAddConstraints(testutils.BedquiltTestCase):
         })))
         self.assertEqual(result, [(True,)])
 
-        # should reject doc with name missing
+        # should not reject doc with name missing
         doc = {
+            'age': 24
+        }
+        result = self._query("""
+        select bq_insert('things', '{}');
+        """.format(json.dumps(doc)))
+        self.assertIsNotNone(result)
+
+        # should reject doc with name set to null
+        doc = {
+            'name': None,
             'age': 24
         }
         with self.assertRaises(psycopg2.IntegrityError):
             self._query("""
             select bq_insert('things', '{}');
             """.format(json.dumps(doc)))
+        self.conn.rollback()
+
+        # should be fine with a name key that is not null
+        doc = {
+            'name': 'steve',
+            'age': 24
+        }
+        result = self._query("""
+        select bq_insert('things', '{}')
+        """.format(json.dumps(doc)))
+        self.assertIsNotNone(result)
+
+    def test_required_and_notnull(self):
+        result = self._query("""
+        select bq_add_constraint('things', '{}');
+        """.format(json.dumps({
+            'name': {'$notnull': 1,
+                     '$required': 1}
+        })))
+        self.assertEqual(result, [(True,)])
+
+        # should reject doc with name missing
+        doc = {
+            'age': 24
+        }
+        with self.assertRaises(psycopg2.IntegrityError):
+            result = self._query("""
+            select bq_insert('things', '{}');
+            """.format(json.dumps(doc)))
+            self.assertIsNotNone(result)
         self.conn.rollback()
 
         # should reject doc with name set to null
