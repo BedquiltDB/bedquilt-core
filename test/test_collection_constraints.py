@@ -302,6 +302,24 @@ class TestAddConstraints(testutils.BedquiltTestCase):
         """.format(json.dumps(doc)))
         self.assertIsNotNone(result)
 
+    def test_type_on_null_value(self):
+        result = self._query("""
+        select bq_add_constraint('things', '{}');
+        """.format(json.dumps({
+            'age': {'$type': 'number'}
+        })))
+        self.assertEqual(result, [(True,)])
+
+        # should be ok if the field is null
+        doc = {
+            'name': 'paul',
+            'age': None
+        }
+        result = self._query("""
+        select bq_insert('things', '{}')
+        """.format(json.dumps(doc)))
+        self.assertIsNotNone(result)
+
     def test_contradictory_type_constraints(self):
         # age type is number
         result = self._query("""

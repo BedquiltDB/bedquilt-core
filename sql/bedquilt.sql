@@ -443,7 +443,7 @@ BEGIN
             'alter table %I
             add constraint %s
             check (
-              jsonb_typeof(bq_jdoc->''%s'') = ''%s''
+              jsonb_typeof(bq_jdoc->''%s'') in (''%s'', ''null'')
             );',
             i_coll,
             new_constraint_name,
