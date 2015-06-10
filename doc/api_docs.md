@@ -202,13 +202,17 @@ save document
 ```markdown
 Add a set of constraints to the collection.
 The supplied json document should be in the form {field: constraint_spec},
-for example: {"age": {"$required": 1, "$notnull": 1, "$type": "number"}}.
+for example:
+  {"age": {"$required": 1,
+           "$notnull": 1,
+           "$type": "number"}}
 Valid constraints are: $required, $notnull and $type.
 - {$required: 1} : the field must be present in all documents
 - {$notnull: 1} : if the field is present, its value must not be null
 - {$type: '<type>'} : if the field is present and has a non-null value,
       then the type of that value must match the specified type.
       Valid types are "string", "number", "object", "array", "boolean".
+Returns a boolean indicating whether any of the constraints newly applied.
 
 ```
 
