@@ -217,12 +217,25 @@ add a constraint to the collection
 
 
 
-## bq\_constraint\_name\_exists
+## bq\_remove\_constraint
 
-- params: `i_coll text, i_name text`
+- params: `i_coll text, i_jdoc json`
 - returns: `boolean`
 - language: `plpgsql`
 
+remove constraints from collection
+
+
+
+
+
+## bq\_list\_constraints
+
+- params: `i_coll text`
+- returns: `setof text`
+- language: `plpgsql`
+
+get a list of constraints on this collection
 
 
 
