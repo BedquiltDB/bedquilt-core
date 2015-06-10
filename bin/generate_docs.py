@@ -131,7 +131,7 @@ def to_md(doc):
 - returns: `{returns}`
 - language: `{language}`
 
-```python
+```markdown
 {doc_comment}
 ```
 
