@@ -462,6 +462,8 @@ END
 $$ LANGUAGE plpgsql;
 
 
+/* private
+ */
 CREATE OR REPLACE FUNCTION bq_constraint_name_exists(i_coll text, i_name text)
 RETURNS boolean AS $$
 BEGIN
