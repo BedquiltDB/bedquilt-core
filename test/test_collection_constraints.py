@@ -320,6 +320,28 @@ class TestAddConstraints(testutils.BedquiltTestCase):
         """.format(json.dumps(doc)))
         self.assertIsNotNone(result)
 
+    def test_type_and_notnull(self):
+        result = self._query("""
+        select bq_add_constraint('things', '{}');
+        """.format(json.dumps({
+            'age': {'$type': 'number',
+                    '$notnull': 1}
+        })))
+        self.assertEqual(result, [(True,)])
+
+        # should raise error if the field is null
+        doc = {
+            'name': 'paul',
+            'age': None
+        }
+        with self.assertRaises(psycopg2.IntegrityError):
+            result = self._query("""
+            select bq_insert('things', '{}')
+            """.format(json.dumps(doc)))
+            self.assertIsNotNone(result)
+        self.conn.rollback()
+
+
     def test_contradictory_type_constraints(self):
         # age type is number
         result = self._query("""
