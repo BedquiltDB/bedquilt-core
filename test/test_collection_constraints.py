@@ -412,11 +412,12 @@ class TestAddConstraints(testutils.BedquiltTestCase):
             self.assertIsNotNone(result)
         self.conn.rollback()
 
-    def test_type_and_notnull_at_nested_path(self):
+    def test_type_required_and_notnull_at_nested_path(self):
         result = self._query("""
         select bq_add_constraint('things', '{}');
         """.format(json.dumps({
             'address.city': {'$type': 'string',
+                             '$required': 1,
                              '$notnull': 1}
         })))
         self.assertEqual(result, [(True,)])
@@ -426,6 +427,20 @@ class TestAddConstraints(testutils.BedquiltTestCase):
             'name': 'paul',
             'address': {
                 'city': None
+            }
+        }
+        with self.assertRaises(psycopg2.IntegrityError):
+            result = self._query("""
+            select bq_insert('things', '{}')
+            """.format(json.dumps(doc)))
+            self.assertIsNotNone(result)
+        self.conn.rollback()
+
+        # should raise error if the field is absent
+        doc = {
+            'name': 'paul',
+            'address': {
+                'street': 'baker street'
             }
         }
         with self.assertRaises(psycopg2.IntegrityError):
