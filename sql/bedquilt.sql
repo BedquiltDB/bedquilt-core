@@ -489,7 +489,9 @@ END
 $$ LANGUAGE plpgsql;
 
 
-/* remove constraints from collection
+/* Remove constraints from collection.
+ * The supplied json document should match the spec for existing constraints.
+ * Returns True if any of the constraints were removed, False otherwise.
  */
 CREATE OR REPLACE FUNCTION bq_remove_constraint(i_coll text, i_jdoc json)
 RETURNS boolean AS $$
@@ -569,7 +571,7 @@ END
 $$ LANGUAGE plpgsql;
 
 
-/* get a list of constraints on this collection
+/* Get a list of text descriptions of constraints on this collection.
  */
 CREATE OR REPLACE FUNCTION bq_list_constraints(i_coll text)
 RETURNS setof text AS $$

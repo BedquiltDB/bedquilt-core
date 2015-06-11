@@ -225,7 +225,9 @@ Returns a boolean indicating whether any of the constraints newly applied.
 - language: `plpgsql`
 
 ```markdown
-remove constraints from collection
+Remove constraints from collection.
+The supplied json document should match the spec for existing constraints.
+Returns True if any of the constraints were removed, False otherwise.
 
 ```
 
@@ -238,7 +240,7 @@ remove constraints from collection
 - language: `plpgsql`
 
 ```markdown
-get a list of constraints on this collection
+Get a list of text descriptions of constraints on this collection.
 
 ```
 
