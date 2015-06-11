@@ -389,18 +389,29 @@ BEGIN
       when '$required' then
         new_constraint_name := format(
           'bqcn__%s__required',
-          field_name);
+          bq_safe_path(field_name));
         PERFORM bq_create_collection(i_coll);
         if bq_constraint_name_exists(i_coll, new_constraint_name) = false
         then
-          execute format(
-            'alter table %I
-            add constraint %s
-            check (bq_jdoc ? ''%s'');',
-            i_coll,
-            new_constraint_name,
-            field_name);
-          result := true;
+          if field_name like '%.%' then
+            execute format(
+              'alter table %I
+              add constraint %s
+              check (bq_path_exists(''%s'', bq_jdoc));',
+              i_coll,
+              new_constraint_name,
+              field_name);
+            result := true;
+          else
+            execute format(
+              'alter table %I
+              add constraint %s
+              check (bq_jdoc ? ''%s'');',
+              i_coll,
+              new_constraint_name,
+              field_name);
+            result := true;
+          end if;
         end if;
       -- $notnull : the key must be present in the json object
       when '$notnull' then
@@ -594,3 +605,36 @@ return query select
   and constraint_name like 'bqcn_%';
 END
 $$ LANGUAGE plpgsql;
+
+
+/* private - Check if a dotted path exists in a document
+ */
+create or replace function bq_path_exists(i_path text, i_jdoc jsonb)
+returns boolean as $$
+DECLARE
+  path_array text[];
+  depth int;
+  path_key text;
+  current_doc jsonb;
+BEGIN
+  current_doc := i_jdoc;
+  if i_path = '' then
+    return false;
+  end if;
+  if i_path not like '%.%' then
+    return (current_doc ? i_path);
+  end if;
+
+  path_array := regexp_split_to_array(i_path, '\.');
+  foreach path_key in array path_array loop
+    if current_doc ? path_key then
+      current_doc := current_doc->path_key;
+    else
+      return false;
+    end if;
+
+  end loop;
+  return true;
+
+END
+$$ language plpgsql;

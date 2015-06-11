@@ -178,6 +178,55 @@ class TestAddConstraints(testutils.BedquiltTestCase):
 
         self.assertIsNotNone(result)
 
+    def test_required_constraint_on_nested_path(self):
+        q = """
+        select bq_add_constraint('things', '{}');
+        """.format(json.dumps({
+            'address.city': {'$required': True}
+        }))
+        result = self._query(q)
+        self.assertEqual(result, [(True,)])
+
+        # should reject document where this field is missing
+        doc = {
+            'name': 'paul',
+            'address': {
+                'street': 'baker street'
+            }
+        }
+        with self.assertRaises(psycopg2.IntegrityError):
+            self._query("""
+            select bq_insert('things', '{}')
+            """.format(json.dumps(doc)))
+        self.conn.rollback()
+
+        # should accept document where this field is present and null
+        doc = {
+            'name': 'paul',
+            'address': {
+                'street': 'baker street',
+                'city': None
+            }
+        }
+        result = self._query("""
+        select bq_insert('things', '{}')
+        """.format(json.dumps(doc)))
+        self.assertIsNotNone(result)
+
+        # should accept document where this field is present
+        # and has value
+        doc = {
+            'name': 'paul',
+            'address': {
+                'street': 'baker street',
+                'city': 'london'
+            }
+        }
+        result = self._query("""
+        select bq_insert('things', '{}')
+        """.format(json.dumps(doc)))
+        self.assertIsNotNone(result)
+
     def test_notnull_constraint(self):
         result = self._query("""
         select bq_add_constraint('things', '{}');
