@@ -320,6 +320,28 @@ class TestAddConstraints(testutils.BedquiltTestCase):
         """.format(json.dumps(doc)))
         self.assertIsNotNone(result)
 
+    def test_type_at_nested_path(self):
+        result = self._query("""
+        select bq_add_constraint('things', '{}');
+        """.format(json.dumps({
+            'address.city': {'$type': 'string'}
+        })))
+        self.assertEqual(result, [(True,)])
+
+        # should reject doc where address.city is a number
+        doc = {
+            'name': 'paul',
+            'address': {
+                'street': 'Baker Street',
+                'city': 42
+            }
+        }
+        with self.assertRaises(psycopg2.IntegrityError):
+            self._query("""
+            select bq_insert('things', '{}')
+            """.format(json.dumps(doc)))
+        self.conn.rollback()
+
     def test_type_and_notnull(self):
         result = self._query("""
         select bq_add_constraint('things', '{}');
@@ -333,6 +355,43 @@ class TestAddConstraints(testutils.BedquiltTestCase):
         doc = {
             'name': 'paul',
             'age': None
+        }
+        with self.assertRaises(psycopg2.IntegrityError):
+            result = self._query("""
+            select bq_insert('things', '{}')
+            """.format(json.dumps(doc)))
+            self.assertIsNotNone(result)
+        self.conn.rollback()
+
+    def test_type_and_notnull_at_nested_path(self):
+        result = self._query("""
+        select bq_add_constraint('things', '{}');
+        """.format(json.dumps({
+            'address.city': {'$type': 'string',
+                             '$notnull': 1}
+        })))
+        self.assertEqual(result, [(True,)])
+
+        # should raise error if the field is null
+        doc = {
+            'name': 'paul',
+            'address': {
+                'city': None
+            }
+        }
+        with self.assertRaises(psycopg2.IntegrityError):
+            result = self._query("""
+            select bq_insert('things', '{}')
+            """.format(json.dumps(doc)))
+            self.assertIsNotNone(result)
+        self.conn.rollback()
+
+        # should raise error if the field is wrong type
+        doc = {
+            'name': 'paul',
+            'address': {
+                'city': 42
+            }
         }
         with self.assertRaises(psycopg2.IntegrityError):
             result = self._query("""

@@ -406,7 +406,7 @@ BEGIN
       when '$notnull' then
         new_constraint_name := format(
           'bqcn__%s__notnull',
-          field_name);
+          bq_safe_path(field_name));
         PERFORM bq_create_collection(i_coll);
         if bq_constraint_name_exists(i_coll, new_constraint_name) = false
         then
@@ -414,12 +414,11 @@ BEGIN
             'alter table %I
             add constraint %s
             check (
-              jsonb_typeof((bq_jdoc->''%s'')::jsonb) <> ''null''
+              jsonb_typeof((bq_jdoc#>''%s'')::jsonb) <> ''null''
             );',
             i_coll,
             new_constraint_name,
-            field_name,
-            field_name);
+            regexp_split_to_array(field_name, '\.'));
           result := true;
         end if;
       -- $type: enforce type of the specified field
@@ -429,7 +428,7 @@ BEGIN
         s_type := spec->>op;
         new_constraint_name := format(
           'bqcn__%s__type__%s',
-          field_name, s_type);
+          bq_safe_path(field_name), s_type);
         PERFORM bq_create_collection(i_coll);
         if bq_constraint_name_exists(i_coll, new_constraint_name) = false
         then
@@ -445,7 +444,9 @@ BEGIN
             select constraint_name
             from information_schema.constraint_column_usage
             where table_name = i_coll
-            and constraint_name like 'bqcn__' || field_name ||'__type__%')
+            and constraint_name like 'bqcn__'
+            || bq_safe_path(field_name)
+            ||'__type__%')
           then
             raise exception
             'Contradictory $type "%" constraint on field "%"',
@@ -456,11 +457,11 @@ BEGIN
             'alter table %I
             add constraint %s
             check (
-              jsonb_typeof(bq_jdoc->''%s'') in (''%s'', ''null'')
+              jsonb_typeof(bq_jdoc#>''%s'') in (''%s'', ''null'')
             );',
             i_coll,
             new_constraint_name,
-            field_name,
+            regexp_split_to_array(field_name, '\.'),
             s_type);
           result := true;
         end if;
@@ -471,6 +472,16 @@ BEGIN
   end loop;
 
   RETURN result;
+END
+$$ LANGUAGE plpgsql;
+
+
+/* private - replace dots in path string with underscores
+ */
+CREATE OR REPLACE FUNCTION bq_safe_path(i_path text)
+RETURNS text AS $$
+BEGIN
+  RETURN replace(i_path, '.', '_');
 END
 $$ LANGUAGE plpgsql;
 
