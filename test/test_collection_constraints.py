@@ -456,6 +456,58 @@ class TestAddConstraints(testutils.BedquiltTestCase):
             """.format(json.dumps(doc)))
         self.conn.rollback()
 
+    def test_type_at_nested_array_path(self):
+        result = self._query("""
+        select bq_add_constraint('things', '{}');
+        """.format(json.dumps({
+            'addresses.0.city': {'$type': 'string'}
+        })))
+        self.assertEqual(result, [(True,)])
+
+        # should reject doc where address.city is a number
+        doc = {
+            'name': 'paul',
+            'addresses': [
+                {'street': 'Baker Street',
+                 'city': 42}
+            ]
+        }
+        with self.assertRaises(psycopg2.IntegrityError):
+            self._query("""
+            select bq_insert('things', '{}')
+            """.format(json.dumps(doc)))
+        self.conn.rollback()
+
+        # should accept doc where addresses is empty
+        doc = {
+            'name': 'paul',
+            'addresses': []
+        }
+        result = self._query("""
+        select bq_insert('things', '{}')
+        """.format(json.dumps(doc)))
+        self.assertIsNotNone(result)
+
+        # should accept doc where addresses is not present
+        doc = {
+            'name': 'paul'
+        }
+        result = self._query("""
+        select bq_insert('things', '{}')
+        """.format(json.dumps(doc)))
+        self.assertIsNotNone(result)
+
+        # should accept doc where city is string
+        doc = {
+            'name': 'paul',
+            'addresses': [
+                {'city': 'wat'}
+            ]
+        }
+        result = self._query("""
+        select bq_insert('things', '{}')
+        """.format(json.dumps(doc)))
+        self.assertIsNotNone(result)
     def test_type_and_notnull(self):
         result = self._query("""
         select bq_add_constraint('things', '{}');
