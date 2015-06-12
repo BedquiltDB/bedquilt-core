@@ -14,22 +14,11 @@ This page describes the sql functions which make up the bedquilt extension.
 - returns: `char(24)`
 - language: `plpgsql`
 
+```markdown
 Generate a random string ID.
 Used by the insert function to populate the '_id' field if missing.
 
-
-
-
-
-## bq\_doc\_set\_key
-
-- params: `i_jdoc json, i_key text, i_val anyelement`
-- returns: `json`
-- language: `plpgsql`
-
-Set a key in a json document.
-
-
+```
 
 
 
@@ -39,24 +28,11 @@ Set a key in a json document.
 - returns: `boolean`
 - language: `plpgsql`
 
+```markdown
 Check if a collection exists.
 Currently does a simple check for a table with the specified name.
 
-
-
-
-
-## bq\_check\_id\_type
-
-- params: `i_jdoc json`
-- returns: `VOID`
-- language: `plpgsql`
-
-Ensure the _id field of the supplied json document is a string value.
-If it's not, an exception is raised. Ideally, the client should validate
-this is the case before submitting to the server.
-
-
+```
 
 
 
@@ -66,9 +42,10 @@ this is the case before submitting to the server.
 - returns: `BOOLEAN`
 - language: `plpgsql`
 
+```markdown
 Create a collection with the specified name
 
-
+```
 
 
 
@@ -78,10 +55,11 @@ Create a collection with the specified name
 - returns: `table(collection_name text)`
 - language: `plpgsql`
 
+```markdown
 Get a list of existing collections.
 This checks information_schema for tables matching the expected structure.
 
-
+```
 
 
 
@@ -91,10 +69,11 @@ This checks information_schema for tables matching the expected structure.
 - returns: `BOOLEAN`
 - language: `plpgsql`
 
+```markdown
 Delete/drop a collection.
 At the moment, this just drops whatever table matches the collection name.
 
-
+```
 
 
 
@@ -104,9 +83,10 @@ At the moment, this just drops whatever table matches the collection name.
 - returns: `table(bq_jdoc json)`
 - language: `plpgsql`
 
+```markdown
 find one
 
-
+```
 
 
 
@@ -116,8 +96,9 @@ find one
 - returns: `table(bq_jdoc json)`
 - language: `plpgsql`
 
+```markdown
 
-
+```
 
 
 
@@ -127,9 +108,10 @@ find one
 - returns: `table(bq_jdoc json)`
 - language: `plpgsql`
 
+```markdown
 find many documents
 
-
+```
 
 
 
@@ -139,9 +121,10 @@ find many documents
 - returns: `integer`
 - language: `plpgsql`
 
+```markdown
 count documents in collection
 
-
+```
 
 
 
@@ -151,9 +134,10 @@ count documents in collection
 - returns: `text`
 - language: `plpgsql`
 
+```markdown
 insert document
 
-
+```
 
 
 
@@ -163,9 +147,10 @@ insert document
 - returns: `setof integer`
 - language: `plpgsql`
 
+```markdown
 remove documents
 
-
+```
 
 
 
@@ -175,9 +160,10 @@ remove documents
 - returns: `setof integer`
 - language: `plpgsql`
 
+```markdown
 remove one document
 
-
+```
 
 
 
@@ -187,9 +173,10 @@ remove one document
 - returns: `setof integer`
 - language: `plpgsql`
 
+```markdown
 remove one document
 
-
+```
 
 
 
@@ -199,7 +186,61 @@ remove one document
 - returns: `text`
 - language: `plpgsql`
 
+```markdown
 save document
 
+```
 
+
+
+## bq\_add\_constraint
+
+- params: `i_coll text, i_jdoc json`
+- returns: `boolean`
+- language: `plpgsql`
+
+```markdown
+Add a set of constraints to the collection.
+The supplied json document should be in the form {field: constraint_spec},
+for example:
+  {"age": {"$required": 1,
+           "$notnull": 1,
+           "$type": "number"}}
+Valid constraints are: $required, $notnull and $type.
+- {$required: 1} : the field must be present in all documents
+- {$notnull: 1} : if the field is present, its value must not be null
+- {$type: '<type>'} : if the field is present and has a non-null value,
+      then the type of that value must match the specified type.
+      Valid types are "string", "number", "object", "array", "boolean".
+Returns a boolean indicating whether any of the constraints newly applied.
+
+```
+
+
+
+## bq\_remove\_constraint
+
+- params: `i_coll text, i_jdoc json`
+- returns: `boolean`
+- language: `plpgsql`
+
+```markdown
+Remove constraints from collection.
+The supplied json document should match the spec for existing constraints.
+Returns True if any of the constraints were removed, False otherwise.
+
+```
+
+
+
+## bq\_list\_constraints
+
+- params: `i_coll text`
+- returns: `setof text`
+- language: `plpgsql`
+
+```markdown
+Get a list of text descriptions of constraints on this collection.
+
+```
 

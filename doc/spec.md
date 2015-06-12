@@ -111,7 +111,6 @@ Spec Options:
 - $notnull (Boolean) : Field must never have a null value
 - $type (String) : enforce the type of this field,
   options are "string", "number|double|float",  "array", "object"
-- $unique (Boolean) : Enforces uniqueness of this field
 
 Params:
 - spec::Map

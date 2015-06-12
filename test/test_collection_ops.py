@@ -1,4 +1,6 @@
 import testutils
+import json
+import psycopg2
 
 
 class TestBasics(testutils.BedquiltTestCase):

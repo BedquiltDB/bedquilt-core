@@ -52,3 +52,6 @@ class BedquiltTestCase(unittest.TestCase):
         self.conn = PG_CONN
         self.cur = self.conn.cursor()
         clean_database(self.conn)
+
+    def tearDown(self):
+        self.conn.rollback()

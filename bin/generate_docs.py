@@ -35,7 +35,7 @@ def main():
 
     final_string = "\n\n"
     for detail in details:
-        if detail['name'] is not None:
+        if detail is not None and detail['name'] is not None:
             final_string = final_string + to_md(detail)
 
     contents = None
@@ -93,6 +93,8 @@ def parse(st):
         params = [param.split(' ') for param in params]
         params = params_string
     doc_comment = get_doc_comment(st)
+    if doc_comment.strip()[:9] == 'private -':
+        return None
 
     return {
         'name': function_name,
@@ -129,8 +131,9 @@ def to_md(doc):
 - returns: `{returns}`
 - language: `{language}`
 
+```markdown
 {doc_comment}
-
+```
 
 """.format(**{
     'name': md_escape(doc['name']),
