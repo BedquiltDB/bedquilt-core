@@ -330,6 +330,108 @@ class TestAddConstraints(testutils.BedquiltTestCase):
         """.format(json.dumps(doc)))
         self.assertIsNotNone(result)
 
+    def test_notnull_constraint_on_nested_path(self):
+        result = self._query("""
+        select bq_add_constraint('things', '{}');
+        """.format(json.dumps({
+            'address.city': {'$notnull': 1}
+        })))
+        self.assertEqual(result, [(True,)])
+
+        # should not reject doc with city missing
+        doc = {
+            'name': 'paul',
+            'address': {
+                'street': 'wat'
+            }
+        }
+        result = self._query("""
+        select bq_insert('things', '{}');
+        """.format(json.dumps(doc)))
+        self.assertIsNotNone(result)
+
+        # should not reject doc with address missing
+        doc = {
+            'name': 'paul',
+        }
+        result = self._query("""
+        select bq_insert('things', '{}');
+        """.format(json.dumps(doc)))
+        self.assertIsNotNone(result)
+
+        # should reject doc with city set to null
+        doc = {
+            'name': None,
+            'address': {
+                'city': None
+            }
+        }
+        with self.assertRaises(psycopg2.IntegrityError):
+            self._query("""
+            select bq_insert('things', '{}');
+            """.format(json.dumps(doc)))
+        self.conn.rollback()
+
+    def test_notnull_constraint_on_nested_array_path(self):
+        result = self._query("""
+        select bq_add_constraint('things', '{}');
+        """.format(json.dumps({
+            'addresses.0.city': {'$notnull': 1}
+        })))
+        self.assertEqual(result, [(True,)])
+
+        # should not reject doc with city missing
+        doc = {
+            'name': 'paul',
+            'addresses': [
+                {'street': 'wat'}
+            ]
+        }
+        result = self._query("""
+        select bq_insert('things', '{}');
+        """.format(json.dumps(doc)))
+        self.assertIsNotNone(result)
+
+        # should not reject doc with addresses missing
+        doc = {
+            'name': 'paul',
+        }
+        result = self._query("""
+        select bq_insert('things', '{}');
+        """.format(json.dumps(doc)))
+        self.assertIsNotNone(result)
+
+        # should reject doc with city set to null
+        doc = {
+            'name': None,
+            'addresses': [
+                {'street': 'wat',
+                 'city': None}
+            ]
+        }
+        with self.assertRaises(psycopg2.IntegrityError):
+            self._query("""
+            select bq_insert('things', '{}');
+            """.format(json.dumps(doc)))
+        self.conn.rollback()
+
+        # should reject doc with city set to null,
+        # but set properly in second element of array
+        doc = {
+            'name': None,
+            'addresses': [
+                {'street': 'wat',
+                 'city': None},
+                {'street': 'one',
+                 'city': 'wat'}
+            ]
+        }
+        with self.assertRaises(psycopg2.IntegrityError):
+            self._query("""
+            select bq_insert('things', '{}');
+            """.format(json.dumps(doc)))
+        self.conn.rollback()
+
     def test_required_and_notnull(self):
         result = self._query("""
         select bq_add_constraint('things', '{}');
