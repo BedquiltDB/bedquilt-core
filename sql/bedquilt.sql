@@ -363,7 +363,7 @@ $$ LANGUAGE plpgsql;
  *       Valid types are "string", "number", "object", "array", "boolean".
  * Returns a boolean indicating whether any of the constraints newly applied.
  */
-CREATE OR REPLACE FUNCTION bq_add_constraint(i_coll text, i_jdoc json)
+CREATE OR REPLACE FUNCTION bq_add_constraints(i_coll text, i_jdoc json)
 RETURNS boolean AS $$
 DECLARE
   jdoc_keys RECORD;
@@ -515,7 +515,7 @@ $$ LANGUAGE plpgsql;
  * The supplied json document should match the spec for existing constraints.
  * Returns True if any of the constraints were removed, False otherwise.
  */
-CREATE OR REPLACE FUNCTION bq_remove_constraint(i_coll text, i_jdoc json)
+CREATE OR REPLACE FUNCTION bq_remove_constraints(i_coll text, i_jdoc json)
 RETURNS boolean AS $$
 DECLARE
   jdoc_keys RECORD;

@@ -193,7 +193,7 @@ save document
 
 
 
-## bq\_add\_constraint
+## bq\_add\_constraints
 
 - params: `i_coll text, i_jdoc json`
 - returns: `boolean`
@@ -218,7 +218,7 @@ Returns a boolean indicating whether any of the constraints newly applied.
 
 
 
-## bq\_remove\_constraint
+## bq\_remove\_constraints
 
 - params: `i_coll text, i_jdoc json`
 - returns: `boolean`
