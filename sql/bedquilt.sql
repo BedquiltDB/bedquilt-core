@@ -615,24 +615,33 @@ DECLARE
   path_array text[];
   depth int;
   path_key text;
-  current_doc jsonb;
+  current_object jsonb;
 BEGIN
-  current_doc := i_jdoc;
+  current_object := i_jdoc;
   if i_path = '' then
     return false;
   end if;
   if i_path not like '%.%' then
-    return (current_doc ? i_path);
+    return (current_object ? i_path);
   end if;
 
   path_array := regexp_split_to_array(i_path, '\.');
   foreach path_key in array path_array loop
-    if current_doc ? path_key then
-      current_doc := current_doc->path_key;
+    if jsonb_typeof(current_object) = 'object' then
+      if current_object ? path_key then
+        current_object := current_object->path_key;
+      else
+        return false;
+      end if;
+    elsif jsonb_typeof(current_object) = 'array' then
+      if path_key ~ '^\d+$' then
+        current_object := current_object->path_key::int;
+      else
+        return false;
+      end if;
     else
       return false;
     end if;
-
   end loop;
   return true;
 

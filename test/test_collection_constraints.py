@@ -200,6 +200,16 @@ class TestAddConstraints(testutils.BedquiltTestCase):
             """.format(json.dumps(doc)))
         self.conn.rollback()
 
+        # should reject document where nested structure is null
+        doc = {
+            'name': 'paul',
+            'address': None
+        }
+        with self.assertRaises(psycopg2.IntegrityError):
+            self._query("""
+            select bq_insert('things', '{}')
+            """.format(json.dumps(doc)))
+        self.conn.rollback()
         # should accept document where this field is present and null
         doc = {
             'name': 'paul',
@@ -221,6 +231,61 @@ class TestAddConstraints(testutils.BedquiltTestCase):
                 'street': 'baker street',
                 'city': 'london'
             }
+        }
+        result = self._query("""
+        select bq_insert('things', '{}')
+        """.format(json.dumps(doc)))
+        self.assertIsNotNone(result)
+
+    def test_required_constraint_on_nested_array_path(self):
+        q = """
+        select bq_add_constraint('things', '{}');
+        """.format(json.dumps({
+            'stuff.0.name': {'$required': True}
+        }))
+        result = self._query(q)
+        self.assertEqual(result, [(True,)])
+
+        # should reject document where nested array is missing
+        doc = {
+            'name': 'paul'
+        }
+        with self.assertRaises(psycopg2.IntegrityError):
+            self._query("""
+            select bq_insert('things', '{}')
+            """.format(json.dumps(doc)))
+        self.conn.rollback()
+
+        # should reject document where this field is missing
+        doc = {
+            'name': 'paul',
+            'things': []
+        }
+        with self.assertRaises(psycopg2.IntegrityError):
+            self._query("""
+            select bq_insert('things', '{}')
+            """.format(json.dumps(doc)))
+        self.conn.rollback()
+
+        # should accept document where this field is present and null
+        doc = {
+            'name': 'paul',
+            'stuff': [
+                {'name': None}
+            ]
+        }
+        result = self._query("""
+        select bq_insert('things', '{}')
+        """.format(json.dumps(doc)))
+        self.assertIsNotNone(result)
+
+        # should accept document where this field is present
+        # and has value
+        doc = {
+            'name': 'paul',
+            'stuff': [
+                {'name': 'wat'}
+            ]
         }
         result = self._query("""
         select bq_insert('things', '{}')
