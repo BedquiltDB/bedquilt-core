@@ -599,7 +599,12 @@ CREATE OR REPLACE FUNCTION bq_list_constraints(i_coll text)
 RETURNS setof text AS $$
 BEGIN
 return query select
-  replace(substring(constraint_name from 7), '__', ':' )
+  replace(
+    replace(substring(constraint_name from 7),
+            '__',
+            ':'),
+    '_',
+    '.')
   from information_schema.constraint_column_usage
   where table_name = i_coll
   and constraint_name like 'bqcn_%';
