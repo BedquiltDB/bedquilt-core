@@ -377,24 +377,24 @@ DECLARE
 BEGIN
   result := false;
   -- loop over the field names
-  FOR jdoc_keys in select * from json_object_keys(i_jdoc) loop
+  FOR jdoc_keys IN SELECT * FROM json_object_keys(i_jdoc) LOOP
     field_name := jdoc_keys.json_object_keys;
     spec := i_jdoc->field_name;
 
     -- for each field name, loop over the constrant ops
-    for spec_keys in select * from json_object_keys(spec) loop
+    FOR spec_keys IN SELECT * FROM json_object_keys(spec) LOOP
       op := spec_keys.json_object_keys;
-      case op
+      CASE op
       -- $required : the key must be present in the json object
-      when '$required' then
+      WHEN '$required' THEN
         new_constraint_name := format(
           'bqcn__%s__required',
           bq_safe_path(field_name));
         PERFORM bq_create_collection(i_coll);
-        if bq_constraint_name_exists(i_coll, new_constraint_name) = false
-        then
-          if field_name like '%.%' then
-            execute format(
+        IF bq_constraint_name_exists(i_coll, new_constraint_name) = false
+        THEN
+          IF field_name LIKE '%.%' THEN
+            EXECUTE format(
               'alter table %I
               add constraint %s
               check (bq_path_exists(''%s'', bq_jdoc));',
@@ -402,8 +402,8 @@ BEGIN
               new_constraint_name,
               field_name);
             result := true;
-          else
-            execute format(
+          ELSE
+            EXECUTE format(
               'alter table %I
               add constraint %s
               check (bq_jdoc ? ''%s'');',
@@ -411,17 +411,17 @@ BEGIN
               new_constraint_name,
               field_name);
             result := true;
-          end if;
-        end if;
+          END IF;
+        END IF;
       -- $notnull : the key must be present in the json object
-      when '$notnull' then
+      WHEN '$notnull' THEN
         new_constraint_name := format(
           'bqcn__%s__notnull',
           bq_safe_path(field_name));
         PERFORM bq_create_collection(i_coll);
-        if bq_constraint_name_exists(i_coll, new_constraint_name) = false
-        then
-          execute format(
+        IF bq_constraint_name_exists(i_coll, new_constraint_name) = false
+        THEN
+          EXECUTE format(
             'alter table %I
             add constraint %s
             check (
@@ -431,40 +431,40 @@ BEGIN
             new_constraint_name,
             regexp_split_to_array(field_name, '\.'));
           result := true;
-        end if;
+        END IF;
       -- $type: enforce type of the specified field
       --   valid values are:
       --   'string' | 'number' | 'object' | 'array' | 'boolean'
-      when '$type' then
+      WHEN '$type' THEN
         s_type := spec->>op;
         new_constraint_name := format(
           'bqcn__%s__type__%s',
           bq_safe_path(field_name), s_type);
         PERFORM bq_create_collection(i_coll);
-        if bq_constraint_name_exists(i_coll, new_constraint_name) = false
-        then
-          if s_type not in ('string','object','array','boolean','number')
-          then
-            raise exception
+        IF bq_constraint_name_exists(i_coll, new_constraint_name) = false
+        THEN
+          IF s_type NOT IN ('string','object','array','boolean','number')
+          THEN
+            RAISE EXCEPTION
             'Invalid $type ("%") specified for field "%"',
             s_type, field_name
-            using hint = 'Please specify the name of a json type';
-          end if;
+            USING HINT = 'Please specify the name of a json type';
+          END IF;
           -- check if we've got a type constraint already
-          if exists(
-            select constraint_name
-            from information_schema.constraint_column_usage
-            where table_name = i_coll
-            and constraint_name like 'bqcn__'
+          IF EXISTS(
+            SELECT constraint_name
+            FROM information_schema.constraint_column_usage
+            WHERE table_name = i_coll
+            AND constraint_name LIKE 'bqcn__'
             || bq_safe_path(field_name)
             ||'__type__%')
-          then
-            raise exception
+          THEN
+            RAISE EXCEPTION
             'Contradictory $type "%" constraint on field "%"',
             s_type, field_name
-            using hint = 'Please remove existing $type constraint';
-          end if;
-          execute format(
+            USING HINT = 'Please remove existing $type constraint';
+          END IF;
+          EXECUTE format(
             'alter table %I
             add constraint %s
             check (
@@ -475,12 +475,12 @@ BEGIN
             regexp_split_to_array(field_name, '\.'),
             s_type);
           result := true;
-        end if;
-      end case;
+        END IF;
+      END CASE;
 
-    end loop;
+    END LOOP;
 
-  end loop;
+  END LOOP;
 
   RETURN result;
 END
@@ -502,10 +502,10 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION bq_constraint_name_exists(i_coll text, i_name text)
 RETURNS boolean AS $$
 BEGIN
-  return exists(
-    select * from information_schema.constraint_column_usage
-    where table_name = i_coll
-    and constraint_name = i_name
+  RETURN EXISTS(
+    SELECT * FROM information_schema.constraint_column_usage
+    WHERE table_name = i_coll
+    AND constraint_name = i_name
   );
 END
 $$ LANGUAGE plpgsql;
@@ -530,65 +530,65 @@ BEGIN
 
   result := false;
   -- loop over the field names
-  FOR jdoc_keys in select * from json_object_keys(i_jdoc) loop
+  FOR jdoc_keys IN SELECT * FROM json_object_keys(i_jdoc) LOOP
     field_name := jdoc_keys.json_object_keys;
     spec := i_jdoc->field_name;
 
     -- for each field name, loop over the constrant ops
-    for spec_keys in select * from json_object_keys(spec) loop
+    FOR spec_keys IN SELECT * FROM json_object_keys(spec) LOOP
       op := spec_keys.json_object_keys;
-      case op
-      when '$required' then
+      CASE op
+      WHEN '$required' THEN
         target_constraint := format(
           'bqcn__%s__required',
           field_name);
-        if bq_constraint_name_exists(i_coll, target_constraint)
-        then
-          execute format(
+        IF bq_constraint_name_exists(i_coll, target_constraint)
+        THEN
+          EXECUTE format(
             'alter table %I
             drop constraint %s;',
             i_coll,
             target_constraint
           );
           result := true;
-        end if;
+        END IF;
 
-      when '$notnull' then
+      WHEN '$notnull' THEN
         target_constraint := format(
           'bqcn__%s__notnull',
           field_name);
-        if bq_constraint_name_exists(i_coll, target_constraint)
-        then
-          execute format(
+        IF bq_constraint_name_exists(i_coll, target_constraint)
+        THEN
+          EXECUTE format(
             'alter table %I
             drop constraint %s;',
             i_coll,
             target_constraint
           );
           result := true;
-        end if;
+        END IF;
 
-      when '$type' then
+      WHEN '$type' THEN
         s_type := spec->>op;
         target_constraint := format(
           'bqcn__%s__type__%s',
           field_name, s_type);
-        if bq_constraint_name_exists(i_coll, target_constraint)
-        then
-          execute format(
+        IF bq_constraint_name_exists(i_coll, target_constraint)
+        THEN
+          EXECUTE format(
             'alter table %I
             drop constraint %s;',
             i_coll,
             target_constraint
           );
           result := true;
-        end if;
-      end case;
+        END IF;
+      END CASE;
 
-    end loop;
-  end loop;
+    END LOOP;
+  END LOOP;
 
-  return result;
+  RETURN result;
 END
 $$ LANGUAGE plpgsql;
 
@@ -598,24 +598,24 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION bq_list_constraints(i_coll text)
 RETURNS setof text AS $$
 BEGIN
-return query select
+RETURN QUERY SELECT
   replace(
     replace(substring(constraint_name from 7),
             '__',
             ':'),
     '_',
     '.')
-  from information_schema.constraint_column_usage
-  where table_name = i_coll
-  and constraint_name like 'bqcn_%';
+  FROM information_schema.constraint_column_usage
+  WHERE table_name = i_coll
+  AND constraint_name LIKE 'bqcn_%';
 END
 $$ LANGUAGE plpgsql;
 
 
 /* private - Check if a dotted path exists in a document
  */
-create or replace function bq_path_exists(i_path text, i_jdoc jsonb)
-returns boolean as $$
+CREATE OR REPLACE FUNCTION bq_path_exists(i_path text, i_jdoc jsonb)
+RETURNS boolean AS $$
 DECLARE
   path_array text[];
   depth int;
@@ -623,32 +623,32 @@ DECLARE
   current_object jsonb;
 BEGIN
   current_object := i_jdoc;
-  if i_path = '' then
-    return false;
-  end if;
-  if i_path not like '%.%' then
-    return (current_object ? i_path);
-  end if;
+  IF i_path = '' THEN
+    RETURN false;
+  END IF;
+  IF i_path NOT LIKE '%.%' THEN
+    RETURN (current_object ? i_path);
+  END IF;
 
   path_array := regexp_split_to_array(i_path, '\.');
-  foreach path_key in array path_array loop
-    if jsonb_typeof(current_object) = 'object' then
-      if current_object ? path_key then
+  FOREACH path_key IN ARRAY path_array LOOP
+    IF jsonb_typeof(current_object) = 'object' THEN
+      IF current_object ? path_key THEN
         current_object := current_object->path_key;
-      else
-        return false;
-      end if;
-    elsif jsonb_typeof(current_object) = 'array' then
-      if path_key ~ '^\d+$' then
+      ELSE
+        RETURN false;
+      END IF;
+    ELSIF jsonb_typeof(current_object) = 'array' THEN
+      IF path_key ~ '^\d+$' THEN
         current_object := current_object->path_key::int;
-      else
-        return false;
-      end if;
-    else
-      return false;
-    end if;
-  end loop;
-  return true;
+      ELSE
+        RETURN false;
+      END IF;
+    ELSE
+      RETURN false;
+    END IF;
+  END LOOP;
+  RETURN true;
 
 END
 $$ language plpgsql;
