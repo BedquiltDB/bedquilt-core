@@ -2,6 +2,10 @@
 VERSION = $(shell cat ./VERSION)
 
 
+.tmp:
+	mkdir .tmp
+
+
 install-head:
 	make install EXTVERSION="HEAD"
 
