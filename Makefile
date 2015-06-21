@@ -1,4 +1,5 @@
 # Bedquilt-core makefile
+VERSION = $(shell cat ./VERSION)
 
 
 install-head:
