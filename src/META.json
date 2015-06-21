@@ -1,0 +1,42 @@
+{
+    "name": "bedquilt",
+    "abstract": "A json document store",
+    "description": "Bedquilt is a json document store built on PostgreSQL",
+    "version": "{{VERSION}}",
+    "maintainer": [
+        "Shane Kilkelly <shane+bedquiltdb@kilkelly.me>"
+    ],
+    "license": "mit",
+    "provides": {
+        "bedquilt": {
+            "file": "sql/bedquilt.sql",
+            "abstract": "A json object store",
+            "docfile": "doc/api_docs.md",
+            "version": "{{VERSION}}"
+        }
+    },
+    "resources": {
+        "bugtracker": {
+            "web": "http://github.com/BedquiltDB/bedquilt-core/issues/"
+        },
+        "repository": {
+            "url": "git://github.com/BedquiltDB/bedquilt-core",
+            "web": "http://bedquiltdb.github.io",
+            "type": "git"
+        }
+    },
+    "generated_by": "Shane Kilkelly",
+    "meta-spec": {
+        "version": "1.0.0",
+        "url": "http://pgxn.org/meta/spec.txt"
+    },
+    "tags": [
+        "json",
+        "object store",
+        "document store",
+        "jsonb",
+        "json store",
+        "bedquilt",
+        "bedquiltdb"
+    ]
+}
