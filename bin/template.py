@@ -17,7 +17,7 @@ def main():
     keyword_args = args[1:]
 
     if not os.path.exists(template_file):
-        raise Exception('File {} does not exist'.format(template_file))
+        raise Exception('File "{}" does not exist'.format(template_file))
 
     context = {}
     for arg in keyword_args:
@@ -26,8 +26,8 @@ def main():
             (key, val) = match.groups()
             context[key] = val
 
-    with open(template_file, 'r') as reader:
-        text = reader.read()
+    with open(template_file, 'r') as file_reader:
+        text = file_reader.read()
         print jinja2.Template(text).render(context)
 
 
