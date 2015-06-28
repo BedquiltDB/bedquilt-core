@@ -1,6 +1,7 @@
 # Bedquilt-core makefile
 VERSION = $(shell cat ./VERSION)
 
+
 all:
 	echo "Nope, not yet"
 
@@ -23,11 +24,11 @@ build-sql: dist/sql
 
 VERSION=HEAD
 build-head:
-	make build-sql
+	$(MAKE) build-sql
 
 
 install-head:
-	make install EXTVERSION="HEAD"
+	$(MAKE) install EXTVERSION="HEAD"
 
 
 docs:
