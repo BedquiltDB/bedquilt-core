@@ -39,4 +39,4 @@ test: install-head
 	bin/run-tests.sh
 
 
-.PHONY: test install-head docs all
+.PHONY: test build-head install-head docs all
