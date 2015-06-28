@@ -6,6 +6,11 @@ all:
 	echo "Nope, not yet"
 
 
+clean:
+	rm -rf dist/packages
+	rm -rf .tmp
+
+
 .tmp:
 	mkdir .tmp
 
@@ -16,6 +21,10 @@ dist:
 
 dist/sql: dist
 	mkdir dist/sql
+
+
+dist/packages: dist
+	mkdir dist/packages
 
 
 build-sql: dist/sql
@@ -39,4 +48,4 @@ test: install-head
 	bin/run-tests.sh
 
 
-.PHONY: test build-head install-head docs all
+.PHONY: test build-head install-head docs all clean
