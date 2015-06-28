@@ -18,7 +18,7 @@ dist/sql: dist
 
 
 build-sql: dist/sql
-	cat src/sql/*.sql > dist/sql/bedquilt-$(VERSION).sql
+	cat src/sql/*.sql > dist/sql/bedquilt--$(VERSION).sql
 
 
 VERSION=HEAD
