@@ -5,7 +5,7 @@ import re
 import os
 
 
-KEY_REGEX = re.compile('([A-Z]+)=(\w+)')
+KEY_REGEX = re.compile('([A-Z]+)=(.+)')
 
 
 def main():
