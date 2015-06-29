@@ -77,4 +77,4 @@ test: install-head
 	bin/run-tests.sh
 
 
-.PHONY: test build-head install-head install docs all clean
+.PHONY: test build-head build-package build-package-head install-head install docs all clean
