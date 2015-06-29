@@ -66,7 +66,7 @@ install:
 
 install-head:
 	make build-package-head
-	make install VERSION=HEAD
+	make install -C dist/packages/bedquilt--HEAD
 
 
 docs:
