@@ -69,7 +69,6 @@ install-head:
 	make install VERSION=HEAD
 
 
-
 docs:
 	python bin/generate_docs.py && mkdocs build --clean
 
@@ -78,4 +77,4 @@ test: install-head
 	bin/run-tests.sh
 
 
-.PHONY: test build-head install-head docs all clean
+.PHONY: test build-head install-head install docs all clean
