@@ -1,38 +1,62 @@
-# Core API
-
-This page describes the sql functions which make up the bedquilt extension.
-
+# API Docs
 
 ---- ---- ---- ----
 
 
 
 
-## bq\_generate\_id 
+## bq\_add\_constraints
 
-- params: `None`
-- returns: `char(24)`
-- language: `plpgsql`
-
-```markdown
-Generate a random string ID.
-Used by the insert function to populate the '_id' field if missing.
-
-```
-
-
-
-## bq\_collection\_exists 
-
-- params: `None`
+- params: `i_coll text, i_jdoc json`
 - returns: `boolean`
 - language: `plpgsql`
 
 ```markdown
-Check if a collection exists.
-Currently does a simple check for a table with the specified name.
+Add a set of constraints to the collection.
+The supplied json document should be in the form {field: constraint_spec},
+for example:
+  {"age": {"$required": 1,
+           "$notnull": 1,
+           "$type": "number"}}
+Valid constraints are: $required, $notnull and $type.
+- {$required: 1} : the field must be present in all documents
+- {$notnull: 1} : if the field is present, its value must not be null
+- {$type: '<type>'} : if the field is present and has a non-null value,
+      then the type of that value must match the specified type.
+      Valid types are "string", "number", "object", "array", "boolean".
+Returns a boolean indicating whether any of the constraints newly applied.
 
 ```
+
+
+
+## bq\_remove\_constraints
+
+- params: `i_coll text, i_jdoc json`
+- returns: `boolean`
+- language: `plpgsql`
+
+```markdown
+Remove constraints from collection.
+The supplied json document should match the spec for existing constraints.
+Returns True if any of the constraints were removed, False otherwise.
+
+```
+
+
+
+## bq\_list\_constraints
+
+- params: `i_coll text`
+- returns: `setof text`
+- language: `plpgsql`
+
+```markdown
+Get a list of text descriptions of constraints on this collection.
+
+```
+
+
 
 
 
@@ -74,6 +98,8 @@ Delete/drop a collection.
 At the moment, this just drops whatever table matches the collection name.
 
 ```
+
+
 
 
 
@@ -125,6 +151,8 @@ find many documents
 count documents in collection
 
 ```
+
+
 
 
 
@@ -193,54 +221,32 @@ save document
 
 
 
-## bq\_add\_constraints
 
-- params: `i_coll text, i_jdoc json`
-- returns: `boolean`
+
+## bq\_generate\_id 
+
+- params: `None`
+- returns: `char(24)`
 - language: `plpgsql`
 
 ```markdown
-Add a set of constraints to the collection.
-The supplied json document should be in the form {field: constraint_spec},
-for example:
-  {"age": {"$required": 1,
-           "$notnull": 1,
-           "$type": "number"}}
-Valid constraints are: $required, $notnull and $type.
-- {$required: 1} : the field must be present in all documents
-- {$notnull: 1} : if the field is present, its value must not be null
-- {$type: '<type>'} : if the field is present and has a non-null value,
-      then the type of that value must match the specified type.
-      Valid types are "string", "number", "object", "array", "boolean".
-Returns a boolean indicating whether any of the constraints newly applied.
+Generate a random string ID.
+Used by the document write functions to populate the '_id' field
+if it is missing.
 
 ```
 
 
 
-## bq\_remove\_constraints
+## bq\_collection\_exists 
 
-- params: `i_coll text, i_jdoc json`
+- params: `None`
 - returns: `boolean`
 - language: `plpgsql`
 
 ```markdown
-Remove constraints from collection.
-The supplied json document should match the spec for existing constraints.
-Returns True if any of the constraints were removed, False otherwise.
-
-```
-
-
-
-## bq\_list\_constraints
-
-- params: `i_coll text`
-- returns: `setof text`
-- language: `plpgsql`
-
-```markdown
-Get a list of text descriptions of constraints on this collection.
+Check if a collection exists.
+Currently does a simple check for a table with the specified name.
 
 ```
 

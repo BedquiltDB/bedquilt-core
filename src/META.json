@@ -2,7 +2,7 @@
     "name": "bedquilt",
     "abstract": "A json document store",
     "description": "Bedquilt is a json document store built on PostgreSQL",
-    "version": "0.2.0",
+    "version": "{{VERSION}}",
     "maintainer": [
         "Shane Kilkelly <shane+bedquiltdb@kilkelly.me>"
     ],
@@ -12,7 +12,7 @@
             "file": "sql/bedquilt.sql",
             "abstract": "A json object store",
             "docfile": "doc/api_docs.md",
-            "version": "0.2.0"
+            "version": "{{VERSION}}"
         }
     },
     "resources": {

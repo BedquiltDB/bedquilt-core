@@ -6,10 +6,11 @@ import pybedquilt
 import os
 import re
 from pprint import pprint
+import glob
 
 
 TARGET_FILE_PATH = 'doc/api_docs.md'
-SOURCE_FILE_PATH = 'sql/bedquilt.sql'
+SOURCE_FILE_PATH = 'src/sql/*.sql'
 MAGIC_LINE = '---- ---- ---- ----'
 
 
@@ -20,29 +21,11 @@ PARAMS_REGEX = 'FUNCTION [a-z_]+\((.+)\)'
 
 
 def main():
-    # BedquiltClient
-    with open(SOURCE_FILE_PATH, 'r') as source_file:
-        source = source_file.read()
-
-    source_blocks = blocks(source)
-    function_blocks = []
-
-    for block in source_blocks:
-        if 'CREATE OR REPLACE FUNCTION' in block and '-- #' not in block:
-            function_blocks.append(block)
-
-    details = [parse(x) for x in function_blocks]
-
-    final_string = "\n\n"
-    for detail in details:
-        if detail is not None and detail['name'] is not None:
-            final_string = final_string + to_md(detail)
+    final_contents = []
 
     contents = None
     with open(TARGET_FILE_PATH, 'r') as target:
         contents = target.readlines()
-
-    final_contents = []
     for line in contents:
         if line.strip() != MAGIC_LINE.strip():
             final_contents.append(line)
@@ -51,9 +34,29 @@ def main():
             final_contents.append('\n')
             break
 
-    for line in final_string.splitlines():
-        final_contents.append(line)
-        final_contents.append('\n')
+    paths = sorted(glob.glob(SOURCE_FILE_PATH))
+    for path in paths:
+        with open(path, 'r') as source_file:
+            source = source_file.read()
+
+        source_blocks = blocks(source)
+        function_blocks = []
+
+        for block in source_blocks:
+            if ('CREATE OR REPLACE FUNCTION' in block
+                and '-- #' not in block):
+                function_blocks.append(block)
+
+        details = [parse(x) for x in function_blocks]
+
+        final_string = "\n\n"
+        for detail in details:
+            if detail is not None and detail['name'] is not None:
+                final_string = final_string + to_md(detail)
+
+        for line in final_string.splitlines():
+            final_contents.append(line)
+            final_contents.append('\n')
 
     with open(TARGET_FILE_PATH, 'w') as target:
         target.writelines(final_contents)

@@ -1,46 +1,72 @@
-# PGXN stuff
-EXTENSION = $(shell grep -m 1 '"name":' META.json | \
-	sed -e 's/[[:space:]]*"name":[[:space:]]*"\([^"]*\)",/\1/')
+# Bedquilt-core makefile
+VERSION = $(shell cat ./VERSION)
 
 
-EXTVERSION = $(shell grep -m 1 '[[:space:]]\{8\}"version":' META.json | \
-	sed -e 's/[[:space:]]*"version":[[:space:]]*"\([^"]*\)",\{0,1\}/\1/')
+all:
+	echo "Nope, not yet"
 
 
-DATA = $(filter-out $(wildcard sql/*--*.sql),$(wildcard sql/*.sql))
-DOCS = $(wildcard doc/*.md)
-TESTS = $(wildcard test/sql/*.sql)
-REGRESS = $(patsubst test/sql/%.sql,%,$(TESTS))
-REGRESS_OPTS = --inputdir=test --load-language=plpgsql
-PG_CONFIG ?= pg_config
-PG91 = $(shell $(PG_CONFIG) --version \
-	| grep -qE " 8\.| 9\.0" && echo no || echo yes)
+clean:
+	rm -rf dist/packages
+	rm -rf .tmp
 
 
-ifeq ($(PG91),yes)
-DATA = $(wildcard sql/*--*.sql) sql/$(EXTENSION)--$(EXTVERSION).sql
-EXTRA_CLEAN = sql/$(EXTENSION)--$(EXTVERSION).sql
-endif
+.tmp:
+	mkdir .tmp
 
 
-PGXS := $(shell $(PG_CONFIG) --pgxs)
-include $(PGXS)
+.tmp/packages: .tmp
+	mkdir .tmp/packages
 
 
-ifeq ($(PG91),yes)
-all: sql/$(EXTENSION)--$(EXTVERSION).sql
-sql/$(EXTENSION)--$(EXTVERSION).sql: sql/$(EXTENSION).sql
-	cp $< $@
-endif
+.tmp/packages/bedquilt--$(VERSION): .tmp/packages build-sql
+	mkdir -p $@
+	mkdir -p $@/sql
+	cp dist/sql/*.sql $@/sql/
+	./bin/template.py src/META.json VERSION=$(VERSION) \
+		> $@/META.json
+	./bin/template.py src/bedquilt.control VERSION=$(VERSION) \
+		> $@/bedquilt.control
+	cp src/Makefile $@/
+	cp -R doc $@/doc
 
 
 dist:
-	git archive --format zip --prefix=$(EXTENSION)-$(EXTVERSION)/ -o $(EXTENSION)-$(EXTVERSION).zip HEAD
-# /PGXN stuff
+	mkdir -p dist
+
+
+dist/sql: dist
+	mkdir -p dist/sql
+
+
+dist/packages: dist
+	mkdir -p dist/packages
+
+
+build-sql: dist/sql
+	cat $(shell ls src/sql/*.sql | sort) > dist/sql/bedquilt--$(VERSION).sql
+
+
+build-package: .tmp/packages/bedquilt--$(VERSION) dist/packages
+	cp -R .tmp/packages/bedquilt--$(VERSION) dist/packages
+
+
+build-package-head:
+	make build-package VERSION=HEAD
+
+
+build-head:
+	make build-sql VERSION=HEAD
+
+
+install:
+	make build-package
+	make install -C dist/packages/bedquilt--$(VERSION)
 
 
 install-head:
-	make install EXTVERSION="HEAD"
+	make build-package-head
+	make install -C dist/packages/bedquilt--HEAD
 
 
 docs:
@@ -51,4 +77,4 @@ test: install-head
 	bin/run-tests.sh
 
 
-.PHONY: test installdocs
+.PHONY: test build-head build-package build-package-head install-head install docs all clean

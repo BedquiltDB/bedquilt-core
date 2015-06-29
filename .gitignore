@@ -1,3 +1,6 @@
 *.pyc
 site/
 sql/bedquilt--HEAD.sql
+dist/sql/bedquilt--HEAD.sql
+dist/packages/
+.tmp/
