@@ -231,7 +231,8 @@ save document
 
 ```markdown
 Generate a random string ID.
-Used by the insert function to populate the '_id' field if missing.
+Used by the document write functions to populate the '_id' field
+if it is missing.
 
 ```
 
