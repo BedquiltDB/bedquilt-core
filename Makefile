@@ -15,29 +15,59 @@ clean:
 	mkdir .tmp
 
 
+.tmp/packages: .tmp
+	mkdir .tmp/packages
+
+
+.tmp/packages/bedquilt--$(VERSION): .tmp/packages build-sql
+	mkdir -p $@
+	mkdir -p $@/sql
+	cp dist/sql/*.sql $@/sql/
+	./bin/template.py src/META.json VERSION=$(VERSION) \
+		> $@/META.json
+	./bin/template.py src/bedquilt.control VERSION=$(VERSION) \
+		> $@/bedquilt.control
+	cp src/Makefile $@/
+	cp -R doc $@/doc
+
+
 dist:
-	mkdir dist
+	mkdir -p dist
 
 
 dist/sql: dist
-	mkdir dist/sql
+	mkdir -p dist/sql
 
 
 dist/packages: dist
-	mkdir dist/packages
+	mkdir -p dist/packages
 
 
 build-sql: dist/sql
-	cat src/sql/*.sql > dist/sql/bedquilt--$(VERSION).sql
+	cat $(shell ls src/sql/*.sql | sort) > dist/sql/bedquilt--$(VERSION).sql
 
 
-VERSION=HEAD
+build-package: .tmp/packages/bedquilt--$(VERSION) dist/packages
+	cp -R .tmp/packages/bedquilt--$(VERSION) dist/packages
+
+
+build-package-head:
+	make build-package VERSION=HEAD
+
+
 build-head:
-	$(MAKE) build-sql
+	make build-sql VERSION=HEAD
+
+
+install:
+	make build-package
+	make install -C dist/packages/bedquilt--$(VERSION)
 
 
 install-head:
-	$(MAKE) install EXTVERSION="HEAD"
+	make build-package-head
+	make install VERSION=HEAD
+
 
 
 docs:
