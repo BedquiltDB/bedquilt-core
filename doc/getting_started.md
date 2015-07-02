@@ -16,6 +16,8 @@ Download the latest release from [pgxn](http://pgxn.org/dist/bedquilt/), unzip i
 $ make install
 ```
 
+Alternatively, you can build a docker image containing a PostgreSQL server with BedquiltDB pre-installed, using our [example Dockerfile](http://github.com/BedquiltDB/docker-bedquiltdb-example).
+
 
 ## Enable the extension
 
