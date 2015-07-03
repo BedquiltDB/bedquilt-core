@@ -102,7 +102,7 @@ DECLARE
 BEGIN
   SELECT bq_insert(i_coll, i_jdoc) INTO o_id;
   RETURN o_id;
-EXCEPTION WHEN others THEN
+EXCEPTION WHEN unique_violation THEN
   EXECUTE format('
     UPDATE %I SET bq_jdoc = %s::jsonb WHERE _id = %s returning _id',
     i_coll,
