@@ -100,27 +100,14 @@ DECLARE
   o_id text;
   existing_id_count integer;
 BEGIN
-PERFORM bq_create_collection(i_coll);
-IF (SELECT i_jdoc->'_id') IS NOT NULL
-THEN
-  EXECUTE format('select count(*) from %I where _id = %s',
-                 i_coll, quote_literal(i_jdoc->>'_id'))
-    INTO existing_id_count;
-  IF existing_id_count > 0
-    THEN
-      EXECUTE format('
-      UPDATE %I SET bq_jdoc = %s::jsonb WHERE _id = %s returning _id',
-      i_coll,
-      quote_literal(i_jdoc),
-      quote_literal(i_jdoc->>'_id')) INTO o_id;
-      RETURN o_id;
-    ELSE
-      SELECT bq_insert(i_coll, i_jdoc) INTO o_id;
-      RETURN o_id;
-    END IF;
-ELSE
   SELECT bq_insert(i_coll, i_jdoc) INTO o_id;
   RETURN o_id;
-END IF;
+EXCEPTION WHEN others THEN
+  EXECUTE format('
+    UPDATE %I SET bq_jdoc = %s::jsonb WHERE _id = %s returning _id',
+    i_coll,
+    quote_literal(i_jdoc),
+    quote_literal(i_jdoc->>'_id')) INTO o_id;
+  RETURN o_id;
 END
 $$ LANGUAGE plpgsql;
