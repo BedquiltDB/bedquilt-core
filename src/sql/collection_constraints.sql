@@ -248,6 +248,7 @@ RETURN QUERY SELECT
           ':')
   FROM information_schema.constraint_column_usage
   WHERE table_name = i_coll
-  AND constraint_name LIKE 'bqcn_%';
+  AND constraint_name LIKE 'bqcn_%'
+  order by 1;
 END
 $$ LANGUAGE plpgsql;

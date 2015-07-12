@@ -14,20 +14,20 @@ class TestListConstraints(testutils.BedquiltTestCase):
         result = self._query("""
         select bq_add_constraints('cool_things', '{}')
         """.format(json.dumps({
-            'name': {'$required': True}
+            'first_name': {'$required': True}
         })))
 
         result = self._query("""
         select bq_list_constraints('cool_things')
         """)
         self.assertEqual(len(result), 1)
-        self.assertEqual(result, [("name:required",)])
+        self.assertEqual(result, [("first_name:required",)])
         pass
 
         result = self._query("""
         select bq_add_constraints('cool_things', '{}')
         """.format(json.dumps({
-            'name': {'$type': 'string'}
+            'first_name': {'$type': 'string'}
         })))
 
         result = self._query("""
@@ -35,11 +35,11 @@ class TestListConstraints(testutils.BedquiltTestCase):
         """)
         self.assertEqual(
             result,
-            [("name:required",),
-             ("name:type:string",)]
+            [("first_name:required",),
+             ("first_name:type:string",)]
         )
 
-        # add another
+        # add anothe
         result = self._query("""
         select bq_add_constraints('cool_things', '{}')
         """.format(json.dumps({
@@ -51,9 +51,10 @@ class TestListConstraints(testutils.BedquiltTestCase):
         """)
         self.assertEqual(
             result,
-            [("name:required",),
-             ("name:type:string",),
-             ("age:notnull",)]
+            [("age:notnull",),
+             ("first_name:required",),
+             ("first_name:type:string",)
+             ]
         )
 
         # remove a constraint
@@ -68,8 +69,8 @@ class TestListConstraints(testutils.BedquiltTestCase):
         """)
         self.assertEqual(
             result,
-            [("name:required",),
-             ("name:type:string",)]
+            [("first_name:required",),
+             ("first_name:type:string",)]
         )
 
         # dotted path
@@ -85,8 +86,9 @@ class TestListConstraints(testutils.BedquiltTestCase):
         self.assertEqual(
             result,
             [("addresses.0.city:required",),
-             ("name:required",),
-             ("name:type:string",)]
+             ("first_name:required",),
+             ("first_name:type:string",)
+             ]
         )
 
 
@@ -94,17 +96,17 @@ class TestRemoveConstraints(testutils.BedquiltTestCase):
 
     def test_remove_constraint(self):
         tests = [
-            ({'name': {'$required': True}},
+            ({'first_name': {'$required': True}},
              {'derp': 1}),
-            ({'name': {'$notnull': True}},
-             {'name': None}),
+            ({'first_name': {'$notnull': True}},
+             {'first_name': None}),
             ({'age': {'$type': 'number'}},
              {'age': ['fish']}),
-            ({'name': {'$required': True,
+            ({'first_name': {'$required': True,
                        '$notnull': True,
                        '$type': 'string'},
               'age': {'$type': 'number'}},
-             {'name': None, 'age': {}})
+             {'first_name': None, 'age': {}})
 
         ]
         for constraint, example in tests:
@@ -157,7 +159,7 @@ class TestAddConstraints(testutils.BedquiltTestCase):
     def test_add_required_constraint(self):
         q = """
         select bq_add_constraints('cool_things', '{}');
-        """.format(json.dumps({'name': {'$required': True}}))
+        """.format(json.dumps({'first_name': {'$required': True}}))
         result = self._query(q)
 
         self.assertEqual(result, [(True,)])
@@ -167,7 +169,7 @@ class TestAddConstraints(testutils.BedquiltTestCase):
 
         self.assertEqual(result, [(False,)])
 
-        # should insist on the name field being present
+        # should insist on the first_name field being present
         doc = {
             'derp': 1
         }
@@ -177,9 +179,9 @@ class TestAddConstraints(testutils.BedquiltTestCase):
             """.format(json.dumps(doc)))
         self.conn.rollback()
 
-        # should be fine with a name key
+        # should be fine with a first_name key
         doc = {
-            'name': 'steve',
+            'first_name': 'steve',
             'age': 24
         }
         result = self._query("""
@@ -187,9 +189,9 @@ class TestAddConstraints(testutils.BedquiltTestCase):
         """.format(json.dumps(doc)))
         self.assertIsNotNone(result)
 
-        # should be fine with a name key, even null
+        # should be fine with a first_name key, even null
         doc = {
-            'name': None,
+            'first_name': None,
             'age': 24
         }
         result = self._query("""
@@ -209,7 +211,7 @@ class TestAddConstraints(testutils.BedquiltTestCase):
 
         # should reject document where this field is missing
         doc = {
-            'name': 'paul',
+            'first_name': 'paul',
             'address': {
                 'street': 'baker street'
             }
@@ -222,7 +224,7 @@ class TestAddConstraints(testutils.BedquiltTestCase):
 
         # should reject document where nested structure is null
         doc = {
-            'name': 'paul',
+            'first_name': 'paul',
             'address': None
         }
         with self.assertRaises(psycopg2.IntegrityError):
@@ -232,7 +234,7 @@ class TestAddConstraints(testutils.BedquiltTestCase):
         self.conn.rollback()
         # should accept document where this field is present and null
         doc = {
-            'name': 'paul',
+            'first_name': 'paul',
             'address': {
                 'street': 'baker street',
                 'city': None
@@ -246,7 +248,7 @@ class TestAddConstraints(testutils.BedquiltTestCase):
         # should accept document where this field is present
         # and has value
         doc = {
-            'name': 'paul',
+            'first_name': 'paul',
             'address': {
                 'street': 'baker street',
                 'city': 'london'
@@ -261,14 +263,14 @@ class TestAddConstraints(testutils.BedquiltTestCase):
         q = """
         select bq_add_constraints('cool_things', '{}');
         """.format(json.dumps({
-            'stuff.0.name': {'$required': True}
+            'stuff.0.first_name': {'$required': True}
         }))
         result = self._query(q)
         self.assertEqual(result, [(True,)])
 
         # should reject document where nested array is missing
         doc = {
-            'name': 'paul'
+            'first_name': 'paul'
         }
         with self.assertRaises(psycopg2.IntegrityError):
             self._query("""
@@ -278,7 +280,7 @@ class TestAddConstraints(testutils.BedquiltTestCase):
 
         # should reject document where this field is missing
         doc = {
-            'name': 'paul',
+            'first_name': 'paul',
             'cool_things': []
         }
         with self.assertRaises(psycopg2.IntegrityError):
@@ -289,9 +291,9 @@ class TestAddConstraints(testutils.BedquiltTestCase):
 
         # should accept document where this field is present and null
         doc = {
-            'name': 'paul',
+            'first_name': 'paul',
             'stuff': [
-                {'name': None}
+                {'first_name': None}
             ]
         }
         result = self._query("""
@@ -302,9 +304,9 @@ class TestAddConstraints(testutils.BedquiltTestCase):
         # should accept document where this field is present
         # and has value
         doc = {
-            'name': 'paul',
+            'first_name': 'paul',
             'stuff': [
-                {'name': 'wat'}
+                {'first_name': 'wat'}
             ]
         }
         result = self._query("""
@@ -316,11 +318,11 @@ class TestAddConstraints(testutils.BedquiltTestCase):
         result = self._query("""
         select bq_add_constraints('cool_things', '{}');
         """.format(json.dumps({
-            'name': {'$notnull': 1}
+            'first_name': {'$notnull': 1}
         })))
         self.assertEqual(result, [(True,)])
 
-        # should not reject doc with name missing
+        # should not reject doc with first_name missing
         doc = {
             'age': 24
         }
@@ -329,9 +331,9 @@ class TestAddConstraints(testutils.BedquiltTestCase):
         """.format(json.dumps(doc)))
         self.assertIsNotNone(result)
 
-        # should reject doc with name set to null
+        # should reject doc with first_name set to null
         doc = {
-            'name': None,
+            'first_name': None,
             'age': 24
         }
         with self.assertRaises(psycopg2.IntegrityError):
@@ -340,9 +342,9 @@ class TestAddConstraints(testutils.BedquiltTestCase):
             """.format(json.dumps(doc)))
         self.conn.rollback()
 
-        # should be fine with a name key that is not null
+        # should be fine with a first_name key that is not null
         doc = {
-            'name': 'steve',
+            'first_name': 'steve',
             'age': 24
         }
         result = self._query("""
@@ -360,7 +362,7 @@ class TestAddConstraints(testutils.BedquiltTestCase):
 
         # should not reject doc with city missing
         doc = {
-            'name': 'paul',
+            'first_name': 'paul',
             'address': {
                 'street': 'wat'
             }
@@ -372,7 +374,7 @@ class TestAddConstraints(testutils.BedquiltTestCase):
 
         # should not reject doc with address missing
         doc = {
-            'name': 'paul',
+            'first_name': 'paul',
         }
         result = self._query("""
         select bq_insert('cool_things', '{}');
@@ -381,7 +383,7 @@ class TestAddConstraints(testutils.BedquiltTestCase):
 
         # should reject doc with city set to null
         doc = {
-            'name': None,
+            'first_name': None,
             'address': {
                 'city': None
             }
@@ -402,7 +404,7 @@ class TestAddConstraints(testutils.BedquiltTestCase):
 
         # should not reject doc with city missing
         doc = {
-            'name': 'paul',
+            'first_name': 'paul',
             'addresses': [
                 {'street': 'wat'}
             ]
@@ -414,7 +416,7 @@ class TestAddConstraints(testutils.BedquiltTestCase):
 
         # should not reject doc with addresses missing
         doc = {
-            'name': 'paul',
+            'first_name': 'paul',
         }
         result = self._query("""
         select bq_insert('cool_things', '{}');
@@ -423,7 +425,7 @@ class TestAddConstraints(testutils.BedquiltTestCase):
 
         # should reject doc with city set to null
         doc = {
-            'name': None,
+            'first_name': None,
             'addresses': [
                 {'street': 'wat',
                  'city': None}
@@ -438,7 +440,7 @@ class TestAddConstraints(testutils.BedquiltTestCase):
         # should reject doc with city set to null,
         # but set properly in second element of array
         doc = {
-            'name': None,
+            'first_name': None,
             'addresses': [
                 {'street': 'wat',
                  'city': None},
@@ -456,12 +458,12 @@ class TestAddConstraints(testutils.BedquiltTestCase):
         result = self._query("""
         select bq_add_constraints('cool_things', '{}');
         """.format(json.dumps({
-            'name': {'$notnull': 1,
+            'first_name': {'$notnull': 1,
                      '$required': 1}
         })))
         self.assertEqual(result, [(True,)])
 
-        # should reject doc with name missing
+        # should reject doc with first_name missing
         doc = {
             'age': 24
         }
@@ -472,9 +474,9 @@ class TestAddConstraints(testutils.BedquiltTestCase):
             self.assertIsNotNone(result)
         self.conn.rollback()
 
-        # should reject doc with name set to null
+        # should reject doc with first_name set to null
         doc = {
-            'name': None,
+            'first_name': None,
             'age': 24
         }
         with self.assertRaises(psycopg2.IntegrityError):
@@ -483,9 +485,9 @@ class TestAddConstraints(testutils.BedquiltTestCase):
             """.format(json.dumps(doc)))
         self.conn.rollback()
 
-        # should be fine with a name key that is not null
+        # should be fine with a first_name key that is not null
         doc = {
-            'name': 'steve',
+            'first_name': 'steve',
             'age': 24
         }
         result = self._query("""
@@ -531,7 +533,7 @@ class TestAddConstraints(testutils.BedquiltTestCase):
 
         # should be ok if the field is absent entirely
         doc = {
-            'name': 'paul'
+            'first_name': 'paul'
         }
         result = self._query("""
         select bq_insert('cool_things', '{}')
@@ -548,7 +550,7 @@ class TestAddConstraints(testutils.BedquiltTestCase):
 
         # should be ok if the field is null
         doc = {
-            'name': 'paul',
+            'first_name': 'paul',
             'age': None
         }
         result = self._query("""
@@ -566,7 +568,7 @@ class TestAddConstraints(testutils.BedquiltTestCase):
 
         # should reject doc where address.city is a number
         doc = {
-            'name': 'paul',
+            'first_name': 'paul',
             'address': {
                 'street': 'Baker Street',
                 'city': 42
@@ -588,7 +590,7 @@ class TestAddConstraints(testutils.BedquiltTestCase):
 
         # should reject doc where address.city is a number
         doc = {
-            'name': 'paul',
+            'first_name': 'paul',
             'addresses': [
                 {'street': 'Baker Street',
                  'city': 42}
@@ -602,7 +604,7 @@ class TestAddConstraints(testutils.BedquiltTestCase):
 
         # should accept doc where addresses is empty
         doc = {
-            'name': 'paul',
+            'first_name': 'paul',
             'addresses': []
         }
         result = self._query("""
@@ -612,7 +614,7 @@ class TestAddConstraints(testutils.BedquiltTestCase):
 
         # should accept doc where addresses is not present
         doc = {
-            'name': 'paul'
+            'first_name': 'paul'
         }
         result = self._query("""
         select bq_insert('cool_things', '{}')
@@ -621,7 +623,7 @@ class TestAddConstraints(testutils.BedquiltTestCase):
 
         # should accept doc where city is string
         doc = {
-            'name': 'paul',
+            'first_name': 'paul',
             'addresses': [
                 {'city': 'wat'}
             ]
@@ -641,7 +643,7 @@ class TestAddConstraints(testutils.BedquiltTestCase):
 
         # should raise error if the field is null
         doc = {
-            'name': 'paul',
+            'first_name': 'paul',
             'age': None
         }
         with self.assertRaises(psycopg2.IntegrityError):
@@ -663,7 +665,7 @@ class TestAddConstraints(testutils.BedquiltTestCase):
 
         # should raise error if the field is null
         doc = {
-            'name': 'paul',
+            'first_name': 'paul',
             'address': {
                 'city': None
             }
@@ -677,7 +679,7 @@ class TestAddConstraints(testutils.BedquiltTestCase):
 
         # should raise error if the field is absent
         doc = {
-            'name': 'paul',
+            'first_name': 'paul',
             'address': {
                 'street': 'baker street'
             }
@@ -691,7 +693,7 @@ class TestAddConstraints(testutils.BedquiltTestCase):
 
         # should raise error if the field is wrong type
         doc = {
-            'name': 'paul',
+            'first_name': 'paul',
             'address': {
                 'city': 42
             }
@@ -726,6 +728,6 @@ class TestAddConstraints(testutils.BedquiltTestCase):
         result = self._query("""
         select bq_add_constraints('cool_things', '{}');
         """.format(json.dumps({
-            'name': {'$type': 'string'}
+            'first_name': {'$type': 'string'}
         })))
         self.assertEqual(result, [(True,)])
