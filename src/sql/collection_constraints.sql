@@ -42,7 +42,7 @@ BEGIN
       -- $required : the key must be present in the json object
       WHEN '$required' THEN
         new_constraint_name := format(
-          'bqcn__%s__required',
+          'bqcn:%s:required',
           field_name);
         PERFORM bq_create_collection(i_coll);
         IF bq_constraint_name_exists(i_coll, new_constraint_name) = false
@@ -70,7 +70,7 @@ BEGIN
       -- $notnull : the key must be present in the json object
       WHEN '$notnull' THEN
         new_constraint_name := format(
-          'bqcn__%s__notnull',
+          'bqcn:%s:notnull',
           field_name);
         PERFORM bq_create_collection(i_coll);
         IF bq_constraint_name_exists(i_coll, new_constraint_name) = false
@@ -92,7 +92,7 @@ BEGIN
       WHEN '$type' THEN
         s_type := spec->>op;
         new_constraint_name := format(
-          'bqcn__%s__type__%s',
+          'bqcn:%s:type:%s',
           field_name, s_type);
         PERFORM bq_create_collection(i_coll);
         IF bq_constraint_name_exists(i_coll, new_constraint_name) = false
@@ -109,9 +109,9 @@ BEGIN
             SELECT constraint_name
             FROM information_schema.constraint_column_usage
             WHERE table_name = i_coll
-            AND constraint_name LIKE 'bqcn__'
+            AND constraint_name LIKE 'bqcn:'
             || field_name
-            ||'__type__%')
+            ||':type:%')
           THEN
             RAISE EXCEPTION
             'Contradictory $type "%" constraint on field "%"',
@@ -184,7 +184,7 @@ BEGIN
       CASE op
       WHEN '$required' THEN
         target_constraint := format(
-          'bqcn__%s__required',
+          'bqcn:%s:required',
           field_name);
         IF bq_constraint_name_exists(i_coll, target_constraint)
         THEN
@@ -199,7 +199,7 @@ BEGIN
 
       WHEN '$notnull' THEN
         target_constraint := format(
-          'bqcn__%s__notnull',
+          'bqcn:%s:notnull',
           field_name);
         IF bq_constraint_name_exists(i_coll, target_constraint)
         THEN
@@ -215,7 +215,7 @@ BEGIN
       WHEN '$type' THEN
         s_type := spec->>op;
         target_constraint := format(
-          'bqcn__%s__type__%s',
+          'bqcn:%s:type:%s',
           field_name, s_type);
         IF bq_constraint_name_exists(i_coll, target_constraint)
         THEN
@@ -243,12 +243,10 @@ CREATE OR REPLACE FUNCTION bq_list_constraints(i_coll text)
 RETURNS setof text AS $$
 BEGIN
 RETURN QUERY SELECT
-  replace(substring(constraint_name from 7),
-          '__',
-          ':')
+  substring(constraint_name from 6)::text
   FROM information_schema.constraint_column_usage
   WHERE table_name = i_coll
-  AND constraint_name LIKE 'bqcn_%'
+  AND constraint_name LIKE 'bqcn:%'
   order by 1;
 END
 $$ LANGUAGE plpgsql;
