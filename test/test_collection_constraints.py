@@ -7,31 +7,31 @@ class TestListConstraints(testutils.BedquiltTestCase):
 
     def test_list_constraints(self):
         result = self._query("""
-        select bq_list_constraints('things')
+        select bq_list_constraints('cool_things')
         """)
         self.assertEqual(len(result), 0)
 
         result = self._query("""
-        select bq_add_constraints('things', '{}')
+        select bq_add_constraints('cool_things', '{}')
         """.format(json.dumps({
             'name': {'$required': True}
         })))
 
         result = self._query("""
-        select bq_list_constraints('things')
+        select bq_list_constraints('cool_things')
         """)
         self.assertEqual(len(result), 1)
         self.assertEqual(result, [("name:required",)])
         pass
 
         result = self._query("""
-        select bq_add_constraints('things', '{}')
+        select bq_add_constraints('cool_things', '{}')
         """.format(json.dumps({
             'name': {'$type': 'string'}
         })))
 
         result = self._query("""
-        select bq_list_constraints('things')
+        select bq_list_constraints('cool_things')
         """)
         self.assertEqual(
             result,
@@ -39,14 +39,15 @@ class TestListConstraints(testutils.BedquiltTestCase):
              ("name:type:string",)]
         )
 
+        # add another
         result = self._query("""
-        select bq_add_constraints('things', '{}')
+        select bq_add_constraints('cool_things', '{}')
         """.format(json.dumps({
             'age': {'$notnull': True}
         })))
 
         result = self._query("""
-        select bq_list_constraints('things')
+        select bq_list_constraints('cool_things')
         """)
         self.assertEqual(
             result,
@@ -54,18 +55,37 @@ class TestListConstraints(testutils.BedquiltTestCase):
              ("name:type:string",),
              ("age:notnull",)]
         )
+
+        # remove a constraint
         result = self._query("""
-        select bq_remove_constraints('things', '{}')
+        select bq_remove_constraints('cool_things', '{}')
         """.format(json.dumps({
             'age': {'$notnull': True}
         })))
 
         result = self._query("""
-        select bq_list_constraints('things')
+        select bq_list_constraints('cool_things')
         """)
         self.assertEqual(
             result,
             [("name:required",),
+             ("name:type:string",)]
+        )
+
+        # dotted path
+        result = self._query("""
+        select bq_add_constraints('cool_things', '{}')
+        """.format(json.dumps({
+            'addresses.0.city': {'$required': True}
+        })))
+
+        result = self._query("""
+        select bq_list_constraints('cool_things')
+        """)
+        self.assertEqual(
+            result,
+            [("addresses.0.city:required",),
+             ("name:required",),
              ("name:type:string",)]
         )
 
@@ -91,14 +111,14 @@ class TestRemoveConstraints(testutils.BedquiltTestCase):
             testutils.clean_database(self.conn)
             # remove constraint without even applying it
             result = self._query("""
-            select bq_remove_constraints('things', '{}');
+            select bq_remove_constraints('cool_things', '{}');
             """.format(json.dumps(constraint)))
 
             self.assertEqual(result, [(False,)])
 
             # add the constraint
             result = self._query("""
-            select bq_add_constraints('things', '{}');
+            select bq_add_constraints('cool_things', '{}');
             """.format(json.dumps(constraint)))
 
             self.assertEqual(result, [(True,)])
@@ -106,27 +126,27 @@ class TestRemoveConstraints(testutils.BedquiltTestCase):
             # example should fail to insert
             with self.assertRaises(psycopg2.IntegrityError):
                 self.cur.execute("""
-                select bq_insert('things', '{}');
+                select bq_insert('cool_things', '{}');
                 """.format(json.dumps(example)))
             self.conn.rollback()
 
             # remove the constraint
             result = self._query("""
-            select bq_remove_constraints('things', '{}');
+            select bq_remove_constraints('cool_things', '{}');
             """.format(json.dumps(constraint)))
 
             self.assertEqual(result, [(True,)])
 
             # remove again
             result = self._query("""
-            select bq_remove_constraints('things', '{}');
+            select bq_remove_constraints('cool_things', '{}');
             """.format(json.dumps(constraint)))
 
             self.assertEqual(result, [(False,)])
 
             # example should insert fine
             result = self._query("""
-            select bq_insert('things', '{}')
+            select bq_insert('cool_things', '{}')
             """.format(json.dumps(example)))
 
             self.assertIsNotNone(result)
@@ -136,7 +156,7 @@ class TestAddConstraints(testutils.BedquiltTestCase):
 
     def test_add_required_constraint(self):
         q = """
-        select bq_add_constraints('things', '{}');
+        select bq_add_constraints('cool_things', '{}');
         """.format(json.dumps({'name': {'$required': True}}))
         result = self._query(q)
 
@@ -153,7 +173,7 @@ class TestAddConstraints(testutils.BedquiltTestCase):
         }
         with self.assertRaises(psycopg2.IntegrityError):
             self.cur.execute("""
-            select bq_insert('things', '{}');
+            select bq_insert('cool_things', '{}');
             """.format(json.dumps(doc)))
         self.conn.rollback()
 
@@ -163,7 +183,7 @@ class TestAddConstraints(testutils.BedquiltTestCase):
             'age': 24
         }
         result = self._query("""
-        select bq_insert('things', '{}')
+        select bq_insert('cool_things', '{}')
         """.format(json.dumps(doc)))
         self.assertIsNotNone(result)
 
@@ -173,14 +193,14 @@ class TestAddConstraints(testutils.BedquiltTestCase):
             'age': 24
         }
         result = self._query("""
-        select bq_insert('things', '{}')
+        select bq_insert('cool_things', '{}')
         """.format(json.dumps(doc)))
 
         self.assertIsNotNone(result)
 
     def test_required_constraint_on_nested_path(self):
         q = """
-        select bq_add_constraints('things', '{}');
+        select bq_add_constraints('cool_things', '{}');
         """.format(json.dumps({
             'address.city': {'$required': True}
         }))
@@ -196,7 +216,7 @@ class TestAddConstraints(testutils.BedquiltTestCase):
         }
         with self.assertRaises(psycopg2.IntegrityError):
             self._query("""
-            select bq_insert('things', '{}')
+            select bq_insert('cool_things', '{}')
             """.format(json.dumps(doc)))
         self.conn.rollback()
 
@@ -207,7 +227,7 @@ class TestAddConstraints(testutils.BedquiltTestCase):
         }
         with self.assertRaises(psycopg2.IntegrityError):
             self._query("""
-            select bq_insert('things', '{}')
+            select bq_insert('cool_things', '{}')
             """.format(json.dumps(doc)))
         self.conn.rollback()
         # should accept document where this field is present and null
@@ -219,7 +239,7 @@ class TestAddConstraints(testutils.BedquiltTestCase):
             }
         }
         result = self._query("""
-        select bq_insert('things', '{}')
+        select bq_insert('cool_things', '{}')
         """.format(json.dumps(doc)))
         self.assertIsNotNone(result)
 
@@ -233,13 +253,13 @@ class TestAddConstraints(testutils.BedquiltTestCase):
             }
         }
         result = self._query("""
-        select bq_insert('things', '{}')
+        select bq_insert('cool_things', '{}')
         """.format(json.dumps(doc)))
         self.assertIsNotNone(result)
 
     def test_required_constraint_on_nested_array_path(self):
         q = """
-        select bq_add_constraints('things', '{}');
+        select bq_add_constraints('cool_things', '{}');
         """.format(json.dumps({
             'stuff.0.name': {'$required': True}
         }))
@@ -252,18 +272,18 @@ class TestAddConstraints(testutils.BedquiltTestCase):
         }
         with self.assertRaises(psycopg2.IntegrityError):
             self._query("""
-            select bq_insert('things', '{}')
+            select bq_insert('cool_things', '{}')
             """.format(json.dumps(doc)))
         self.conn.rollback()
 
         # should reject document where this field is missing
         doc = {
             'name': 'paul',
-            'things': []
+            'cool_things': []
         }
         with self.assertRaises(psycopg2.IntegrityError):
             self._query("""
-            select bq_insert('things', '{}')
+            select bq_insert('cool_things', '{}')
             """.format(json.dumps(doc)))
         self.conn.rollback()
 
@@ -275,7 +295,7 @@ class TestAddConstraints(testutils.BedquiltTestCase):
             ]
         }
         result = self._query("""
-        select bq_insert('things', '{}')
+        select bq_insert('cool_things', '{}')
         """.format(json.dumps(doc)))
         self.assertIsNotNone(result)
 
@@ -288,13 +308,13 @@ class TestAddConstraints(testutils.BedquiltTestCase):
             ]
         }
         result = self._query("""
-        select bq_insert('things', '{}')
+        select bq_insert('cool_things', '{}')
         """.format(json.dumps(doc)))
         self.assertIsNotNone(result)
 
     def test_notnull_constraint(self):
         result = self._query("""
-        select bq_add_constraints('things', '{}');
+        select bq_add_constraints('cool_things', '{}');
         """.format(json.dumps({
             'name': {'$notnull': 1}
         })))
@@ -305,7 +325,7 @@ class TestAddConstraints(testutils.BedquiltTestCase):
             'age': 24
         }
         result = self._query("""
-        select bq_insert('things', '{}');
+        select bq_insert('cool_things', '{}');
         """.format(json.dumps(doc)))
         self.assertIsNotNone(result)
 
@@ -316,7 +336,7 @@ class TestAddConstraints(testutils.BedquiltTestCase):
         }
         with self.assertRaises(psycopg2.IntegrityError):
             self._query("""
-            select bq_insert('things', '{}');
+            select bq_insert('cool_things', '{}');
             """.format(json.dumps(doc)))
         self.conn.rollback()
 
@@ -326,13 +346,13 @@ class TestAddConstraints(testutils.BedquiltTestCase):
             'age': 24
         }
         result = self._query("""
-        select bq_insert('things', '{}')
+        select bq_insert('cool_things', '{}')
         """.format(json.dumps(doc)))
         self.assertIsNotNone(result)
 
     def test_notnull_constraint_on_nested_path(self):
         result = self._query("""
-        select bq_add_constraints('things', '{}');
+        select bq_add_constraints('cool_things', '{}');
         """.format(json.dumps({
             'address.city': {'$notnull': 1}
         })))
@@ -346,7 +366,7 @@ class TestAddConstraints(testutils.BedquiltTestCase):
             }
         }
         result = self._query("""
-        select bq_insert('things', '{}');
+        select bq_insert('cool_things', '{}');
         """.format(json.dumps(doc)))
         self.assertIsNotNone(result)
 
@@ -355,7 +375,7 @@ class TestAddConstraints(testutils.BedquiltTestCase):
             'name': 'paul',
         }
         result = self._query("""
-        select bq_insert('things', '{}');
+        select bq_insert('cool_things', '{}');
         """.format(json.dumps(doc)))
         self.assertIsNotNone(result)
 
@@ -368,13 +388,13 @@ class TestAddConstraints(testutils.BedquiltTestCase):
         }
         with self.assertRaises(psycopg2.IntegrityError):
             self._query("""
-            select bq_insert('things', '{}');
+            select bq_insert('cool_things', '{}');
             """.format(json.dumps(doc)))
         self.conn.rollback()
 
     def test_notnull_constraint_on_nested_array_path(self):
         result = self._query("""
-        select bq_add_constraints('things', '{}');
+        select bq_add_constraints('cool_things', '{}');
         """.format(json.dumps({
             'addresses.0.city': {'$notnull': 1}
         })))
@@ -388,7 +408,7 @@ class TestAddConstraints(testutils.BedquiltTestCase):
             ]
         }
         result = self._query("""
-        select bq_insert('things', '{}');
+        select bq_insert('cool_things', '{}');
         """.format(json.dumps(doc)))
         self.assertIsNotNone(result)
 
@@ -397,7 +417,7 @@ class TestAddConstraints(testutils.BedquiltTestCase):
             'name': 'paul',
         }
         result = self._query("""
-        select bq_insert('things', '{}');
+        select bq_insert('cool_things', '{}');
         """.format(json.dumps(doc)))
         self.assertIsNotNone(result)
 
@@ -411,7 +431,7 @@ class TestAddConstraints(testutils.BedquiltTestCase):
         }
         with self.assertRaises(psycopg2.IntegrityError):
             self._query("""
-            select bq_insert('things', '{}');
+            select bq_insert('cool_things', '{}');
             """.format(json.dumps(doc)))
         self.conn.rollback()
 
@@ -428,13 +448,13 @@ class TestAddConstraints(testutils.BedquiltTestCase):
         }
         with self.assertRaises(psycopg2.IntegrityError):
             self._query("""
-            select bq_insert('things', '{}');
+            select bq_insert('cool_things', '{}');
             """.format(json.dumps(doc)))
         self.conn.rollback()
 
     def test_required_and_notnull(self):
         result = self._query("""
-        select bq_add_constraints('things', '{}');
+        select bq_add_constraints('cool_things', '{}');
         """.format(json.dumps({
             'name': {'$notnull': 1,
                      '$required': 1}
@@ -447,7 +467,7 @@ class TestAddConstraints(testutils.BedquiltTestCase):
         }
         with self.assertRaises(psycopg2.IntegrityError):
             result = self._query("""
-            select bq_insert('things', '{}');
+            select bq_insert('cool_things', '{}');
             """.format(json.dumps(doc)))
             self.assertIsNotNone(result)
         self.conn.rollback()
@@ -459,7 +479,7 @@ class TestAddConstraints(testutils.BedquiltTestCase):
         }
         with self.assertRaises(psycopg2.IntegrityError):
             self._query("""
-            select bq_insert('things', '{}');
+            select bq_insert('cool_things', '{}');
             """.format(json.dumps(doc)))
         self.conn.rollback()
 
@@ -469,13 +489,13 @@ class TestAddConstraints(testutils.BedquiltTestCase):
             'age': 24
         }
         result = self._query("""
-        select bq_insert('things', '{}')
+        select bq_insert('cool_things', '{}')
         """.format(json.dumps(doc)))
         self.assertIsNotNone(result)
 
     def test_basic_type_constraint(self):
         result = self._query("""
-        select bq_add_constraints('things', '{}');
+        select bq_add_constraints('cool_things', '{}');
         """.format(json.dumps({
             'age': {'$type': 'number'}
         })))
@@ -488,7 +508,7 @@ class TestAddConstraints(testutils.BedquiltTestCase):
             }
             with self.assertRaises(psycopg2.IntegrityError):
                 self._query("""
-                select bq_insert('things', '{}');
+                select bq_insert('cool_things', '{}');
                 """.format(json.dumps(doc)))
             self.conn.rollback()
 
@@ -497,13 +517,13 @@ class TestAddConstraints(testutils.BedquiltTestCase):
             'age': 22
         }
         result = self._query("""
-        select bq_insert('things', '{}')
+        select bq_insert('cool_things', '{}')
         """.format(json.dumps(doc)))
         self.assertIsNotNone(result)
 
     def test_type_constraint_on_missing_value(self):
         result = self._query("""
-        select bq_add_constraints('things', '{}');
+        select bq_add_constraints('cool_things', '{}');
         """.format(json.dumps({
             'age': {'$type': 'number'}
         })))
@@ -514,13 +534,13 @@ class TestAddConstraints(testutils.BedquiltTestCase):
             'name': 'paul'
         }
         result = self._query("""
-        select bq_insert('things', '{}')
+        select bq_insert('cool_things', '{}')
         """.format(json.dumps(doc)))
         self.assertIsNotNone(result)
 
     def test_type_on_null_value(self):
         result = self._query("""
-        select bq_add_constraints('things', '{}');
+        select bq_add_constraints('cool_things', '{}');
         """.format(json.dumps({
             'age': {'$type': 'number'}
         })))
@@ -532,13 +552,13 @@ class TestAddConstraints(testutils.BedquiltTestCase):
             'age': None
         }
         result = self._query("""
-        select bq_insert('things', '{}')
+        select bq_insert('cool_things', '{}')
         """.format(json.dumps(doc)))
         self.assertIsNotNone(result)
 
     def test_type_at_nested_path(self):
         result = self._query("""
-        select bq_add_constraints('things', '{}');
+        select bq_add_constraints('cool_things', '{}');
         """.format(json.dumps({
             'address.city': {'$type': 'string'}
         })))
@@ -554,13 +574,13 @@ class TestAddConstraints(testutils.BedquiltTestCase):
         }
         with self.assertRaises(psycopg2.IntegrityError):
             self._query("""
-            select bq_insert('things', '{}')
+            select bq_insert('cool_things', '{}')
             """.format(json.dumps(doc)))
         self.conn.rollback()
 
     def test_type_at_nested_array_path(self):
         result = self._query("""
-        select bq_add_constraints('things', '{}');
+        select bq_add_constraints('cool_things', '{}');
         """.format(json.dumps({
             'addresses.0.city': {'$type': 'string'}
         })))
@@ -576,7 +596,7 @@ class TestAddConstraints(testutils.BedquiltTestCase):
         }
         with self.assertRaises(psycopg2.IntegrityError):
             self._query("""
-            select bq_insert('things', '{}')
+            select bq_insert('cool_things', '{}')
             """.format(json.dumps(doc)))
         self.conn.rollback()
 
@@ -586,7 +606,7 @@ class TestAddConstraints(testutils.BedquiltTestCase):
             'addresses': []
         }
         result = self._query("""
-        select bq_insert('things', '{}')
+        select bq_insert('cool_things', '{}')
         """.format(json.dumps(doc)))
         self.assertIsNotNone(result)
 
@@ -595,7 +615,7 @@ class TestAddConstraints(testutils.BedquiltTestCase):
             'name': 'paul'
         }
         result = self._query("""
-        select bq_insert('things', '{}')
+        select bq_insert('cool_things', '{}')
         """.format(json.dumps(doc)))
         self.assertIsNotNone(result)
 
@@ -607,12 +627,12 @@ class TestAddConstraints(testutils.BedquiltTestCase):
             ]
         }
         result = self._query("""
-        select bq_insert('things', '{}')
+        select bq_insert('cool_things', '{}')
         """.format(json.dumps(doc)))
         self.assertIsNotNone(result)
     def test_type_and_notnull(self):
         result = self._query("""
-        select bq_add_constraints('things', '{}');
+        select bq_add_constraints('cool_things', '{}');
         """.format(json.dumps({
             'age': {'$type': 'number',
                     '$notnull': 1}
@@ -626,14 +646,14 @@ class TestAddConstraints(testutils.BedquiltTestCase):
         }
         with self.assertRaises(psycopg2.IntegrityError):
             result = self._query("""
-            select bq_insert('things', '{}')
+            select bq_insert('cool_things', '{}')
             """.format(json.dumps(doc)))
             self.assertIsNotNone(result)
         self.conn.rollback()
 
     def test_type_required_and_notnull_at_nested_path(self):
         result = self._query("""
-        select bq_add_constraints('things', '{}');
+        select bq_add_constraints('cool_things', '{}');
         """.format(json.dumps({
             'address.city': {'$type': 'string',
                              '$required': 1,
@@ -650,7 +670,7 @@ class TestAddConstraints(testutils.BedquiltTestCase):
         }
         with self.assertRaises(psycopg2.IntegrityError):
             result = self._query("""
-            select bq_insert('things', '{}')
+            select bq_insert('cool_things', '{}')
             """.format(json.dumps(doc)))
             self.assertIsNotNone(result)
         self.conn.rollback()
@@ -664,7 +684,7 @@ class TestAddConstraints(testutils.BedquiltTestCase):
         }
         with self.assertRaises(psycopg2.IntegrityError):
             result = self._query("""
-            select bq_insert('things', '{}')
+            select bq_insert('cool_things', '{}')
             """.format(json.dumps(doc)))
             self.assertIsNotNone(result)
         self.conn.rollback()
@@ -678,7 +698,7 @@ class TestAddConstraints(testutils.BedquiltTestCase):
         }
         with self.assertRaises(psycopg2.IntegrityError):
             result = self._query("""
-            select bq_insert('things', '{}')
+            select bq_insert('cool_things', '{}')
             """.format(json.dumps(doc)))
             self.assertIsNotNone(result)
         self.conn.rollback()
@@ -687,7 +707,7 @@ class TestAddConstraints(testutils.BedquiltTestCase):
     def test_contradictory_type_constraints(self):
         # age type is number
         result = self._query("""
-        select bq_add_constraints('things', '{}');
+        select bq_add_constraints('cool_things', '{}');
         """.format(json.dumps({
             'age': {'$type': 'number'}
         })))
@@ -696,7 +716,7 @@ class TestAddConstraints(testutils.BedquiltTestCase):
         # then try to set type as string
         with self.assertRaises(psycopg2.InternalError):
             self._query("""
-            select bq_add_constraints('things', '{}');
+            select bq_add_constraints('cool_things', '{}');
             """.format(json.dumps({
                 'age': {'$type': 'string'}
             })))
@@ -704,7 +724,7 @@ class TestAddConstraints(testutils.BedquiltTestCase):
 
         # should be ok with a constraint on a different field
         result = self._query("""
-        select bq_add_constraints('things', '{}');
+        select bq_add_constraints('cool_things', '{}');
         """.format(json.dumps({
             'name': {'$type': 'string'}
         })))

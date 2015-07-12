@@ -43,14 +43,14 @@ BEGIN
       WHEN '$required' THEN
         new_constraint_name := format(
           'bqcn__%s__required',
-          bq_safe_path(field_name));
+          field_name);
         PERFORM bq_create_collection(i_coll);
         IF bq_constraint_name_exists(i_coll, new_constraint_name) = false
         THEN
           IF field_name LIKE '%.%' THEN
             EXECUTE format(
               'alter table %I
-              add constraint %s
+              add constraint "%s"
               check (bq_path_exists(''%s'', bq_jdoc));',
               i_coll,
               new_constraint_name,
@@ -59,7 +59,7 @@ BEGIN
           ELSE
             EXECUTE format(
               'alter table %I
-              add constraint %s
+              add constraint "%s"
               check (bq_jdoc ? ''%s'');',
               i_coll,
               new_constraint_name,
@@ -71,13 +71,13 @@ BEGIN
       WHEN '$notnull' THEN
         new_constraint_name := format(
           'bqcn__%s__notnull',
-          bq_safe_path(field_name));
+          field_name);
         PERFORM bq_create_collection(i_coll);
         IF bq_constraint_name_exists(i_coll, new_constraint_name) = false
         THEN
           EXECUTE format(
             'alter table %I
-            add constraint %s
+            add constraint "%s"
             check (
               jsonb_typeof((bq_jdoc#>''%s'')::jsonb) <> ''null''
             );',
@@ -93,7 +93,7 @@ BEGIN
         s_type := spec->>op;
         new_constraint_name := format(
           'bqcn__%s__type__%s',
-          bq_safe_path(field_name), s_type);
+          field_name, s_type);
         PERFORM bq_create_collection(i_coll);
         IF bq_constraint_name_exists(i_coll, new_constraint_name) = false
         THEN
@@ -110,7 +110,7 @@ BEGIN
             FROM information_schema.constraint_column_usage
             WHERE table_name = i_coll
             AND constraint_name LIKE 'bqcn__'
-            || bq_safe_path(field_name)
+            || field_name
             ||'__type__%')
           THEN
             RAISE EXCEPTION
@@ -120,7 +120,7 @@ BEGIN
           END IF;
           EXECUTE format(
             'alter table %I
-            add constraint %s
+            add constraint "%s"
             check (
               jsonb_typeof(bq_jdoc#>''%s'') in (''%s'', ''null'')
             );',
@@ -190,7 +190,7 @@ BEGIN
         THEN
           EXECUTE format(
             'alter table %I
-            drop constraint %s;',
+            drop constraint "%s";',
             i_coll,
             target_constraint
           );
@@ -205,7 +205,7 @@ BEGIN
         THEN
           EXECUTE format(
             'alter table %I
-            drop constraint %s;',
+            drop constraint "%s";',
             i_coll,
             target_constraint
           );
@@ -221,7 +221,7 @@ BEGIN
         THEN
           EXECUTE format(
             'alter table %I
-            drop constraint %s;',
+            drop constraint "%s";',
             i_coll,
             target_constraint
           );
@@ -243,12 +243,9 @@ CREATE OR REPLACE FUNCTION bq_list_constraints(i_coll text)
 RETURNS setof text AS $$
 BEGIN
 RETURN QUERY SELECT
-  replace(
-    replace(substring(constraint_name from 7),
-            '__',
-            ':'),
-    '_',
-    '.')
+  replace(substring(constraint_name from 7),
+          '__',
+          ':')
   FROM information_schema.constraint_column_usage
   WHERE table_name = i_coll
   AND constraint_name LIKE 'bqcn_%';

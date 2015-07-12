@@ -67,16 +67,6 @@ END
 $$ LANGUAGE plpgsql;
 
 
-/* private - replace dots in path string with underscores
- */
-CREATE OR REPLACE FUNCTION bq_safe_path(i_path text)
-RETURNS text AS $$
-BEGIN
-  RETURN replace(i_path, '.', '_');
-END
-$$ LANGUAGE plpgsql;
-
-
 /* private - Check if a dotted path exists in a document
  */
 CREATE OR REPLACE FUNCTION bq_path_exists(i_path text, i_jdoc jsonb)
