@@ -18,6 +18,12 @@ class TestBasics(testutils.BedquiltTestCase):
         self.assertTrue(len(row) > 0)
         self.assertEqual(row[0], 'bedquilt')
 
+    def test_assert_version(self):
+        result = self._query("""
+        select bq_assert_minimum_version('1.0.0');
+        """)
+        self.assertEqual(result, [(True,)])
+
 
 class TestCreateCollection(testutils.BedquiltTestCase):
 

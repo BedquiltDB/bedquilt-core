@@ -107,3 +107,27 @@ BEGIN
 
 END
 $$ language plpgsql;
+
+
+/* private - raise an exception if the extension version is less than
+ * the supplied version.
+ */
+CREATE OR REPLACE FUNCTION bq_assert_minimum_version(i_version text)
+RETURNS boolean AS $$
+DECLARE
+  version text;
+BEGIN
+  select extversion from pg_catalog.pg_extension
+  where extname = 'bedquilt'
+  into version;
+  if version = 'HEAD' then
+    return true;
+  end if;
+  if version < i_version then
+    raise exception
+    'Bedquilt extension version (%) less than %', version, i_version
+    using hint = 'Update the bedquilt extension to a newer version';
+  end if;
+  return true;
+END
+$$ LANGUAGE plpgsql;
