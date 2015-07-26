@@ -1,6 +1,14 @@
 # BedquiltDB Changelog
 
 
+## 0.3.1
+
+Released 2015-07-26
+
+- Make `save` operations faster
+- Change how constraint internals work:
+
+
 ## 0.3.0
 
 Released 2015-07-01
