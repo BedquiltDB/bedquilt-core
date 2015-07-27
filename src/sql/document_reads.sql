@@ -44,15 +44,13 @@ $$ LANGUAGE plpgsql;
  */
 CREATE OR REPLACE FUNCTION bq_find(i_coll text, i_json_query json)
 RETURNS table(bq_jdoc json) AS $$
+DECLARE
+  q text = format('select bq_jdoc::json from %I where 1=1', i_coll);
 BEGIN
 IF (SELECT bq_collection_exists(i_coll))
 THEN
-    RETURN QUERY EXECUTE format(
-        'SELECT bq_jdoc::json FROM %I
-        WHERE bq_jdoc @> (%s)::jsonb',
-        i_coll,
-        quote_literal(i_json_query)
-    );
+    q := q || format('and bq_jdoc @> (%s)::jsonb', quote_literal(i_json_query));
+    RETURN QUERY EXECUTE q;
 END IF;
 END
 $$ LANGUAGE plpgsql;
