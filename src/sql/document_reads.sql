@@ -49,7 +49,8 @@ DECLARE
 BEGIN
 IF (SELECT bq_collection_exists(i_coll))
 THEN
-    q := q || format('and bq_jdoc @> (%s)::jsonb', quote_literal(i_json_query));
+    q := q || format(' and bq_jdoc @> (%s)::jsonb',
+                     quote_literal(i_json_query));
     RETURN QUERY EXECUTE q;
 END IF;
 END
