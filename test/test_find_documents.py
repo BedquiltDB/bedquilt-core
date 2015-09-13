@@ -278,3 +278,36 @@ class TestFindDocuments(testutils.BedquiltTestCase):
                              (jill,),
                              (darren,)
                          ])
+
+        # find with limit
+        self.cur.execute("""
+        select bq_find('people', '{}', 0, 2)
+        """)
+        result = self.cur.fetchall()
+        self.assertEqual(result,
+                         [
+                             (sarah,),
+                             (mike,)
+                         ])
+
+
+
+class TestFindWithSkipAndLimit(testutils.BedquiltTestCase):
+
+    def test_skip_and_limit_on_empty_collection(self):
+        self.cur.execute("""
+        select bq_find('things', '{}', 4, 2)
+        """)
+        result = self.cur.fetchall()
+        self.assertEqual(result, [])
+
+        self.cur.execute("""
+        select bq_create_collection('things');
+        """)
+        _ = self.cur.fetchall()
+
+        self.cur.execute("""
+        select bq_find('things', '{}', 4, 2)
+        """)
+        result = self.cur.fetchall()
+        self.assertEqual(result, [])

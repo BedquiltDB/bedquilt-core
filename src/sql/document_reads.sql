@@ -42,15 +42,25 @@ $$ LANGUAGE plpgsql;
 
 /* find many documents
  */
-CREATE OR REPLACE FUNCTION bq_find(i_coll text, i_json_query json)
+CREATE OR REPLACE FUNCTION bq_find(i_coll text, i_json_query json, i_skip integer DEFAULT 0, i_limit integer DEFAULT null)
 RETURNS table(bq_jdoc json) AS $$
 DECLARE
   q text = format('select bq_jdoc::json from %I where 1=1', i_coll);
 BEGIN
 IF (SELECT bq_collection_exists(i_coll))
 THEN
-    q := q || format(' and bq_jdoc @> (%s)::jsonb',
+    -- query match
+    q := q || format(' and bq_jdoc @> (%s)::jsonb ',
                      quote_literal(i_json_query));
+    -- skip and limit
+    IF (i_limit is not null)
+    THEN
+      q := q || format(' limit %s ', i_limit);
+    ELSE
+      q := q || format(' limit NULL ');
+    END IF;
+    -- final query
+    q := q || format(' offset %s ', i_skip);
     RETURN QUERY EXECUTE q;
 END IF;
 END
