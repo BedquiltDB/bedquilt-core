@@ -294,7 +294,7 @@ class TestFindDocuments(testutils.BedquiltTestCase):
 
 class TestFindWithSkipAndLimit(testutils.BedquiltTestCase):
 
-    def test_skip_and_limit_on_empty_collection(self):
+    def test_on_empty_collection(self):
         self.cur.execute("""
         select bq_find('things', '{}', 4, 2)
         """)
@@ -308,6 +308,38 @@ class TestFindWithSkipAndLimit(testutils.BedquiltTestCase):
 
         self.cur.execute("""
         select bq_find('things', '{}', 4, 2)
+        """)
+        result = self.cur.fetchall()
+        self.assertEqual(result, [])
+
+    def test_on_small_collection(self):
+        for i in range(10):
+            self.cur.execute("""
+            select bq_insert('things', '{}')
+            """.format(json.dumps({'num': i})))
+            _ = self.cur.fetchall()
+
+        # within range of collection
+        self.cur.execute("""
+        select bq_find('things', '{}', 4, 2)
+        """)
+        result = self.cur.fetchall()
+        self.assertEqual(len(result), 2)
+        self.assertEqual(map(lambda x: x[0]['num'], result),
+                         [4, 5])
+
+        # on edge of collection
+        self.cur.execute("""
+        select bq_find('things', '{}', 9, 4)
+        """)
+        result = self.cur.fetchall()
+        self.assertEqual(len(result), 1)
+        self.assertEqual(map(lambda x: x[0]['num'], result),
+                         [9])
+
+        # beyond end of collection
+        self.cur.execute("""
+        select bq_find('things', '{}', 30, 4)
         """)
         result = self.cur.fetchall()
         self.assertEqual(result, [])
