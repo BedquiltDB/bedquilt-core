@@ -109,6 +109,33 @@ END
 $$ language plpgsql;
 
 
+/* private - transform a json sort spec into an 'ORDER BY...' string
+ */
+CREATE OR REPLACE FUNCTION bq_sort_to_text(i_sort jsonb)
+RETURNS text AS $$
+DECLARE
+  r RECORD;
+  dotted_path text;
+  path_array text[];
+  direction text = 'ASC';
+  o_query text;
+BEGIN
+  o_query := 'order by ';
+  for r in select * from jsonb_each(i_sort) loop
+    dotted_path := r.key;
+    if (r.value::text = '-1')
+    then
+      direction := 'DESC';
+    end if;
+    path_array := regexp_split_to_array(dotted_path, '\.');
+    o_query := o_query || format(' bq_jdoc#>''%s'' %s, ', path_array, direction);
+  end loop;
+  o_query := o_query || ' created ';
+  return o_query;
+END
+$$ LANGUAGE plpgsql;
+
+
 /* private - raise an exception if the extension version is less than
  * the supplied version.
  */

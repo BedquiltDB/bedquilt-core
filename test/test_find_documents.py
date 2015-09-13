@@ -291,7 +291,6 @@ class TestFindDocuments(testutils.BedquiltTestCase):
                          ])
 
 
-
 class TestFindWithSkipAndLimit(testutils.BedquiltTestCase):
 
     def test_on_empty_collection(self):
@@ -359,3 +358,24 @@ class TestFindWithSkipAndLimit(testutils.BedquiltTestCase):
         self.assertEqual(len(result), 4)
         self.assertEqual(map(lambda x: x[0]['num'], result),
                          [6, 7, 8, 9])
+
+
+class TestFindWithSkipLimitAndSort(testutils.BedquiltTestCase):
+
+    def test_on_empty_collection(self):
+        self.cur.execute("""
+        select bq_find('things', '{}', 4, 2, '{"pet.age": 1}')
+        """)
+        result = self.cur.fetchall()
+        self.assertEqual(result, [])
+
+        self.cur.execute("""
+        select bq_create_collection('things');
+        """)
+        _ = self.cur.fetchall()
+
+        self.cur.execute("""
+        select bq_find('things', '{}', 4, 2, '{"pet.age": 1}')
+        """)
+        result = self.cur.fetchall()
+        self.assertEqual(result, [])
