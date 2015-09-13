@@ -343,3 +343,19 @@ class TestFindWithSkipAndLimit(testutils.BedquiltTestCase):
         """)
         result = self.cur.fetchall()
         self.assertEqual(result, [])
+
+    def test_skip_alone(self):
+        for i in range(10):
+            self.cur.execute("""
+            select bq_insert('things', '{}')
+            """.format(json.dumps({'num': i})))
+            _ = self.cur.fetchall()
+
+        # within range of collection
+        self.cur.execute("""
+        select bq_find('things', '{}', 6)
+        """)
+        result = self.cur.fetchall()
+        self.assertEqual(len(result), 4)
+        self.assertEqual(map(lambda x: x[0]['num'], result),
+                         [6, 7, 8, 9])
