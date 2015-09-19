@@ -80,7 +80,7 @@ select bq_list_collections();
 
 # Prerequisites
 
-- PostgreSQL >= 9.4
+- PostgreSQL >= 9.4 (bedquilt-core is currently being tested against 9.5 alpha)
 - PL/pgSQL
 - The pgcrypto extension
 
