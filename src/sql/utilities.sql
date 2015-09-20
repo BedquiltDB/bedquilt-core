@@ -111,7 +111,7 @@ $$ language plpgsql;
 
 /* private - transform a json sort spec into an 'ORDER BY...' string
  */
-CREATE OR REPLACE FUNCTION bq_sort_to_text(i_sort jsonb)
+CREATE OR REPLACE FUNCTION bq_sort_to_text(i_sort json)
 RETURNS text AS $$
 DECLARE
   r RECORD;
@@ -121,7 +121,7 @@ DECLARE
   o_query text;
 BEGIN
   o_query := 'order by ';
-  for r in select * from jsonb_each(i_sort) loop
+  for r in select * from json_each(i_sort) loop
     dotted_path := r.key;
     if (r.value::text = '-1')
     then

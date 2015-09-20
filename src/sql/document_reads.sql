@@ -42,7 +42,7 @@ $$ LANGUAGE plpgsql;
 
 /* find many documents
  */
-CREATE OR REPLACE FUNCTION bq_find(i_coll text, i_json_query json, i_skip integer DEFAULT 0, i_limit integer DEFAULT null, i_sort jsonb DEFAULT null)
+CREATE OR REPLACE FUNCTION bq_find(i_coll text, i_json_query json, i_skip integer DEFAULT 0, i_limit integer DEFAULT null, i_sort json DEFAULT null)
 RETURNS table(bq_jdoc json) AS $$
 DECLARE
   q text = format('select bq_jdoc::json from %I where 1=1', i_coll);
