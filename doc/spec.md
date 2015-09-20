@@ -197,12 +197,16 @@ likes = coll.find_one({"name": "Sarah Bingham"}, {"likes": 1})
 ### Find
 
 Retrieve a sequence of documents which match the provided
-query document. The filter specifies the structure of the returned
-documents.
+query document. if `skip` is supplied, that number of documents are skipped.
+If `limit` is supplied, the result sequence is limited to that number of documents.
+The `sort` parameter is a map of `field->integer`, where the field is the field to sort
+by and the integer indicates ascending (1) or descending (-1) ordering.
 
 Params:
 - query::Map
-- filter::Map (optional)
+- skip::Integer (optional, default 0)
+- limit::Integer (optional, default null)
+- sort::Map (optional, default null)
 
 Returns: A potentially empty sequence of documents.
 
@@ -210,6 +214,13 @@ Examples:
 ```
 people_who_like_icecream = coll.find(
     {"likes": ["icecream"]}
+)
+
+coll.find(
+    {"likes": ["icecream"]},
+    skip=4,
+    limit=2,
+    sort={"age": 1}
 )
 ```
 
