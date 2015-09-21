@@ -128,6 +128,8 @@ BEGIN
       if (pair.value::text = '-1')
       then
         direction := 'DESC';
+      else
+        direction := 'ASC';
       end if;
       path_array := regexp_split_to_array(dotted_path, '\.');
       o_query := o_query || format(' bq_jdoc#>''%s'' %s, ', path_array, direction);

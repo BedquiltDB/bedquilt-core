@@ -201,3 +201,53 @@ class TestFindWithSkipLimitAndSort(testutils.BedquiltTestCase):
         """)
         self.assertEqual(_names(result),
                          ['Sarah', 'Jane'])
+
+
+class TestSortOnTwoFields(testutils.BedquiltTestCase):
+
+    def test_sort_on_two_fields(self):
+        docs = [
+            {"name": "aa", "b": {"c": 4}},
+            {"name": "hh", "b": {"c": 1}},
+            {"name": "bb", "b": {"c": 1}},
+            {"name": "yy", "b": {"c": 4}},
+            {"name": "jj", "b": {"c": 4}},
+            {"name": "kk", "b": {"c": 1}},
+            {"name": "ff", "b": {"c": 1}}
+        ]
+        for doc in docs:
+            _ = self._query("""
+            select bq_insert('things', '{}')
+            """.format(json.dumps(doc)))
+
+        # ascending b.c, ascending name
+        result = self._query("""
+        select bq_find('things', '{}', 0, null, '[{"b.c": 1}, {"name": 1}]')
+        """)
+        self.assertEqual(_names(result),
+                         ["bb", "ff", "hh", "kk",
+                          "aa", "jj", "yy"])
+
+        # ascending b.c, descending name
+        result = self._query("""
+        select bq_find('things', '{}', 0, null, '[{"b.c": 1}, {"name": -1}]')
+        """)
+        self.assertEqual(_names(result),
+                         ["kk", "hh", "ff", "bb",
+                          "yy", "jj", "aa"])
+
+        # # descending b.c, ascending name
+        result = self._query("""
+        select bq_find('things', '{}', 0, null, '[{"b.c": -1}, {"name": 1}]')
+        """)
+        self.assertEqual(_names(result),
+                         ["aa", "jj", "yy",
+                          "bb", "ff", "hh", "kk"])
+
+        # # descending b.c, descending name
+        result = self._query("""
+        select bq_find('things', '{}', 0, null, '[{"b.c": -1}, {"name": -1}]')
+        """)
+        self.assertEqual(_names(result),
+                         ["yy", "jj", "aa",
+                          "kk", "hh", "ff", "bb"])
