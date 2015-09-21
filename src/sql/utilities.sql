@@ -128,8 +128,12 @@ BEGIN
       if (pair.value::text = '-1')
       then
         direction := 'DESC';
-      else
+      elsif (pair.value::text = '1')
+      then
         direction := 'ASC';
+      else
+        raise exception 'Invalid sort direction "%s"', pair.value::text
+        using hint = 'sort direction must be either 1 (ascending) or -1 (descending)';
       end if;
       path_array := regexp_split_to_array(dotted_path, '\.');
       o_query := o_query || format(' bq_jdoc#>''%s'' %s, ', path_array, direction);
