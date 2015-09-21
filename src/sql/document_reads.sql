@@ -49,16 +49,22 @@ DECLARE
 BEGIN
 IF (SELECT bq_collection_exists(i_coll))
 THEN
+    IF json_typeof(i_sort) != 'array'
+    THEN
+      RAISE EXCEPTION
+      'Invalid sort parameter json type "%s"', json_typeof(i_sort)
+      USING HINT = 'The i_sort parameter to bq_find should be a json array';
+    END IF;
     -- query match
     q := q || format(' and bq_jdoc @> (%s)::jsonb ',
                      quote_literal(i_json_query));
     -- sort
-    if (i_sort is not null)
-    then
+    IF (i_sort IS NOT NULL)
+    THEN
       q := q || format(' %s ', bq_sort_to_text(i_sort));
-    end if;
+    END IF;
     -- skip and limit
-    IF (i_limit is not null)
+    IF (i_limit IS NOT NULL)
     THEN
       q := q || format(' limit %s ', i_limit);
     ELSE

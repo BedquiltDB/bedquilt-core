@@ -130,7 +130,7 @@ class TestFindWithSkipLimitAndSort(testutils.BedquiltTestCase):
 
     def test_sort_on_empty_collection(self):
         result = self._query("""
-        select bq_find('things', '{}', 4, 2, '{"pet.age": 1}')
+        select bq_find('things', '{}', 4, 2, '[{"pet.age": 1}]')
         """)
         self.assertEqual(result, [])
 
@@ -139,7 +139,7 @@ class TestFindWithSkipLimitAndSort(testutils.BedquiltTestCase):
         """)
 
         result = self._query("""
-        select bq_find('things', '{}', 4, 2, '{"pet.age": 1}')
+        select bq_find('things', '{}', 4, 2, '[{"pet.age": 1}]')
         """)
         self.assertEqual(result, [])
 
@@ -148,7 +148,7 @@ class TestFindWithSkipLimitAndSort(testutils.BedquiltTestCase):
 
         # ascending
         result = self._query("""
-        select bq_find('people', '{}', 0, null, '{"pet.age": 1}')
+        select bq_find('people', '{}', 0, null, '[{"pet.age": 1}]')
         """)
         ages = map(lambda x: x[0]['pet']['age'], result)
         # ages should be in ascending order
@@ -156,7 +156,7 @@ class TestFindWithSkipLimitAndSort(testutils.BedquiltTestCase):
 
         # descending
         result = self._query("""
-        select bq_find('people', '{}', 0, null, '{"pet.age": -1}')
+        select bq_find('people', '{}', 0, null, '[{"pet.age": -1}]')
         """)
         ages = map(lambda x: x[0]['pet']['age'], result)
         # ages should be in ascending order
@@ -165,7 +165,7 @@ class TestFindWithSkipLimitAndSort(testutils.BedquiltTestCase):
         # with an actual query
         result = self._query("""
         select bq_find('people', '{"pet": {"species": "cat"}}',
-                       0, null, '{"pet.age": 1}')
+                       0, null, '[{"pet.age": 1}]')
         """)
         self.assertEqual(_names(result),
                          ['Eliot', 'Carly', 'Jane'])
@@ -176,28 +176,28 @@ class TestFindWithSkipLimitAndSort(testutils.BedquiltTestCase):
         # with an actual query, skip one, limit one
         result = self._query("""
         select bq_find('people', '{"pet": {"species": "cat"}}',
-                       1, 1, '{"pet.age": 1}')
+                       1, 1, '[{"pet.age": 1}]')
         """)
         self.assertEqual(_names(result),
                          ['Carly'])
 
         # no skip, limit two, ascending
         result = self._query("""
-        select bq_find('people', '{}', 0, 2, '{"pet.age": 1}')
+        select bq_find('people', '{}', 0, 2, '[{"pet.age": 1}]')
         """)
         self.assertEqual(_names(result),
                          ['Eliot', 'Carly'])
 
         # skip one, limit two, ascending
         result = self._query("""
-        select bq_find('people', '{}', 1, 2, '{"pet.age": 1}')
+        select bq_find('people', '{}', 1, 2, '[{"pet.age": 1}]')
         """)
         self.assertEqual(_names(result),
                          ['Carly', 'Jane'])
 
         # skip one, limit two, descending
         result = self._query("""
-        select bq_find('people', '{}', 1, 2, '{"pet.age": -1}')
+        select bq_find('people', '{}', 1, 2, '[{"pet.age": -1}]')
         """)
         self.assertEqual(_names(result),
                          ['Sarah', 'Jane'])

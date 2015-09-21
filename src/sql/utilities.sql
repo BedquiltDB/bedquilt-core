@@ -114,23 +114,26 @@ $$ language plpgsql;
 CREATE OR REPLACE FUNCTION bq_sort_to_text(i_sort json)
 RETURNS text AS $$
 DECLARE
-  r RECORD;
+  sort_spec json;
+  pair RECORD;
   dotted_path text;
   path_array text[];
   direction text = 'ASC';
   o_query text;
 BEGIN
   o_query := 'order by ';
-  for r in select * from json_each(i_sort) loop
-    dotted_path := r.key;
-    if (r.value::text = '-1')
-    then
-      direction := 'DESC';
-    end if;
-    path_array := regexp_split_to_array(dotted_path, '\.');
-    o_query := o_query || format(' bq_jdoc#>''%s'' %s, ', path_array, direction);
+  for sort_spec in select value from json_array_elements(i_sort) loop
+    for pair in select * from json_each(sort_spec) limit 1 loop
+      dotted_path := pair.key;
+      if (pair.value::text = '-1')
+      then
+        direction := 'DESC';
+      end if;
+      path_array := regexp_split_to_array(dotted_path, '\.');
+      o_query := o_query || format(' bq_jdoc#>''%s'' %s, ', path_array, direction);
+    end loop;
   end loop;
-  o_query := o_query || ' created ';
+  o_query := o_query || ' updated ';
   return o_query;
 END
 $$ LANGUAGE plpgsql;
