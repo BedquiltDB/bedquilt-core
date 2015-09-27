@@ -129,15 +129,15 @@ coll.add_constraint({"name": {"$required": True,
 ### Insert
 
 Insert a document into the collection. If the document does not
-contain an _id field, one will be generated and added to the
-document before insertion. If an _id is supplied and there
+contain an \_id field, one will be generated and added to the
+document before insertion. If an \_id is supplied and there
 already exists a document in this collection with the
-same _id, that is an error.
+same \_id, that is an error.
 
 Params:
 - doc::Map
 
-Returns: String representing the _id field of the document
+Returns: String representing the \_id field of the document
 
 Examples:
 ```
@@ -151,18 +151,18 @@ _id = coll.insert({"_id": "sarah@example.com",
 ### Save
 
 Write a document to the collection.
-If an _id is supplied and there already exists a document in this
-collection with the same _id, that document will be
+If an \_id is supplied and there already exists a document in this
+collection with the same \_id, that document will be
 replaced with this one.
 
-If the document does not contain an _id field, one will be
+If the document does not contain an \_id field, one will be
 generated and added to the document before insertion as
 a new document.
 
 Params:
 - doc::Map
 
-Returns: String representing the _id field of the document
+Returns: String representing the \_id field of the document
 
 Examples:
 ```
@@ -199,14 +199,17 @@ likes = coll.find_one({"name": "Sarah Bingham"}, {"likes": 1})
 Retrieve a sequence of documents which match the provided
 query document. if `skip` is supplied, that number of documents are skipped.
 If `limit` is supplied, the result sequence is limited to that number of documents.
-The `sort` parameter is a map of `field->integer`, where the field is the field to sort
-by and the integer indicates ascending (1) or descending (-1) ordering.
+The `sort` parameter is an array of `key->integer` maps, where the key is the
+name of the field to sort by and the integer indicates ascending (1) or
+descending (-1) ordering. If the sort array contains more than one value, the
+sorts are applied in that order. For example `[{age: 1}, {name: 1}]` means
+"sort by age, then by name".
 
 Params:
 - query::Map
 - skip::Integer (optional, default 0)
 - limit::Integer (optional, default null)
-- sort::Map (optional, default null)
+- sort::Array (optional, default null)
 
 Returns: A potentially empty sequence of documents.
 
@@ -220,7 +223,14 @@ coll.find(
     {"likes": ["icecream"]},
     skip=4,
     limit=2,
-    sort={"age": 1}
+    sort=[{"age": 1}]
+)
+
+coll.find(
+    {"likes": ["icecream"]},
+    skip=4,
+    limit=2,
+    sort=[{"age": 1, "name": -1}]
 )
 ```
 

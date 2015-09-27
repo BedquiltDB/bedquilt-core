@@ -2,8 +2,11 @@ site_name: BedquiltDB Docs
 theme: readthedocs
 docs_dir: doc
 pages:
-  - [index.md, Home]
-  - [getting_started.md, Getting Started]
-  - [api_docs.md, Core API]
-  - [spec.md, Spec]
-  
+  - 'Home': 'index.md'
+  - 'Getting Started': 'getting_started.md'
+  - 'Core API': 'api_docs.md'
+  - 'Spec': 'spec.md'
+  - 'Guide':
+    - 'BedquiltDB Guide': 'guide/index.md'
+    - 'Constraints': 'guide/constraints.md'
+    - 'Installation': 'guide/installation.md'
