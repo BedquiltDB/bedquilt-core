@@ -1,5 +1,7 @@
 # API Docs
 
+This document is auto-generated from the core `bedquilt` source code, and describes the low-level SQL API of BedquiltDB.
+
 ---- ---- ---- ----
 
 
@@ -223,7 +225,7 @@ save document
 
 
 
-## bq\_generate\_id 
+## bq\_generate\_id
 
 - params: `None`
 - returns: `char(24)`
@@ -238,7 +240,7 @@ if it is missing.
 
 
 
-## bq\_collection\_exists 
+## bq\_collection\_exists
 
 - params: `None`
 - returns: `boolean`
@@ -249,4 +251,3 @@ Check if a collection exists.
 Currently does a simple check for a table with the specified name.
 
 ```
-

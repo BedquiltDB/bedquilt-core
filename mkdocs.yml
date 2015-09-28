@@ -1,14 +1,14 @@
 site_name: BedquiltDB Docs
-theme: readthedocs
+theme: bootstrap
 docs_dir: doc
 pages:
   - 'Home': 'index.md'
   - 'Getting Started': 'getting_started.md'
-  - 'Core API': 'api_docs.md'
-  - 'Spec': 'spec.md'
-  - 'Guide':
+  - 'User Guide':
     - 'BedquiltDB Guide': 'guide/index.md'
     - 'Clients': 'guide/clients.md'
     - 'Database Operations': 'guide/database_ops.md'
     - 'Constraints': 'guide/constraints.md'
     - 'Installation': 'guide/installation.md'
+  - 'Spec': 'spec.md'
+  - 'Core API': 'api_docs.md'
