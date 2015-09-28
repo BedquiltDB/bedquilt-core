@@ -6,7 +6,7 @@ Welcome to the BedquiltDB Guide
 
 ### [Installation](installation.md)
 
-### Clients
+### [Clients](clients.md)
 
 ### Collection Operations
 
