@@ -9,5 +9,6 @@ pages:
   - 'Guide':
     - 'BedquiltDB Guide': 'guide/index.md'
     - 'Clients': 'guide/clients.md'
+    - 'Database Operations': 'guide/database_ops.md'
     - 'Constraints': 'guide/constraints.md'
     - 'Installation': 'guide/installation.md'

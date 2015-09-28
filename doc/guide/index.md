@@ -8,7 +8,7 @@ Welcome to the BedquiltDB Guide
 
 ### [Clients](clients.md)
 
-### Collection Operations
+### [Database Operations](database_ops.md)
 
 ### Inserting Data
 
