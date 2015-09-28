@@ -3,7 +3,7 @@
 There are four operations in BedquiltDB which work at the Database level, they are `create_collection`, `delete_collection`, `list_collections` and `collection_exists`. Example code below is written in python, using the `pybedquilt` driver.
 
 
-## `create_collection`
+## create_collection
 
 Creates a new collection with a given name, if the collection does not already exist. Returns a Boolean value, `true` if the collection was created, `false` if the collection already existed.
 
@@ -22,7 +22,7 @@ if was_created:
 ```
 
 
-## `delete_collection`
+## delete_collection
 
 Deletes a collection with a given name, if the collection exists. All data in the collection is destroyed instantly. There is no way to recover deleted data. Returns a Boolean value, `true` if the collection was destroyed, `false` if the collection did not exist.
 
@@ -41,7 +41,7 @@ if was_deleted:
 ```
 
 
-## `list_collections`
+## list_collections
 
 Produces a (possibly empty) list of all the collection names in this BedquiltDB instance.
 
@@ -59,7 +59,7 @@ print db.list_collections()
 ```
 
 
-## `collection_exists`
+## collection_exists
 
 Checks if the named collection exists on the server, returning `true` if it does, `false` otherwise.
 
