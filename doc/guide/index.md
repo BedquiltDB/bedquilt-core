@@ -6,6 +6,8 @@ Welcome to the BedquiltDB Guide
 
 ### [Installation](installation.md)
 
+### [General Concepts](concepts.md)
+
 ### [Clients](clients.md)
 
 ### [Database Operations](database_ops.md)
