@@ -101,6 +101,32 @@ edinburgh_users = users.find({"address": {"city": "Edinburgh"}})
 
 ## Writing Data
 
+There are two operations which write JSON data to a collection: `insert` and `save`.
+The `insert` operation takes a JSON document and inserts it into the collection, generating
+an `_id` value if needed. Regardless, the `insert` operation always returns the `_id` of the
+inserted document:
+```python
+print pets.insert({"name": "Snuffles", "species": "dog"})
+# => "ba40513444b760b7eb2684d8"
+
+print pets.insert({"_id": "some_meaningful_identifier", "name": "Larry", "species": "cat"})
+# => "some_meaningful_identifier"
+```
+
+The `save` operation also takes a JSON document, but it first
+checks if the document has an `_id` field. If it does, and a document with that same `_id`
+exists in the collection, then the old document will be overwritten by the new one.
+Otherwise, `save` behaves the same as `insert`: if there are no documents in the collection
+with the same `_id` then the document is simply inserted into the collection, and the
+`_id` returned to the caller:
+```python
+john = users.find_one_by_id('john@example.com')
+john['age'] = 46
+result = users.save(john)
+print result
+# => "john@example.com"
+```
+
 
 ## Reading Data
 
