@@ -35,12 +35,69 @@ SQL in a specific language:
 
 ## Drivers
 
+To use BedquiltDB, the programmer will need to import a BedquiltDB driver for their favourite programming language
+and use it to connect to the PostgreSQL/BedquiltDB server. Example, with the [pybedquilt](pybedquilt.readthedocs.org) driver:
+
+```python
+import pybdequilt
+db = pybedquilt.BedquiltClient('dbname=test')
+```
+
+The `db` object holds a connection to the server, and provides an api for the collections in the BedquiltDB database.
+
 
 ## Collections
+
+In a BedquiltDB database, JSON data is stored in collections. You write data into collections,
+then read it back out later, like so:
+
+```python
+# create a collection called 'users'
+db.create_collection('users')
+
+# get a Collection object, referencing the new 'users' collection
+users = db['users']
+
+# How many users do you think we have?
+print users.count()
+```
 
 
 ## Documents
 
+Collections contain documents. A document is essentially a single JSON object.
+The BedquiltDB driver handles converting from native data-structures to JSON and back again.
+A document can have practically any structure you could want, as long as it's valid JSON,
+with one exception: all documents must have an `_id` field, with a string value.
+
+If a document without an `_id` field is written to a collection, then a random string will be
+generated and set as the `_id` value. The `_id` field is used as the unique primary-key in
+the collection. If two documents are saved with the same `_id`, then the second one will over-write the first.
+
+Here we see an example of saving a python dictionary to a BedquiltDB collection as a
+JSON object:
+
+```python
+users.insert({
+    "_id": "john@example.com",
+    "name": "John",
+    "age": 45,
+    "address": {
+        "street": "Elm Row",
+        "city": "Edinburgh"
+    }
+})
+```
+
+We can read that same document out later:
+```python
+john = users.find_one_by_id("john@example.com")
+```
+
+Or retrieve it as part of a more general query:
+```
+edinburgh_users = users.find({"address": {"city": "Edinburgh"}})
+```
 
 ## Writing Data
 
