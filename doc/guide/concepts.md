@@ -219,9 +219,50 @@ print db['users'].find_one_by_id('400241')
 # => {_id: '400241', ...}
 ```
 
+## Skip, Limit and Sort
+
+The `find` operation takes a few extra, optional parameters which allow you to control
+the number of documents that are returned from the query.
+
+The `limit` option limits the result set to the desired size:
+
+```python
+db['users'].find({active: true}, limit=10)
+```
+
+The `skip` option omits a number of documents from the start of the result set:
+
+```python
+db['users'].find({active: true}, limit=10, skip=4)
+```
+
+The `sort` option allows you to specify how the result set should be sorted:
+
+```python
+# sort by age ascending, then by name descending
+db['users'].find({active: true},
+    limit=10, skip=4,
+    sort=[{'age': 1}, {'name': -1}]
+)
+```
+
+Naturally, the `skip`, `limit` and `sort` options to `find` can be used in any
+combination. If no sort order is specified, the result set is likely to be sorted
+naturally in the order the documents were written to the collection. However, this
+behaviour is not guaranteed, so if you care about ordering you should sort by a
+document field which has meaning to your data.
+
 
 ## Removing Data
 
+Removing data from a collection can be accomplished with the `remove`, `remove_one` and `remove_one_by_id` operations. `remove` and `remove_one` take a query document and remove any documents which match the query, while `remove_one_by_id` takes a string `id` and removes the document in the collection with the same `_id`.
+
+All of the `remove*` operations return an integer indicating the number of documents
+that were removed.
+
+Beware: the `remove*` operations will permanantly delete data. There is no way to recover data removed in this way.
 
 
 ## Updating Data
+
+At the moment, the only way to update a document in a collection is to use the `save` operation detailed above.
