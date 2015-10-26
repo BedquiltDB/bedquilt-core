@@ -198,7 +198,8 @@ print type(result)
 ```
 
 
-The `find_one` operation also takes a query document, just like `find`, but it only returns at most a single result,
+The `find_one` operation also takes a query document, just like `find`,
+but it only returns at most a single result,
 or `null` if there were no matching documents:
 
 ```python
@@ -209,6 +210,14 @@ print db['users'].find_one({'this': 'matches': {'nothing'}})
 # => None
 ```
 
+As if that weren't enough, the `find_one_by_id` operation takes a string `id` instead
+of a query document, and returns the document with the matching `_id` field, or `null`
+if there are no documents with that `_id`.
+
+```python
+print db['users'].find_one_by_id('400241')
+# => {_id: '400241', ...}
+```
 
 
 ## Removing Data
