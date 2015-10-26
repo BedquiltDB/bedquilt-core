@@ -130,6 +130,86 @@ print result
 
 ## Reading Data
 
+There are three operations which read json documents out of collections: `find`, `find_one`
+and`find_one_by_id`. The `find` operation takes a "query document" and compares it to
+the documents in the collection, returning the set of documents which match the query.
+A document is considered a match if the query matches some subset of the document.
+
+For example, we could find all active users:
+
+```python
+cool_people = db['users'].find({
+    'active': true
+})
+```
+
+or, we could find all active users who are living in Edinburgh:
+
+```python
+cool_people = db['users'].find({
+    'active': true,
+    'address': {
+        'city': 'Edinburgh'
+    }
+})
+```
+
+or all active users in Edinburgh who have both `"icecream"` and `"code"` in their list of `likes`:
+
+```python
+cool_people = db['users'].find({
+    'active': true,
+    'address': {
+        'city': 'Edinburgh'
+    },
+    'likes': ['icecream', 'code']
+})
+```
+
+We can also just query for all documents in the collection, by suppling an empty query document:
+
+```python
+cool_people = db['users'].find({})
+```
+
+For most BedquiltDB drivers, the result of a `find` operation will be a `Cursor` of results,
+rather than an Array. This is so that the results can be streamed from the PostgreSQL server to the
+client as needed, rather than being eagerly materialised in memory:
+
+```python
+print db['users'].find({...})
+# => <pybedquilt.core.BedquiltCursor at 0x101cb8a90>
+```
+
+We can iterate over the cursor, pulling in results as they are needed:
+
+```python
+result = db['users'].find({...})
+for doc in result:
+    print doc
+```
+
+Or we can just turn the result into a list:
+
+```python
+result = list( db['users'].find({}) )
+print type(result)
+# => list
+```
+
+
+The `find_one` operation also takes a query document, just like `find`, but it only returns at most a single result,
+or `null` if there were no matching documents:
+
+```python
+print db['users'].find_one({'email': 'user@example.com'})
+# => {_id: '...', 'email': '...', ...}
+
+print db['users'].find_one({'this': 'matches': {'nothing'}})
+# => None
+```
+
+
 
 ## Removing Data
 
