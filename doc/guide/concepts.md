@@ -32,6 +32,8 @@ SQL in a specific language:
 - The logic of BedquiltDB is performed inside the database, close to the data
 - Driver libraries become very simple to implement and test
 
+For more information on setting up BedquiltDB, see [Installation](installation.md).
+
 
 ## Drivers
 
