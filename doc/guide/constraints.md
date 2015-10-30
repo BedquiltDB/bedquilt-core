@@ -56,5 +56,50 @@ There are three validations which can be applied, in any combination, to a field
 | `$notnull`        | If the field is present, it must not be null     |
 | `$type`           | If the field is present, it must be of this type |
 
+Both `$required` and `$notnull` accept boolean values, indicating that the constraint
+should be enforced. Silly constraints such as `{'$required': False}` and
+`{'$notnull': False}` are simply ignored.
+
+The `$type` constraint accepts a string value describing the data-type that should
+be enforced. Valid types are `"string"'`, `"number"`, `"object"`,
+`"array"`, and `"boolean"`.
+
+The `add_constraints` operation is idempotent. If you add the same constraint twice,
+the second operation simply does nothing. `add_constraints` returns a boolean value indicating whether any new constraints were applied to the collection.
+
+
+## Listing Constraints on a Collection
+
+The `list_constraints` operation returns a list of strings describing the constraints
+that are currently in effect on a collection. Example:
+
+```python
+print db['users'].list_constraints()
+# => ['email:required', 'email:notnull', 'email:type:string', ...]
+```
+
+This should only be used for database administration, as the format of the
+data returned from `list_collections` is subject to change in future versions
+of BedquiltDB.
+
 
 ## Removing Constraints
+
+To remove constraints from a collection, use the `remove_constraints` operation,
+passing it the same constraint spec document that was used to create the constraints.
+For example, to remove the constraints on the `name` field we added earlier,
+we could do the following:
+
+```python
+db['users'].remove_constraints({
+    'name': {
+        '$required': True,
+        '$type': 'string'
+    }
+})
+```
+
+Just like `add_constraints`, `remove_constraints` is idempotent. If a constraint
+does not already exist, then `remove_constraints` just does nothing.
+The `remove_constraints` operation returns a boolean to indicate whether any of the
+specified constraints were actually removed.
