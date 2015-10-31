@@ -1,5 +1,11 @@
 # BedquiltDB Changelog
 
+## 0.4.0
+
+Released 2015-11-01
+
+- Add skip, limit and sort options to `find` queries.
+
 
 ## 0.3.1
 
