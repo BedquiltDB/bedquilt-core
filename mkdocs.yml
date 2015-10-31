@@ -1,5 +1,5 @@
 site_name: BedquiltDB Docs
-theme: bootstrap
+theme: readthedocs
 docs_dir: doc
 pages:
   - 'Home': 'index.md'
