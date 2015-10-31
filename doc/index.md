@@ -30,6 +30,9 @@ sarah['likes'] = ['icecream', 'code']
 users.save(sarah)
 ```
 
+BedquiltDB is open-source software. The source-code is freely available
+on [github](https://github.com/BedquiltDB).
+
 ## Sections
 
 ### [BedquiltDB Guide](guide/index.md)
