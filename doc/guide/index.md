@@ -4,6 +4,8 @@ Welcome to the BedquiltDB Guide
 
 ## Sections
 
+### [Quick-Start Guide (with Docker)](quick_start.md)
+
 ### [Installation](installation.md)
 
 ### [General Concepts](concepts.md)
