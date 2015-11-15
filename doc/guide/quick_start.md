@@ -25,7 +25,7 @@ $ sudo apt-get install docker-engine
 We should test that the docker daemon is working correctly:
 
 ```bash
-sudo docker run hello-world
+$ sudo docker run hello-world
 ```
 
 If all looks well, we can build the [BedquiltDB Example image](https://github.com/BedquiltDB/docker-bedquiltdb-example):
