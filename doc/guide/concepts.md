@@ -221,6 +221,14 @@ print db['users'].find_one_by_id('400241')
 # => {_id: '400241', ...}
 ```
 
+We can also get a list of the distinct values we may have under a given key, with
+the `distinct` operation.
+
+```python
+print db['users'].distinct('address.city')
+```
+
+
 ## Skip, Limit and Sort
 
 The `find` operation takes a few extra, optional parameters which allow you to control
