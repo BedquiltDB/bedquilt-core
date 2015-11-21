@@ -99,3 +99,19 @@ ELSE
 END IF;
 END
 $$ LANGUAGE plpgsql;
+
+
+/* Get distinct values for a key
+ */
+CREATE OR REPLACE FUNCTION bq_distinct(i_coll text, i_key_path text)
+RETURNS table(val jsonb) AS $$
+DECLARE
+  path_array text[];
+BEGIN
+  path_array := regexp_split_to_array(i_key_path, '\.');
+  RETURN QUERY EXECUTE format(
+    'select distinct (bq_jdoc#>''%s'')::jsonb as val from %I',
+    path_array, i_coll
+  );
+END
+$$ LANGUAGE plpgsql;
