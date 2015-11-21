@@ -109,9 +109,12 @@ DECLARE
   path_array text[];
 BEGIN
   path_array := regexp_split_to_array(i_key_path, '\.');
-  RETURN QUERY EXECUTE format(
-    'select distinct (bq_jdoc#>''%s'')::jsonb as val from %I',
-    path_array, i_coll
-  );
+  IF (SELECT bq_collection_exists(i_coll))
+  THEN
+    RETURN QUERY EXECUTE format(
+      'select distinct (bq_jdoc#>''%s'')::jsonb as val from %I',
+      path_array, i_coll
+    );
+  END IF;
 END
 $$ LANGUAGE plpgsql;
