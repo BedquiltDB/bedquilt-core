@@ -3,6 +3,7 @@ import json
 import string
 import psycopg2
 
+# Test for collection.distinct operation
 
 class TestCollectionDiscinct(testutils.BedquiltTestCase):
 
@@ -19,7 +20,7 @@ class TestCollectionDiscinct(testutils.BedquiltTestCase):
         """)
         self.assertEqual(result, [])
 
-    def test_distinct_on_with_a_few_documents(self):
+    def test_distinct_with_a_few_documents(self):
         _ = self._query("select bq_create_collection('people');")
 
         docs = [
@@ -36,6 +37,24 @@ class TestCollectionDiscinct(testutils.BedquiltTestCase):
         """)
         ages = sorted(map(lambda x: x[0], result))
         self.assertEqual(ages, sorted([22, 24, 30, 38]))
+
+    def test_distinct_with_missing_values(self):
+        _ = self._query("select bq_create_collection('people');")
+
+        docs = [
+            {'name': 'Sarah', 'age': 22},
+            {'name': 'Brian'},
+            {'name': 'Mike', 'age': 30},
+            {'name': 'Diane', 'age': 38},
+            {'name': 'Peter', 'age': 30}
+        ]
+        for doc in docs:
+            self._query("select bq_insert('people', '{}')".format(json.dumps(doc)))
+        result = self._query("""
+        select bq_distinct('people', 'age');
+        """)
+        ages = sorted(map(lambda x: x[0], result))
+        self.assertEqual(ages, sorted([22, 30, 38, None]))
 
     def test_distinct_on_dotted_path(self):
         _ = self._query("select bq_create_collection('people');")
