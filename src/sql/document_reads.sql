@@ -101,7 +101,8 @@ END
 $$ LANGUAGE plpgsql;
 
 
-/* Get distinct values for a key
+/* Get a sequence of the distinct values present in the collection for a given key,
+ * example: bq_distinct('people', 'address.city')
  */
 CREATE OR REPLACE FUNCTION bq_distinct(i_coll text, i_key_path text)
 RETURNS table(val jsonb) AS $$

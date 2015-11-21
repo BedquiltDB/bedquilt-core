@@ -156,6 +156,20 @@ count documents in collection
 
 
 
+## bq\_distinct
+
+- params: `i_coll text, i_key_path text`
+- returns: `table(val jsonb)`
+- language: `plpgsql`
+
+```markdown
+Get a sequence of the distinct values present in the collection for a given key,
+example: bq_distinct('people', 'address.city')
+
+```
+
+
+
 
 
 ## bq\_insert
