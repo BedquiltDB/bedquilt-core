@@ -15,6 +15,10 @@ Download the latest release from [pgxn](http://pgxn.org/dist/bedquilt/), unzip i
 $ make install
 ```
 
+You may need to install the postgres server-dev packages in order for this to work.
+On ubuntu, install the `postgresql-server-dev-<VERSION>` package.
+
+
 Alternatively, you can build a docker image containing a PostgreSQL server with BedquiltDB pre-installed, using our [example Dockerfile](http://github.com/BedquiltDB/docker-bedquiltdb-example).
 
 
