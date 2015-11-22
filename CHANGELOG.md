@@ -1,5 +1,12 @@
 # BedquiltDB Changelog
 
+## 0.5.0
+
+Released 2015-11-22
+
+- Add `bq_distinct` function
+
+
 ## 0.4.0
 
 Released 2015-11-01
