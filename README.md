@@ -139,6 +139,11 @@ $ make docs
 ```
 
 
+# Contributing
+
+Contributions are welcome, to any of the BedquiltDB projects. Just open an issue,
+or get in touch directly.
+
 
 # License
 
