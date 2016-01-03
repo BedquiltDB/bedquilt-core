@@ -10,14 +10,6 @@ A JSON store on PostgreSQL.
 Release packages for BedquiltDB can be found on [pgxn](http://pgxn.org/dist/bedquilt/).
 
 
-# Warning
-
-Bedquilt is currently worse-than-alpha quality and should not be used in production,
-or anywhere else for that matter. If Bedquilt kills your database, just imagine me
-whispering "told you so" and think hard about how you got yourself into this
-mess.
-
-
 # Goals
 
 - Borrow some of the good ideas and positive attributes of json
