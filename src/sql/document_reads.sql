@@ -48,7 +48,7 @@ BEGIN
     IF jsonb_typeof(i_ids) != 'array'
     THEN
       RAISE EXCEPTION
-      'Invalid ids parameter "%s"', json_typeop(i_ids)
+      'Invalid ids parameter "%s"', json_typeof(i_ids)
       USING HINT = 'ids should be a json array of strings';
     END IF;
     RETURN QUERY EXECUTE format(

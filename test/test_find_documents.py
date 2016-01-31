@@ -261,6 +261,16 @@ class TestFindDocuments(testutils.BedquiltTestCase):
                              (mike,)
                          ])
 
+        self.cur.execute("""
+        select bq_find_many_by_ids(
+          'people',
+          '[]'
+        );
+        """)
+        result = self.cur.fetchall()
+        self.assertEqual(result,
+                         [])
+
     def test_find_existing_documents(self):
 
         sarah = {'_id': "sarah@example.com",
