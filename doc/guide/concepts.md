@@ -221,6 +221,13 @@ print db['users'].find_one_by_id('400241')
 # => {_id: '400241', ...}
 ```
 
+If we have a list of document ids, we can use `find_many_by_ids` to get them all
+in one query, rather than using `find_one_by_id` multiple times:
+
+```python
+print db['orders'].find_many_by_ids(['X2242', 'X5373', 'X1762'])
+```
+
 We can also get a list of the distinct values we may have under a given key, with
 the `distinct` operation.
 
