@@ -211,7 +211,7 @@ Params:
 - limit::Integer (optional, default null)
 - sort::Array (optional, default null)
 
-Returns: A potentially empty sequence of documents.
+Returns: a (possibly empty) sequence of documents.
 
 Examples:
 ```
@@ -247,6 +247,21 @@ Returns: A single document, or null if none could be found.
 Examples:
 ```
 likes = coll.find_one_by_id("sarah@example.com")
+```
+
+
+### Find Many By Ids
+
+Retrieve documents whose `_id` field is in the supplied list of ids.
+
+Params:
+- ids::List[String]
+
+Returns: a (possibly empty) sequence of documents.
+
+Examples:
+```
+orders = coll.find_many_by_ids(["X224", "X573", "X248"])
 ```
 
 

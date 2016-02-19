@@ -39,6 +39,29 @@ END IF;
 END
 $$ LANGUAGE plpgsql;
 
+-- find many by ids
+CREATE OR REPLACE FUNCTION bq_find_many_by_ids(i_coll text, i_ids jsonb)
+RETURNS table(bq_jdoc json) AS $$
+BEGIN
+  IF (SELECT bq_collection_exists(i_coll))
+  THEN
+    IF jsonb_typeof(i_ids) != 'array'
+    THEN
+      RAISE EXCEPTION
+      'Invalid ids parameter "%s"', json_typeof(i_ids)
+      USING HINT = 'ids should be a json array of strings';
+    END IF;
+    RETURN QUERY EXECUTE format(
+      'SELECT bq_jdoc::json FROM %I
+      WHERE _id = ANY(array(select jsonb_array_elements_text(''%s''::jsonb)))
+      ORDER BY created ASC;',
+      i_coll,
+      i_ids
+    );
+  END IF;
+END
+$$ LANGUAGE plpgsql;
+
 
 /* find many documents
  */

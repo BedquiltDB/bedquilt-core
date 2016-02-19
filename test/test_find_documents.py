@@ -195,6 +195,81 @@ class TestFindDocuments(testutils.BedquiltTestCase):
         self.assertIsNotNone(result)
         self.assertEqual(len(result), 0)
 
+    def test_find_many_by_ids(self):
+
+        sarah = {'_id': "sarah@example.com",
+                 'name': "Sarah",
+                 'city': "Glasgow",
+                 'age': 34,
+                 'likes': ['icecream', 'cats']}
+        mike = {'_id': "mike@example.com",
+                'name': "Mike",
+                'city': "Edinburgh",
+                'age': 32,
+                'likes': ['cats', 'crochet']}
+        jill = {'_id': "jill@example.com",
+                'name': "Jill",
+                'city': "Glasgow",
+                'age': 32,
+                'likes': ['code', 'crochet']}
+        darren = {'_id': "darren@example.com",
+                'name': "Darren",
+                'city': "Manchester"}
+
+        self._insert('people', sarah)
+        self._insert('people', mike)
+        self._insert('people', jill)
+        self._insert('people', darren)
+
+        # find many by ids
+        self.cur.execute("""
+        select bq_find_many_by_ids(
+          'people',
+          '["jill@example.com", "mike@example.com"]'
+        );
+        """)
+        result = self.cur.fetchall()
+        self.assertEqual(result,
+                         [
+                             (mike,),
+                             (jill,)
+                         ])
+
+        # find many by ids
+        self.cur.execute("""
+        select bq_find_many_by_ids(
+          'people',
+          '["jill@example.com", "sarah@example.com", "nope"]'
+        );
+        """)
+        result = self.cur.fetchall()
+        self.assertEqual(result,
+                         [
+                             (sarah,),
+                             (jill,)
+                         ])
+
+        self.cur.execute("""
+        select bq_find_many_by_ids(
+          'people',
+          '["mike@example.com"]'
+        );
+        """)
+        result = self.cur.fetchall()
+        self.assertEqual(result,
+                         [
+                             (mike,)
+                         ])
+
+        self.cur.execute("""
+        select bq_find_many_by_ids(
+          'people',
+          '[]'
+        );
+        """)
+        result = self.cur.fetchall()
+        self.assertEqual(result,
+                         [])
 
     def test_find_existing_documents(self):
 
