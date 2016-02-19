@@ -1,5 +1,12 @@
 # BedquiltDB Changelog
 
+## 0.6.0
+
+Released 2016-02-19
+
+- Add `find_many_by_ids` function
+
+
 ## 0.5.0
 
 Released 2015-11-22
