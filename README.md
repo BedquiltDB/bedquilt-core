@@ -123,7 +123,7 @@ that the current user owns.
 
 # Documentation
 
-Project documnetation hosted at [Read The Docs](http://bedquiltdb.readthedocs.org).
+Project documentation hosted at [Read The Docs](http://bedquiltdb.readthedocs.org).
 
 To build documentation, install the `mkdocs` utility and run:
 ```
