@@ -80,6 +80,18 @@ $ make docs
 ```
 
 
+# Drivers
+
+BedquiltDB is intended to be used with client libraries (aka Drivers), such as:
+
+- [pybedquilt](https://github.com/BedquiltDB/pybedquilt) for Python
+- [node-bedquilt](https://github.com/BedquiltDB/node-bedquilt) for NodeJS
+- [clj-bedquilt](https://github.com/BedquiltDB/clj-bedquilt) for Clojure
+
+Installation instructions and documentation for each driver can be found on the
+respective driver repositories.
+
+
 # Prerequisites
 
 - PostgreSQL >= 9.4 (bedquilt-core is currently being tested against 9.5 alpha)
