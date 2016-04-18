@@ -70,6 +70,16 @@ select bq_list_collections();
 ```
 
 
+# Documentation
+
+Project documnetation hosted at [Read The Docs](http://bedquiltdb.readthedocs.org).
+
+To build documentation, install the `mkdocs` utility and run:
+```
+$ make docs
+```
+
+
 # Prerequisites
 
 - PostgreSQL >= 9.4 (bedquilt-core is currently being tested against 9.5 alpha)
@@ -98,7 +108,7 @@ $ cd bedquilt-core
 Run the following to build the extension and install it to the local database:
 
 ```
-$ make install
+$ sudo make install
 ```
 
 Run this to build to a zip file:
@@ -114,21 +124,17 @@ CREATE EXTENSION IF NOT EXISTS pgcrypto;
 CREATE EXTENSION bedquilt;
 ```
 
+Test out the bedquilt extension by running a simple `find` operation:
+
+```PlpgSQL
+select bq_find('stuff', '{}');
+```
+
 
 # Tests
 
 Run `make test` to run the test suite. Requires a `bedquilt_test` database
 that the current user owns.
-
-
-# Documentation
-
-Project documnetation hosted at [Read The Docs](http://bedquiltdb.readthedocs.org).
-
-To build documentation, install the `mkdocs` utility and run:
-```
-$ make docs
-```
 
 
 # Contributing
