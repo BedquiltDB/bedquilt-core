@@ -1,5 +1,7 @@
 # Bedquilt
 
+[![Join the chat at https://gitter.im/BedquiltDB/bedquilt-core](https://badges.gitter.im/BedquiltDB/bedquilt-core.svg)](https://gitter.im/BedquiltDB/bedquilt-core?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 ![Bedquilt](./resources/bedquilt_logo_tile.png)
 
 A JSON store on PostgreSQL.
@@ -8,14 +10,6 @@ A JSON store on PostgreSQL.
 # Releases
 
 Release packages for BedquiltDB can be found on [pgxn](http://pgxn.org/dist/bedquilt/).
-
-
-# Warning
-
-Bedquilt is currently worse-than-alpha quality and should not be used in production,
-or anywhere else for that matter. If Bedquilt kills your database, just imagine me
-whispering "told you so" and think hard about how you got yourself into this
-mess.
 
 
 # Goals
@@ -78,6 +72,28 @@ select bq_list_collections();
 ```
 
 
+# Documentation
+
+Project documnetation hosted at [Read The Docs](http://bedquiltdb.readthedocs.org).
+
+To build documentation, install the `mkdocs` utility and run:
+```
+$ make docs
+```
+
+
+# Drivers
+
+BedquiltDB is intended to be used with client libraries (aka Drivers), such as:
+
+- [pybedquilt](https://github.com/BedquiltDB/pybedquilt) for Python
+- [node-bedquilt](https://github.com/BedquiltDB/node-bedquilt) for NodeJS
+- [clj-bedquilt](https://github.com/BedquiltDB/clj-bedquilt) for Clojure
+
+Installation instructions and documentation for each driver can be found on the
+respective driver repositories.
+
+
 # Prerequisites
 
 - PostgreSQL >= 9.4 (bedquilt-core is currently being tested against 9.5 alpha)
@@ -106,7 +122,7 @@ $ cd bedquilt-core
 Run the following to build the extension and install it to the local database:
 
 ```
-$ make install
+$ sudo make install
 ```
 
 Run this to build to a zip file:
@@ -122,6 +138,12 @@ CREATE EXTENSION IF NOT EXISTS pgcrypto;
 CREATE EXTENSION bedquilt;
 ```
 
+Test out the bedquilt extension by running a simple `find` operation:
+
+```PlpgSQL
+select bq_find('stuff', '{}');
+```
+
 
 # Tests
 
@@ -129,15 +151,10 @@ Run `make test` to run the test suite. Requires a `bedquilt_test` database
 that the current user owns.
 
 
-# Documentation
+# Contributing
 
-Project documnetation hosted at [Read The Docs](http://bedquiltdb.readthedocs.org).
-
-To build documentation, install the `mkdocs` utility and run:
-```
-$ make docs
-```
-
+Contributions are welcome, to any of the BedquiltDB projects. Just open an issue,
+or get in touch directly.
 
 
 # License
