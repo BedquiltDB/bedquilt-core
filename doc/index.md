@@ -37,7 +37,7 @@ on [github](https://github.com/BedquiltDB).
 
 ### [BedquiltDB Guide](guide/index.md)
 
-### [Getting Started](getting_started.md)
+### [Getting Started (Installation)](guide/installation.md)
 
 ### [Core API](api_docs.md)
 

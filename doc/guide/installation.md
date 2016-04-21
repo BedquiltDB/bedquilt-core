@@ -12,15 +12,15 @@ To use BedquiltDB, you will need the following:
 
 Download the latest release from [pgxn](http://pgxn.org/dist/bedquilt/), unzip it, then run the install task to install to the local PostgreSQL installation:
 ```
-$ make install
+$ sudo make install
 ```
 
 You may need to install the postgres server-dev packages in order for this to work.
 On ubuntu, install the `postgresql-server-dev-<VERSION>` package.
 
-
 Alternatively, you can build a docker image containing a PostgreSQL server with BedquiltDB pre-installed, using our [example Dockerfile](http://github.com/BedquiltDB/docker-bedquiltdb-example).
 
+If you have any trouble with installing BedquiltDB, please do [open an issue](https://github.com/BedquiltDB/bedquilt-core/issues), or ask for help in our [Gitter chat channel](https://gitter.im/BedquiltDB/bedquilt-core).
 
 ## Enable the extension
 
@@ -33,6 +33,14 @@ CREATE EXTENSION bedquilt;
 
 The various functions that make up `bedquilt` should be available
 on the database, and you are ready to connect a client driver.
+
+You can run a simple test with this query:
+
+```sql
+select bq_find('test', '{}');
+```
+
+If it doesn't crash, then `bedquilt-core` is installed and ready to use.
 
 
 ## Next steps

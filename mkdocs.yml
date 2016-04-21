@@ -3,7 +3,6 @@ theme: readthedocs
 docs_dir: doc
 pages:
   - 'Home': 'index.md'
-  - 'Getting Started': 'getting_started.md'
   - 'User Guide':
     - 'BedquiltDB Guide': 'guide/index.md'
     - 'Installation': 'guide/installation.md'
