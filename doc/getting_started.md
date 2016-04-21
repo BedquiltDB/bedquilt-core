@@ -18,6 +18,8 @@ $ sudo make install
 
 Alternatively, you can build a docker image containing a PostgreSQL server with BedquiltDB pre-installed, using our [example Dockerfile](http://github.com/BedquiltDB/docker-bedquiltdb-example).
 
+If you have any trouble with installing BedquiltDB, please do [open an issue](https://github.com/BedquiltDB/bedquilt-core/issues), or ask for help in our [Gitter chat channel](https://gitter.im/BedquiltDB/bedquilt-core).
+
 
 ## Enable the extension
 
