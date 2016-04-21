@@ -1,4 +1,4 @@
-# General Concepts
+# BedquiltDB Conceptual Overview
 
 This document attempts to describe BedquiltDB at a high level.
 

@@ -8,7 +8,7 @@ Welcome to the BedquiltDB Guide
 
 ### [Installation](installation.md)
 
-### [General Concepts](concepts.md)
+### [Conceptual Overview](concepts.md)
 
 ### [Clients](clients.md)
 

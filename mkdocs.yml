@@ -7,7 +7,7 @@ pages:
     - 'BedquiltDB Guide': 'guide/index.md'
     - 'Installation': 'guide/installation.md'
     - 'Quick-Start Guide': 'guide/quick_start.md'
-    - 'General Concepts': 'guide/concepts.md'
+    - 'Conceptual Overview': 'guide/concepts.md'
     - 'Clients': 'guide/clients.md'
     - 'Database Operations': 'guide/database_ops.md'
     - 'Constraints': 'guide/constraints.md'
