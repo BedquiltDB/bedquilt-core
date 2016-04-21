@@ -1,5 +1,7 @@
 # Bedquilt
 
+[![Join the chat at https://gitter.im/BedquiltDB/bedquilt-core](https://badges.gitter.im/BedquiltDB/bedquilt-core.svg)](https://gitter.im/BedquiltDB/bedquilt-core?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 ![Bedquilt](./resources/bedquilt_logo_tile.png)
 
 A JSON store on PostgreSQL.
@@ -110,7 +112,15 @@ respective driver repositories.
 
 # Installation
 
-First, clone this repositroy:
+## From a pre-built package (recommended)
+
+To install BedquiltDB on your PostgreSQL server, follow the instructions here: 
+
+http://bedquiltdb.readthedocs.org/en/latest/guide/installation/
+
+## From source
+
+If you would prefer to install from source, first clone this repositroy:
 
 ```
 $ git clone https://github.com/BedquiltDB/bedquilt-core.git
