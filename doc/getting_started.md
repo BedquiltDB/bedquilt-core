@@ -13,7 +13,7 @@ To use BedquiltDB, you will need the following:
 
 Download the latest release from [pgxn](http://pgxn.org/dist/bedquilt/), unzip it, then run the install task to install to the local PostgreSQL installation:
 ```
-$ make install
+$ sudo make install
 ```
 
 Alternatively, you can build a docker image containing a PostgreSQL server with BedquiltDB pre-installed, using our [example Dockerfile](http://github.com/BedquiltDB/docker-bedquiltdb-example).
