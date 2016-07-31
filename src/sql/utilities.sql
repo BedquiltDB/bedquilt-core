@@ -192,7 +192,6 @@ AS $$
 
     data = json.loads(i_json)
     special_queries = []
-
     if 'proc' in SD:
         proc = SD['proc']
     else:
@@ -202,7 +201,6 @@ AS $$
             for k in keys:
                 v = d[k]
                 if k.startswith('$'):
-                    # this is a special query
                     op = None
                     if k == '$eq':
                         op = "="
@@ -225,7 +223,6 @@ AS $$
                      )
                     deletions.append(k)
                 else:
-                    # not special keep going, recur
                     if type(v) == dict:
                         p = current_path.copy()
                         p.extend([k])
@@ -234,10 +231,7 @@ AS $$
                             deletions.append(k)
             for s in deletions:
                 del d[s]
-
         SD['proc'] = proc
-
     proc(data, [])
-
     return (json.dumps(data), special_queries)
 $$ LANGUAGE plpython3u;
