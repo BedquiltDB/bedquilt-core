@@ -114,7 +114,7 @@ respective driver repositories.
 
 ## From a pre-built package (recommended)
 
-To install BedquiltDB on your PostgreSQL server, follow the instructions here: 
+To install BedquiltDB on your PostgreSQL server, follow the instructions here:
 
 http://bedquiltdb.readthedocs.org/en/latest/guide/installation/
 
@@ -143,6 +143,7 @@ Then, on the postgres server:
 
 ```PLpgSQL
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
+CREATE EXTENSION IF NOT EXISTS plpython3u;
 CREATE EXTENSION bedquilt;
 ```
 

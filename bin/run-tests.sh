@@ -5,6 +5,7 @@
 echo ">> Enabling bedquilt on localhost/bedquilt_test..."
 psql -d bedquilt_test \
      -c "create extension if not exists pgcrypto;
+         create extension if not exists plpython3u;
          drop extension if exists bedquilt;
          create extension bedquilt;"
 if [ $? -ne 0 ]

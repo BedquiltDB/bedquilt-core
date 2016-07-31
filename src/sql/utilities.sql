@@ -167,3 +167,77 @@ BEGIN
   return true;
 END
 $$ LANGUAGE plpgsql;
+
+
+DROP TYPE IF EXISTS bq_split_queries_result;
+
+/* private - return type for bq_split_queries
+*/
+CREATE TYPE bq_split_queries_result AS (
+    match_query text,
+    special_queries text[]
+);
+
+
+/* private - split a json query into query and special queries, '$eq' etc.
+ */
+CREATE OR REPLACE FUNCTION bq_split_queries(i_json jsonb)
+  RETURNS bq_split_queries_result
+AS $$
+    if 'json' in SD:
+        json = SD['json']
+    else:
+        import json
+        SD['json'] = json
+
+    data = json.loads(i_json)
+    special_queries = []
+
+    if 'proc' in SD:
+        proc = SD['proc']
+    else:
+        def proc(d, current_path):
+            keys = d.keys()
+            deletions = []
+            for k in keys:
+                v = d[k]
+                if k.startswith('$'):
+                    # this is a special query
+                    op = None
+                    if k == '$eq':
+                        op = "="
+                    if k == '$ne':
+                        op = "!="
+                    elif k == '$gte':
+                        op = ">="
+                    elif k == '$gt':
+                        op = ">"
+                    elif k == '$lte':
+                        op = "<="
+                    elif k == '$lt':
+                        op = "<"
+                    if op is None:
+                        plpy.fatal("Invalid query operator: {}".format(k))
+                    special_queries.append(
+                        """
+                        and bq_jdoc #> '{{{}}}'  {}  '{}'::jsonb
+                        """.format(",".join(current_path), op, json.dumps(v)).strip()
+                     )
+                    deletions.append(k)
+                else:
+                    # not special keep going, recur
+                    if type(v) == dict:
+                        p = current_path.copy()
+                        p.extend([k])
+                        proc(v, p)
+                        if len(v.keys()) == 0:
+                            deletions.append(k)
+            for s in deletions:
+                del d[s]
+
+        SD['proc'] = proc
+
+    proc(data, [])
+
+    return (json.dumps(data), special_queries)
+$$ LANGUAGE plpython3u;

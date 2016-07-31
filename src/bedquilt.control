@@ -3,4 +3,4 @@ comment = 'A json document store'
 default_version = '{{VERSION}}'
 module_pathname = '$libdir/bedquilt'
 relocatable = true
-requires = 'plpgsql, pgcrypto'
+requires = 'plpgsql, pgcrypto, plpython3u'
