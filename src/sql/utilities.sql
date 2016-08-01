@@ -228,8 +228,14 @@ AS $$
                         ",".join(current_path),
                         json.dumps(v)
                     ).strip()
+                elif k == '$in' and type(v) is list:
+                    s = "and bq_jdoc #> '{{{}}}' <@ '{}'::jsonb".format(
+                        ",".join(current_path),
+                        json.dumps(v)
+                    ).strip()
                 else:
                     plpy.fatal("Invalid query operator: {}".format(k))
+                    return None
                 special_queries.append(s)
                 deletions.append(k)
             else:
