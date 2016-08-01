@@ -198,26 +198,39 @@ AS $$
         for k in keys:
             v = d[k]
             if k.startswith('$'):
-                op = None
                 if k == '$eq':
-                    op = "="
-                if k == '$ne':
-                    op = "!="
+                    s = "and bq_jdoc #> '{{{}}}' = '{}'::jsonb".format(
+                        ",".join(current_path),
+                        json.dumps(v)
+                    ).strip()
+                elif k == '$ne':
+                    s = "and bq_jdoc #> '{{{}}}' != '{}'::jsonb".format(
+                        ",".join(current_path),
+                        json.dumps(v)
+                    ).strip()
                 elif k == '$gte':
-                    op = ">="
+                    s = "and bq_jdoc #> '{{{}}}' >= '{}'::jsonb".format(
+                        ",".join(current_path),
+                        json.dumps(v)
+                    ).strip()
                 elif k == '$gt':
-                    op = ">"
+                    s = "and bq_jdoc #> '{{{}}}' > '{}'::jsonb".format(
+                        ",".join(current_path),
+                        json.dumps(v)
+                    ).strip()
                 elif k == '$lte':
-                    op = "<="
+                    s = "and bq_jdoc #> '{{{}}}' <= '{}'::jsonb".format(
+                        ",".join(current_path),
+                        json.dumps(v)
+                    ).strip()
                 elif k == '$lt':
-                    op = "<"
-                if op is None:
+                    s = "and bq_jdoc #> '{{{}}}' < '{}'::jsonb".format(
+                        ",".join(current_path),
+                        json.dumps(v)
+                    ).strip()
+                else:
                     plpy.fatal("Invalid query operator: {}".format(k))
-                special_queries.append(
-                    """
-                    and bq_jdoc #> '{{{}}}' {} '{}'::jsonb
-                    """.format(",".join(current_path), op, json.dumps(v)).strip()
-                  )
+                special_queries.append(s)
                 deletions.append(k)
             else:
                 if type(v) == dict:
