@@ -203,7 +203,7 @@ AS $$
                         ",".join(current_path),
                         json.dumps(v)
                     ).strip()
-                elif k == '$ne':
+                elif k == '$noteq':
                     s = "and bq_jdoc #> '{{{}}}' != '{}'::jsonb".format(
                         ",".join(current_path),
                         json.dumps(v)
@@ -228,14 +228,15 @@ AS $$
                         ",".join(current_path),
                         json.dumps(v)
                     ).strip()
-                elif k == '$in' and type(v) is list:
+                elif k == '$in':
+                    if type(v) is not list:
+                        plpy.error("Value of '$in' operator must be an array")
                     s = "and bq_jdoc #> '{{{}}}' <@ '{}'::jsonb".format(
                         ",".join(current_path),
                         json.dumps(v)
                     ).strip()
                 else:
-                    plpy.fatal("Invalid query operator: {}".format(k))
-                    return None
+                    plpy.error("Invalid query operator: {}".format(k))
                 special_queries.append(s)
                 deletions.append(k)
             else:
