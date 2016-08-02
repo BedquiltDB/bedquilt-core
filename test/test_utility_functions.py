@@ -111,3 +111,13 @@ class TestSplitQueries(testutils.BedquiltTestCase):
         ]
 
         self._assert_examples(examples)
+
+    def test_bad_op(self):
+        query = {
+            'a': {'$totallynotavalidop': 42}
+        }
+        with self.assertRaises(psycopg2.InternalError):
+            self.cur.execute("""
+            select * from bq_split_queries('{}'::jsonb)
+            """.format(json.dumps(query)))
+        self.conn.rollback()
