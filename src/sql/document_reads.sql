@@ -27,7 +27,7 @@ BEGIN
         q := q || format(' AND %s ', s);
       END LOOP;
     END IF;
-    q := q || ' LIMIT 1; ';
+    q := q || ' ORDER BY created ASC LIMIT 1; ';
     RETURN QUERY EXECUTE q;
   END IF;
 END
