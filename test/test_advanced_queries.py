@@ -69,3 +69,13 @@ class TestAdvancedQueries(testutils.BedquiltTestCase):
         select bq_find_one('people', '{"age": {"$gt": 30}}')
         """)
         self.assertEqual(result, [(mike,)])
+
+        result = self._query("""
+        select bq_find_one('people', '{"age": {"$gt": 34}}')
+        """)
+        self.assertEqual(result, [])
+
+        result = self._query("""
+        select bq_find_one('people', '{"age": {"$gte": 34}}')
+        """)
+        self.assertEqual(result, [(sarah,)])
