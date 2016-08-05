@@ -7,17 +7,29 @@
  */
 CREATE OR REPLACE FUNCTION bq_find_one(i_coll text, i_json_query json)
 RETURNS table(bq_jdoc json) AS $$
+DECLARE
+  q text;
+  mq text;
+  sq text[];
+  s text;
 BEGIN
-IF (SELECT bq_collection_exists(i_coll))
-THEN
-    RETURN QUERY EXECUTE format(
-        'SELECT bq_jdoc::json FROM %I
-        WHERE bq_jdoc @> (%s)::jsonb
-        LIMIT 1',
-        i_coll,
-        quote_literal(i_json_query)
-    );
-END IF;
+  IF (SELECT bq_collection_exists(i_coll))
+  THEN
+    q := format('SELECT bq_jdoc::json FROM %I', i_coll);
+    SELECT match_query, special_queries
+      FROM bq_split_queries(i_json_query::jsonb)
+      INTO mq, sq;
+    q := q || format(' WHERE bq_jdoc @> (%s)::jsonb ', quote_literal(mq));
+    IF array_length(sq, 1) > 0
+    THEN
+      FOREACH s IN ARRAY sq
+      LOOP
+        q := q || format(' AND %s ', s);
+      END LOOP;
+    END IF;
+    q := q || ' LIMIT 1; ';
+    RETURN QUERY EXECUTE q;
+  END IF;
 END
 $$ LANGUAGE plpgsql;
 
@@ -27,15 +39,15 @@ CREATE OR REPLACE FUNCTION bq_find_one_by_id(i_coll text, i_id text)
 RETURNS table(bq_jdoc json) AS $$
 BEGIN
 IF (SELECT bq_collection_exists(i_coll))
-THEN
+  THEN
     RETURN QUERY EXECUTE format(
-        'SELECT bq_jdoc::json FROM %I
-        WHERE _id = %s
-        LIMIT 1',
-        i_coll,
-        quote_literal(i_id)
+      'SELECT bq_jdoc::json FROM %I
+      WHERE _id = %s
+      LIMIT 1',
+      i_coll,
+      quote_literal(i_id)
     );
-END IF;
+  END IF;
 END
 $$ LANGUAGE plpgsql;
 

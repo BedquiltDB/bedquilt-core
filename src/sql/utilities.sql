@@ -199,39 +199,39 @@ AS $$
             v = d[k]
             if k.startswith('$'):
                 if k == '$eq':
-                    s = "and bq_jdoc #> '{{{}}}' = '{}'::jsonb".format(
+                    s = "bq_jdoc #> '{{{}}}' = '{}'::jsonb".format(
                         ",".join(current_path),
                         json.dumps(v)
                     ).strip()
                 elif k == '$noteq':
-                    s = "and bq_jdoc #> '{{{}}}' != '{}'::jsonb".format(
+                    s = "bq_jdoc #> '{{{}}}' != '{}'::jsonb".format(
                         ",".join(current_path),
                         json.dumps(v)
                     ).strip()
                 elif k == '$gte':
-                    s = "and bq_jdoc #> '{{{}}}' >= '{}'::jsonb".format(
+                    s = "bq_jdoc #> '{{{}}}' >= '{}'::jsonb".format(
                         ",".join(current_path),
                         json.dumps(v)
                     ).strip()
                 elif k == '$gt':
-                    s = "and bq_jdoc #> '{{{}}}' > '{}'::jsonb".format(
+                    s = "bq_jdoc #> '{{{}}}' > '{}'::jsonb".format(
                         ",".join(current_path),
                         json.dumps(v)
                     ).strip()
                 elif k == '$lte':
-                    s = "and bq_jdoc #> '{{{}}}' <= '{}'::jsonb".format(
+                    s = "bq_jdoc #> '{{{}}}' <= '{}'::jsonb".format(
                         ",".join(current_path),
                         json.dumps(v)
                     ).strip()
                 elif k == '$lt':
-                    s = "and bq_jdoc #> '{{{}}}' < '{}'::jsonb".format(
+                    s = "bq_jdoc #> '{{{}}}' < '{}'::jsonb".format(
                         ",".join(current_path),
                         json.dumps(v)
                     ).strip()
                 elif k == '$in':
                     if type(v) is not list:
                         plpy.error("Value of '$in' operator must be an array")
-                    s = "and bq_jdoc #> '{{{}}}' <@ '{}'::jsonb".format(
+                    s = "bq_jdoc #> '{{{}}}' <@ '{}'::jsonb".format(
                         ",".join(current_path),
                         json.dumps(v)
                     ).strip()

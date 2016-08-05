@@ -37,7 +37,7 @@ class TestSplitQueries(testutils.BedquiltTestCase):
                     }
                 },
                 {},
-                ["and bq_jdoc #> '{a,b}' = '22'::jsonb"]
+                ["bq_jdoc #> '{a,b}' = '22'::jsonb"]
             ),
             (
                 {
@@ -51,7 +51,7 @@ class TestSplitQueries(testutils.BedquiltTestCase):
                 {
                     'c': 44
                 },
-                ["and bq_jdoc #> '{a,b}' = '22'::jsonb"]
+                ["bq_jdoc #> '{a,b}' = '22'::jsonb"]
             ),
             (
                 {
@@ -65,7 +65,7 @@ class TestSplitQueries(testutils.BedquiltTestCase):
                 {
                     'a': {'c': 44}
                 },
-                ["and bq_jdoc #> '{a,b}' = '22'::jsonb"]
+                ["bq_jdoc #> '{a,b}' = '22'::jsonb"]
             )
         ]
 
@@ -76,37 +76,37 @@ class TestSplitQueries(testutils.BedquiltTestCase):
             (
                 {'a': {'b': {'$eq': 42}}},
                 {},
-                ["and bq_jdoc #> '{a,b}' = '42'::jsonb"]
+                ["bq_jdoc #> '{a,b}' = '42'::jsonb"]
             ),
             (
                 {'a': {'b': {'$noteq': 42}}},
                 {},
-                ["and bq_jdoc #> '{a,b}' != '42'::jsonb"]
+                ["bq_jdoc #> '{a,b}' != '42'::jsonb"]
             ),
             (
                 {'a': {'b': {'$gte': 42}}},
                 {},
-                ["and bq_jdoc #> '{a,b}' >= '42'::jsonb"]
+                ["bq_jdoc #> '{a,b}' >= '42'::jsonb"]
             ),
             (
                 {'a': {'b': {'$gt': 42}}},
                 {},
-                ["and bq_jdoc #> '{a,b}' > '42'::jsonb"]
+                ["bq_jdoc #> '{a,b}' > '42'::jsonb"]
             ),
             (
                 {'a': {'b': {'$lte': 42}}},
                 {},
-                ["and bq_jdoc #> '{a,b}' <= '42'::jsonb"]
+                ["bq_jdoc #> '{a,b}' <= '42'::jsonb"]
             ),
             (
                 {'a': {'b': {'$lt': 42}}},
                 {},
-                ["and bq_jdoc #> '{a,b}' < '42'::jsonb"]
+                ["bq_jdoc #> '{a,b}' < '42'::jsonb"]
             ),
             (
                 {'a': {'b': {'$in': [22, 42]}}},
                 {},
-                ["and bq_jdoc #> '{a,b}' <@ '[22, 42]'::jsonb"]
+                ["bq_jdoc #> '{a,b}' <@ '[22, 42]'::jsonb"]
             ),
         ]
 
