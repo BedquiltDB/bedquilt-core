@@ -5,6 +5,9 @@ import psycopg2
 
 class TestAdvancedQueries(testutils.BedquiltTestCase):
 
+    def _map_labels(self, results):
+        return list(map(lambda row: row[0]['label'], results))
+
     def test_eq(self):
         rows = [
             {"_id": "aa", "label": "a", "n": 1,  "color": "red"},
@@ -34,6 +37,23 @@ class TestAdvancedQueries(testutils.BedquiltTestCase):
             }))
         )
         self.assertEqual(result[0][0]['label'], 'f')
+
+        # find many
+        result = self._query(
+            "select bq_find('things', '{}')".format(json.dumps({
+                'n': {'$eq': 8},
+            }))
+        )
+        self.assertEqual(len(result), 2)
+        self.assertEqual(self._map_labels(result), ['c', 'e'])
+
+        result = self._query(
+            "select bq_find('things', '{}')".format(json.dumps({
+                'color': {'$eq': 'red'},
+            }))
+        )
+        self.assertEqual(len(result), 4)
+        self.assertEqual(self._map_labels(result), ['a', 'b', 'c', 'f'])
 
     def test_noteq(self):
         rows = [
