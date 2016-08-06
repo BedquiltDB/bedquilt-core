@@ -5,77 +5,62 @@ import psycopg2
 
 class TestAdvancedQueries(testutils.BedquiltTestCase):
 
-    def test_eq_find_one(self):
-        mike = {'_id': "mike@example.com",
-                'name': "Mike",
-                'city': "Edinburgh",
-                'age': 32,
-                'likes': ['cats', 'crochet', 'code']}
-        jill = {'_id': "jill@example.com",
-                'name': "Jill",
-                'city': "Glasgow",
-                'age': 32,
-                'likes': ['code', 'crochet']}
-        darren = {'_id': "darren@example.com",
-                'name': "Darren",
-                'city': "Manchester"}
-        sarah = {'_id': "sarah@example.com",
-                 'name': "Sarah",
-                 'city': "Glasgow",
-                 'age': 34,
-                 'likes': ['icecream', 'cats']}
+    def test_eq(self):
+        rows = [
+            {"_id": "aa", "label": "a", "n": 1,  "color": "red"},
+            {"_id": "bb", "label": "b", "n": 4,  "color": "red"},
+            {"_id": "cc", "label": "c", "n": 8,  "color": "red"},
+            {"_id": "dd", "label": "d", "n": 16, "color": "blue"},
+            {"_id": "ee", "label": "e", "n": 8,  "color": "blue"},
+            {"_id": "ff", "label": "f", "n": 16, "color": "red"},
+            {"_id": "dud", "color": "blue"}
+        ]
+        for row in rows:
+            self._insert('things', row)
 
-        self._insert('people', mike)
-        self._insert('people', jill)
-        self._insert('people', darren)
-        self._insert('people', sarah)
+        # find_one
+        result = self._query(
+            "select bq_find_one('things', '{}')".format(json.dumps({
+                'color': 'blue',
+                'n': {'$eq': 8},
+            }))
+        )
+        self.assertEqual(result[0][0]['label'], 'e')
 
-        result = self._query("""
-        select bq_find_one('people', '{"likes": {"$eq": ["code", "crochet"]}}')
-        """)
-        self.assertEqual(result, [(jill,)])
+        result = self._query(
+            "select bq_find_one('things', '{}')".format(json.dumps({
+                'color': 'red',
+                'n': {'$eq': 16},
+            }))
+        )
+        self.assertEqual(result[0][0]['label'], 'f')
 
-    def test_gt_find_one(self):
-        mike = {'_id': "mike@example.com",
-                'name': "Mike",
-                'city': "Edinburgh",
-                'age': 32,
-                'likes': ['cats', 'crochet', 'code']}
-        jill = {'_id': "jill@example.com",
-                'name': "Jill",
-                'city': "Glasgow",
-                'age': 32,
-                'likes': ['code', 'crochet']}
-        darren = {'_id': "darren@example.com",
-                'name': "Darren",
-                'city': "Manchester"}
-        sarah = {'_id': "sarah@example.com",
-                 'name': "Sarah",
-                 'city': "Glasgow",
-                 'age': 34,
-                 'likes': ['icecream', 'cats']}
+    def test_gt(self):
+        rows = [
+            {"_id": "aa", "label": "a", "n": 1,  "color": "red"},
+            {"_id": "bb", "label": "b", "n": 4,  "color": "red"},
+            {"_id": "cc", "label": "c", "n": 8,  "color": "red"},
+            {"_id": "dd", "label": "d", "n": 16, "color": "blue"},
+            {"_id": "ee", "label": "e", "n": 8,  "color": "blue"},
+            {"_id": "ff", "label": "f", "n": 16, "color": "red"},
+            {"_id": "dud", "color": "blue"}
+        ]
+        for row in rows:
+            self._insert('things', row)
 
-        self._insert('people', mike)
-        self._insert('people', jill)
-        self._insert('people', darren)
-        self._insert('people', sarah)
+        # find_one
+        result = self._query(
+            "select bq_find_one('things', '{}')".format(json.dumps({
+                'color': 'blue',
+                'n': {'$gt': 5},
+            }))
+        )
+        self.assertEqual(result[0][0]['label'], 'd')
 
-        result = self._query("""
-        select bq_find_one('people', '{"age": {"$gt": 32}}')
-        """)
-        self.assertEqual(result, [(sarah,)])
-
-        result = self._query("""
-        select bq_find_one('people', '{"age": {"$gt": 30}}')
-        """)
-        self.assertEqual(result, [(mike,)])
-
-        result = self._query("""
-        select bq_find_one('people', '{"age": {"$gt": 34}}')
-        """)
-        self.assertEqual(result, [])
-
-        result = self._query("""
-        select bq_find_one('people', '{"age": {"$gte": 34}}')
-        """)
-        self.assertEqual(result, [(sarah,)])
+        result = self._query(
+            "select bq_find_one('things', '{}')".format(json.dumps({
+                'color': 'red',
+                'n': {'$gt': 5},
+            }))
+        )
+        self.assertEqual(result[0][0]['label'], 'c')
