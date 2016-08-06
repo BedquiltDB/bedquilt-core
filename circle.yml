@@ -12,3 +12,7 @@ dependencies:
 database:
   override:
     - createdb bedquilt_test
+
+test:
+  override:
+    - make test
