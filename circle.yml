@@ -16,6 +16,7 @@ dependencies:
 
 database:
   override:
+    - createuser -s -d ubuntu
     - createdb bedquilt_test
 
 test:
