@@ -248,7 +248,7 @@ AS $$
                 deletions.append(k)
             else:
                 if type(v) == dict:
-                    p = current_path.copy()
+                    p = list(current_path)
                     p.extend([k])
                     proc(v, p)
                     if len(v.keys()) == 0:
