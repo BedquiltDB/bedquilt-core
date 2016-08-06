@@ -15,4 +15,4 @@ database:
 
 test:
   override:
-    - make test
+    - sudo make test
