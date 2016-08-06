@@ -16,7 +16,7 @@ dependencies:
 
 database:
   override:
-    - createuser -s -d ubuntu
+    - sudo su postgres -c 'createuser -s -d ubuntu'
     - createdb bedquilt_test
 
 test:
