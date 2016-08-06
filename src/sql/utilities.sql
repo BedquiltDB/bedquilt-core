@@ -235,6 +235,13 @@ AS $$
                         ",".join(current_path),
                         json.dumps(v)
                     ).strip()
+                elif k == '$notin':
+                    if type(v) is not list:
+                        plpy.error("Value of '$notin' operator must be an array")
+                    s = "not (bq_jdoc #> '{{{}}}' <@ '{}'::jsonb)".format(
+                        ",".join(current_path),
+                        json.dumps(v)
+                    ).strip()
                 else:
                     plpy.error("Invalid query operator: {}".format(k))
                 special_queries.append(s)
