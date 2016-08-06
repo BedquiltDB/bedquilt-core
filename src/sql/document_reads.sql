@@ -80,10 +80,13 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION bq_find(i_coll text, i_json_query json, i_skip integer DEFAULT 0, i_limit integer DEFAULT null, i_sort json DEFAULT null)
 RETURNS table(bq_jdoc json) AS $$
 DECLARE
-  q text = format('select bq_jdoc::json from %I where 1=1', i_coll);
+  q text = format('select bq_jdoc::json from %I ', i_coll);
+  mq text;
+  sq text[];
+  s text;
 BEGIN
-IF (SELECT bq_collection_exists(i_coll))
-THEN
+  IF (SELECT bq_collection_exists(i_coll))
+  THEN
     IF json_typeof(i_sort) != 'array'
     THEN
       RAISE EXCEPTION
@@ -91,8 +94,18 @@ THEN
       USING HINT = 'The i_sort parameter to bq_find should be a json array';
     END IF;
     -- query match
-    q := q || format(' and bq_jdoc @> (%s)::jsonb ',
-                     quote_literal(i_json_query));
+    SELECT match_query, special_queries
+      FROM bq_split_queries(i_json_query::jsonb)
+      INTO mq, sq;
+    q := q || format(' WHERE bq_jdoc @> (%s)::jsonb ', quote_literal(mq));
+    -- special queries
+    IF array_length(sq, 1) > 0
+    THEN
+      FOREACH s IN ARRAY sq
+      LOOP
+        q := q || format(' AND %s ', s);
+      END LOOP;
+    END IF;
     -- sort
     IF (i_sort IS NOT NULL)
     THEN
@@ -108,7 +121,7 @@ THEN
     -- final query
     q := q || format(' offset %s ', i_skip);
     RETURN QUERY EXECUTE q;
-END IF;
+  END IF;
 END
 $$ LANGUAGE plpgsql;
 
