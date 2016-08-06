@@ -110,3 +110,29 @@ class TestAdvancedQueries(testutils.BedquiltTestCase):
             }))
         )
         self.assertEqual(result[0][0]['label'], 'e')
+
+    def test_noteq(self):
+        rows = [
+            {"_id": "aa", "label": "a", "n": 1,  "color": "red"},
+            {"_id": "bb", "label": "b", "n": 4,  "color": "red"},
+            {"_id": "dud", "color": "blue"}
+        ]
+        for row in rows:
+            self._insert('things', row)
+
+        # find_one
+        result = self._query(
+            "select bq_find_one('things', '{}')".format(json.dumps({
+                'color': 'red',
+                'n': {'$noteq': 1},
+            }))
+        )
+        self.assertEqual(result[0][0]['label'], 'b')
+
+        result = self._query(
+            "select bq_find_one('things', '{}')".format(json.dumps({
+                'color': 'red',
+                'n': {'$noteq': 4},
+            }))
+        )
+        self.assertEqual(result[0][0]['label'], 'a')
