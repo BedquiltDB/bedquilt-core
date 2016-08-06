@@ -1,0 +1,18 @@
+machine:
+  timezone:
+    UTC
+  services:
+    - postgresql
+
+dependencies:
+  pre:
+    - sudo apt-get update; sudo apt-get install python-pip build-essential python-dev libpq-dev
+    - sudo pip install psycopg2 jinja2
+
+database:
+  override:
+    - createdb bedquilt_test
+
+test:
+  override:
+    - sudo make test
