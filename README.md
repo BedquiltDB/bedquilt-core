@@ -6,6 +6,8 @@
 
 A JSON store on PostgreSQL.
 
+[![CircleCI](https://circleci.com/gh/BedquiltDB/bedquilt-core/tree/master.svg?style=svg)](https://circleci.com/gh/BedquiltDB/bedquilt-core/tree/master)
+
 
 # Releases
 
@@ -114,7 +116,7 @@ respective driver repositories.
 
 ## From a pre-built package (recommended)
 
-To install BedquiltDB on your PostgreSQL server, follow the instructions here: 
+To install BedquiltDB on your PostgreSQL server, follow the instructions here:
 
 http://bedquiltdb.readthedocs.org/en/latest/guide/installation/
 
