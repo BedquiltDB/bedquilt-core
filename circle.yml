@@ -11,7 +11,7 @@ dependencies:
     - sudo apt-get install build-essential
     - sudo apt-get install python-dev
     - sudo apt-get install libpq-dev
-    - sudo apt-get install postgresql-plpython3-9.4
+    - sudo apt-get install postgresql-plpython3-9.5
     - sudo pip install psycopg2 jinja2
 
 database:
