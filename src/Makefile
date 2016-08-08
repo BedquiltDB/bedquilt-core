@@ -18,7 +18,6 @@ PG91 = $(shell $(PG_CONFIG) --version \
 
 
 ifeq ($(PG91),yes)
-DATA = $(wildcard sql/*--*.sql) sql/$(EXTENSION)--$(EXTVERSION).sql
 EXTRA_CLEAN = sql/$(EXTENSION)--$(EXTVERSION).sql
 endif
 
