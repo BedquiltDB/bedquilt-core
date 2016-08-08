@@ -184,78 +184,78 @@ CREATE TYPE bq_split_queries_result AS (
 CREATE OR REPLACE FUNCTION bq_split_queries(i_json jsonb)
   RETURNS bq_split_queries_result
 AS $$
-    if 'json' in SD:
-        json = SD['json']
-    else:
-        import json
-        SD['json'] = json
+  if 'json' in SD:
+    json = SD['json']
+  else:
+    import json
+    SD['json'] = json
 
-    data = json.loads(i_json)
-    special_queries = []
-    def proc(d, current_path):
-        keys = d.keys()
-        deletions = []
-        for k in keys:
-            v = d[k]
-            if k.startswith('$'):
-                if k == '$eq':
-                    s = "bq_jdoc #> '{{{}}}' = '{}'::jsonb".format(
-                        ",".join(current_path),
-                        json.dumps(v)
-                    ).strip()
-                elif k == '$noteq':
-                    s = "(bq_jdoc #> '{{{}}}' != '{}'::jsonb or bq_jdoc #> '{{{}}}' is null)".format(
-                        ",".join(current_path),
-                        json.dumps(v),
-                        ",".join(current_path)
-                    ).strip()
-                elif k == '$gte':
-                    s = "bq_jdoc #> '{{{}}}' >= '{}'::jsonb".format(
-                        ",".join(current_path),
-                        json.dumps(v)
-                    ).strip()
-                elif k == '$gt':
-                    s = "bq_jdoc #> '{{{}}}' > '{}'::jsonb".format(
-                        ",".join(current_path),
-                        json.dumps(v)
-                    ).strip()
-                elif k == '$lte':
-                    s = "bq_jdoc #> '{{{}}}' <= '{}'::jsonb".format(
-                        ",".join(current_path),
-                        json.dumps(v)
-                    ).strip()
-                elif k == '$lt':
-                    s = "bq_jdoc #> '{{{}}}' < '{}'::jsonb".format(
-                        ",".join(current_path),
-                        json.dumps(v)
-                    ).strip()
-                elif k == '$in':
-                    if type(v) is not list:
-                        plpy.error("Value of '$in' operator must be an array")
-                    s = "bq_jdoc #> '{{{}}}' <@ '{}'::jsonb".format(
-                        ",".join(current_path),
-                        json.dumps(v)
-                    ).strip()
-                elif k == '$notin':
-                    if type(v) is not list:
-                        plpy.error("Value of '$notin' operator must be an array")
-                    s = "not (bq_jdoc #> '{{{}}}' <@ '{}'::jsonb)".format(
-                        ",".join(current_path),
-                        json.dumps(v)
-                    ).strip()
-                else:
-                    plpy.error("Invalid query operator: {}".format(k))
-                special_queries.append(s)
-                deletions.append(k)
-            else:
-                if type(v) == dict:
-                    p = list(current_path)
-                    p.extend([k])
-                    proc(v, p)
-                    if len(v.keys()) == 0:
-                        deletions.append(k)
-        for s in deletions:
-            del d[s]
-    proc(data, [])
-    return (json.dumps(data), special_queries)
+  data = json.loads(i_json)
+  special_queries = []
+  def proc(d, current_path):
+    keys = d.keys()
+    deletions = []
+    for k in keys:
+      v = d[k]
+      if k.startswith('$'):
+        if k == '$eq':
+          s = "bq_jdoc #> '{{{}}}' = '{}'::jsonb".format(
+            ",".join(current_path),
+            json.dumps(v)
+          ).strip()
+        elif k == '$noteq':
+          s = "(bq_jdoc #> '{{{}}}' != '{}'::jsonb or bq_jdoc #> '{{{}}}' is null)".format(
+            ",".join(current_path),
+            json.dumps(v),
+            ",".join(current_path)
+          ).strip()
+        elif k == '$gte':
+          s = "bq_jdoc #> '{{{}}}' >= '{}'::jsonb".format(
+            ",".join(current_path),
+            json.dumps(v)
+          ).strip()
+        elif k == '$gt':
+          s = "bq_jdoc #> '{{{}}}' > '{}'::jsonb".format(
+            ",".join(current_path),
+            json.dumps(v)
+          ).strip()
+        elif k == '$lte':
+          s = "bq_jdoc #> '{{{}}}' <= '{}'::jsonb".format(
+            ",".join(current_path),
+            json.dumps(v)
+          ).strip()
+        elif k == '$lt':
+          s = "bq_jdoc #> '{{{}}}' < '{}'::jsonb".format(
+            ",".join(current_path),
+            json.dumps(v)
+          ).strip()
+        elif k == '$in':
+          if type(v) is not list:
+            plpy.error("Value of '$in' operator must be an array")
+          s = "bq_jdoc #> '{{{}}}' <@ '{}'::jsonb".format(
+            ",".join(current_path),
+            json.dumps(v)
+          ).strip()
+        elif k == '$notin':
+          if type(v) is not list:
+            plpy.error("Value of '$notin' operator must be an array")
+          s = "not (bq_jdoc #> '{{{}}}' <@ '{}'::jsonb)".format(
+            ",".join(current_path),
+            json.dumps(v)
+          ).strip()
+        else:
+          plpy.error("Invalid query operator: {}".format(k))
+        special_queries.append(s)
+        deletions.append(k)
+      else:
+        if type(v) == dict:
+          p = list(current_path)
+          p.extend([k])
+          proc(v, p)
+          if len(v.keys()) == 0:
+            deletions.append(k)
+    for s in deletions:
+      del d[s]
+  proc(data, [])
+  return (json.dumps(data), special_queries)
 $$ LANGUAGE plpython3u;
