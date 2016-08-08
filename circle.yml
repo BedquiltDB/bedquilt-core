@@ -12,6 +12,7 @@ dependencies:
     - sudo apt-get install python-dev
     - sudo apt-get install libpq-dev
     - sudo apt-get install postgresql-server-dev-9.5
+    - sudo apt-get install postgresql-common
     - sudo apt-get install postgresql-plpython3-9.5
     - sudo pip install psycopg2 jinja2
 
