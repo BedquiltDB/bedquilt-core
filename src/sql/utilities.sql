@@ -204,9 +204,10 @@ AS $$
                         json.dumps(v)
                     ).strip()
                 elif k == '$noteq':
-                    s = "bq_jdoc #> '{{{}}}' != '{}'::jsonb".format(
+                    s = "(bq_jdoc #> '{{{}}}' != '{}'::jsonb or bq_jdoc #> '{{{}}}' is null)".format(
                         ",".join(current_path),
-                        json.dumps(v)
+                        json.dumps(v),
+                        ",".join(current_path)
                     ).strip()
                 elif k == '$gte':
                     s = "bq_jdoc #> '{{{}}}' >= '{}'::jsonb".format(

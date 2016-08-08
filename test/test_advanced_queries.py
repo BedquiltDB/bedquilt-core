@@ -57,9 +57,10 @@ class TestAdvancedQueries(testutils.BedquiltTestCase):
 
     def test_noteq(self):
         rows = [
+            {"_id": "wat", "label": "oh", "color": "purple"},
             {"_id": "aa", "label": "a", "n": 1,  "color": "red"},
             {"_id": "bb", "label": "b", "n": 4,  "color": "red"},
-            {"_id": "dud", "color": "blue"}
+            {"_id": "dud", "label": "dud", "color": "blue"}
         ]
         for row in rows:
             self._insert('things', row)
@@ -80,6 +81,16 @@ class TestAdvancedQueries(testutils.BedquiltTestCase):
             }))
         )
         self.assertEqual(result[0][0]['label'], 'a')
+
+        # find many
+        result = self._query(
+            "select bq_find('things', '{}')".format(json.dumps({
+                'n': {'$noteq': 4},
+            }))
+        )
+        self.assertEqual(len(result), 3)
+        self.assertEqual(self._map_labels(result), ['oh', 'a', 'dud'])
+
 
     def test_gt_and_gte(self):
         rows = [

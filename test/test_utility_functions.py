@@ -81,7 +81,7 @@ class TestSplitQueries(testutils.BedquiltTestCase):
             (
                 {'a': {'b': {'$noteq': 42}}},
                 {},
-                ["bq_jdoc #> '{a,b}' != '42'::jsonb"]
+                ["(bq_jdoc #> '{a,b}' != '42'::jsonb or bq_jdoc #> '{a,b}' is null)"]
             ),
             (
                 {'a': {'b': {'$gte': 42}}},
