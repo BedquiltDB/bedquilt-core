@@ -7,7 +7,8 @@ EXTVERSION = $(shell grep -m 1 '[[:space:]]\{8\}"version":' META.json | \
 	sed -e 's/[[:space:]]*"version":[[:space:]]*"\([^"]*\)",\{0,1\}/\1/')
 
 
-DATA = $(filter-out $(wildcard sql/*--*.sql),$(wildcard sql/*.sql))
+#DATA = $(filter-out $(wildcard sql/*--*.sql),$(wildcard sql/*.sql))
+DATA = $(wildcard sql/*--*.sql)
 DOCS = $(wildcard doc/*.md)
 TESTS = $(wildcard test/sql/*.sql)
 REGRESS = $(patsubst test/sql/%.sql,%,$(TESTS))
