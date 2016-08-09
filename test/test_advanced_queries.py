@@ -91,6 +91,21 @@ class TestAdvancedQueries(testutils.BedquiltTestCase):
         self.assertEqual(len(result), 3)
         self.assertEqual(self._map_labels(result), ['oh', 'a', 'dud'])
 
+        result = self._query(
+            "select bq_find('things', '{}')".format(json.dumps({
+                'n': {'$noteq': 400},
+            }))
+        )
+        self.assertEqual(len(result), 4)
+        self.assertEqual(self._map_labels(result), ['oh', 'a', 'b', 'dud'])
+
+        result = self._query(
+            "select bq_find('things', '{}')".format(json.dumps({
+                'color': {'$noteq': 'red'},
+            }))
+        )
+        self.assertEqual(len(result), 2)
+        self.assertEqual(self._map_labels(result), ['oh', 'dud'])
 
     def test_gt_and_gte(self):
         rows = [
