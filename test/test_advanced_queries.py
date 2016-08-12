@@ -251,6 +251,16 @@ class TestAdvancedQueries(testutils.BedquiltTestCase):
         )
         self.assertEqual(result[0][0]['label'], 'e')
 
+        # find many
+        result = self._query(
+            "select bq_find('things', '{}')".format(json.dumps({
+                'color': 'red',
+                'n': {'$in': [4, 2, 16, 9]},
+            }))
+        )
+        self.assertEqual(len(result), 2)
+        self.assertEqual(self._map_labels(result), ['b', 'f'])
+
     def test_notin(self):
         rows = [
             {"_id": "aa", "label": "a", "n": 1,  "color": "red"},
@@ -280,3 +290,13 @@ class TestAdvancedQueries(testutils.BedquiltTestCase):
             }))
         )
         self.assertEqual(result[0][0]['label'], 'e')
+
+        # find many
+        result = self._query(
+            "select bq_find('things', '{}')".format(json.dumps({
+                'color': 'red',
+                'n': {'$notin': [22, 4, 8]},
+            }))
+        )
+        self.assertEqual(len(result), 2)
+        self.assertEqual(self._map_labels(result), ['a', 'f'])
