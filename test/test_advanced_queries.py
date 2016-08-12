@@ -145,6 +145,25 @@ class TestAdvancedQueries(testutils.BedquiltTestCase):
         )
         self.assertEqual(result[0][0]['label'], 'c')
 
+        # find many
+        result = self._query(
+            "select bq_find('things', '{}')".format(json.dumps({
+                'color': 'blue',
+                'n': {'$gt': 5},
+            }))
+        )
+        self.assertEqual(len(result), 2)
+        self.assertEqual(self._map_labels(result), ['d', 'e'])
+
+        result = self._query(
+            "select bq_find('things', '{}')".format(json.dumps({
+                'color': 'red',
+                'n': {'$gte': 4},
+            }))
+        )
+        self.assertEqual(len(result), 3)
+        self.assertEqual(self._map_labels(result), ['b', 'c', 'f'])
+
     def test_lt(self):
         rows = [
             {"_id": "aa", "label": "a", "n": 1,  "color": "red"},
