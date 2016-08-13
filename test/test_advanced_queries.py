@@ -300,3 +300,62 @@ class TestAdvancedQueries(testutils.BedquiltTestCase):
         )
         self.assertEqual(len(result), 2)
         self.assertEqual(self._map_labels(result), ['a', 'f'])
+
+    def test_exists(self):
+        rows = [
+            {"_id": "aa", "color": "red",  "label": "a", "nested": {"x": 42}},
+            {"_id": "bb", "color": "blue", "label": "b"},
+            {"_id": "cc", "color": "blue", "label": "c", "nested": {"x": 44}},
+            {"_id": "dd", "color": "red",  "label": "d", "nested": {"y": 13}},
+            {"_id": "ee", "color": "blue", "label": "e", "nested": {"x": 46}},
+            {"_id": "ff", "color": "red",  "label": "f"},
+            {"_id": "gg", "color": "blue", "label": "g"},
+        ]
+        for row in rows:
+            self._insert('things', row)
+
+        # exists=true, find one
+        result = self._query(
+            "select bq_find_one('things', '{}')".format(json.dumps({
+                'color': 'blue',
+                'nested': {
+                    'x': {'$exists': True}
+                },
+            }))
+        )
+        self.assertEqual(result[0][0]['label'], 'c')
+
+        # exists=true, find many
+        result = self._query(
+            "select bq_find('things', '{}')".format(json.dumps({
+                'color': 'blue',
+                'nested': {
+                    'x': {'$exists': True}
+                },
+            }))
+        )
+        self.assertEqual(len(result), 2)
+        self.assertEqual(self._map_labels(result), ['c', 'e'])
+
+        # exists=false, find one
+        result = self._query(
+            "select bq_find_one('things', '{}')".format(json.dumps({
+                'color': 'blue',
+                'nested': {
+                    'x': {'$exists': False}
+                },
+            }))
+        )
+        self.assertEqual(result[0][0]['label'], 'b')
+
+        # exists=false, find many
+        result = self._query(
+            "select bq_find('things', '{}')".format(json.dumps({
+                'color': 'blue',
+                'nested': {
+                    'x': {'$exists': False}
+                },
+            }))
+        )
+        self.assertEqual(len(result), 2)
+        self.assertEqual(self._map_labels(result), ['b', 'g'])

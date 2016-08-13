@@ -243,6 +243,17 @@ AS $$
             ",".join(current_path),
             json.dumps(v)
           ).strip()
+        elif k == '$exists':
+          if type(v) is not bool:
+            plpy.error("Value of '$exists' operator must be a boolean")
+          if v is True:
+            s = "bq_jdoc #> '{{{}}}' is not null".format(
+              ",".join(current_path),
+            ).strip()
+          else:
+            s = "bq_jdoc #> '{{{}}}' is null".format(
+              ",".join(current_path),
+            ).strip()
         else:
           plpy.error("Invalid query operator: {}".format(k))
         special_queries.append(s)
