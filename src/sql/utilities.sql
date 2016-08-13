@@ -263,6 +263,14 @@ AS $$
               ",".join(current_path),
             ).strip()
 
+        elif k == '$type':
+          if type(v) is not str:
+            plpy.error("Value of '$type' operator must be a string")
+          s = "jsonb_typeof(bq_jdoc #> '{{{}}}') = '{}'".format(
+            ",".join(current_path),
+            v
+          ).strip()
+
         else:
           plpy.error("Invalid query operator: {}".format(k))
         special_queries.append(s)

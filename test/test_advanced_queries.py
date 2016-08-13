@@ -359,3 +359,56 @@ class TestAdvancedQueries(testutils.BedquiltTestCase):
         )
         self.assertEqual(len(result), 2)
         self.assertEqual(self._map_labels(result), ['b', 'g'])
+
+    def test_type(self):
+        rows = [
+            {'label': 'a', 'x': 42},
+            {'label': 'b', 'x': 'wat'},
+            {'label': 'c', 'x': None},
+            {'label': 'd', 'x': 90},
+            {'label': 'e', 'x': True},
+            {'label': 'f', 'x': 'wat'},
+            {'label': 'g', 'x': [1, 2, 3]},
+            {'label': 'h', 'x': {'foo': 'bar'}},
+            {'label': 'i', 'x': [4, 5]},
+            {'label': 'j', 'x': False},
+            {'label': 'k', 'x': {'foo': 'baz'}},
+            {'label': 'l', 'x': None},
+            {'label': 'm', 'x': None}
+        ]
+        for row in rows:
+            self._insert('things', row)
+
+        # find one
+        examples = [
+            ('number',  'a'),
+            ('string',  'b'),
+            ('object',  'h'),
+            ('array',   'g'),
+            ('boolean', 'e'),
+            ('null',    'c')
+        ]
+        for type_string, label in examples:
+            result = self._query(
+                "select bq_find_one('things', '{}')".format(json.dumps({
+                    'x': {'$type': type_string}
+                }))
+            )
+            self.assertEqual(result[0][0]['label'], label)
+
+        # find many
+        examples = [
+            ('number',  ['a', 'd']),
+            ('string',  ['b', 'f']),
+            ('object',  ['h', 'k']),
+            ('array',   ['g', 'i']),
+            ('boolean', ['e', 'j']),
+            ('null',    ['c', 'l', 'm'])
+        ]
+        for type_string, labels in examples:
+            result = self._query(
+                "select bq_find('things', '{}')".format(json.dumps({
+                    'x': {'$type': type_string}
+                }))
+            )
+            self.assertEqual(self._map_labels(result), labels)
