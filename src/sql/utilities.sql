@@ -271,6 +271,16 @@ AS $$
             v
           ).strip()
 
+        elif k == '$like':
+          if type(v) is not str:
+            plpy.error("Value of '$like' operator must be a string")
+          s = "jsonb_typeof(bq_jdoc#>'{{{}}}')='string' and bq_jdoc#>>'{{{}}}' like '{}'".format(
+            ",".join(current_path),
+            ",".join(current_path),
+            v
+          ).strip()
+
+
         else:
           plpy.error("Invalid query operator: {}".format(k))
         special_queries.append(s)

@@ -412,3 +412,47 @@ class TestAdvancedQueries(testutils.BedquiltTestCase):
                 }))
             )
             self.assertEqual(self._map_labels(result), labels)
+
+    def test_like(self):
+        rows = [
+            {'label': 'a', 'x': 42},
+            {'label': 'b', 'x': 'one two'},
+            {'label': 'c', 'x': 'oh no two'},
+            {'label': 'd', 'x': 90},
+            {'label': 'e', 'x': True},
+            {'label': 'f', 'x': 'three four'},
+            {'label': 'g', 'x': 'nine four'},
+        ]
+        for row in rows:
+            self._insert('things', row)
+
+        examples = [
+            ('%two',    'b'),
+            ('%one%',   'b'),
+            ('%four',   'f'),
+            ('%ree f%', 'f')
+        ]
+
+        # find one
+        for like_string, label in examples:
+            result = self._query(
+                "select bq_find_one('things', '{}')".format(json.dumps({
+                    'x': {'$like': like_string}
+                }))
+            )
+            self.assertEqual(result[0][0]['label'], label)
+
+        # find many
+        examples = [
+            ('%two',    ['b', 'c']),
+            ('%o%',     ['b','c','f', 'g']),
+            ('%four',   ['f', 'g']),
+            ('%ree f%', ['f'])
+        ]
+        for like_string, labels in examples:
+            result = self._query(
+                "select bq_find('things', '{}')".format(json.dumps({
+                    'x': {'$like': like_string}
+                }))
+            )
+            self.assertEqual(self._map_labels(result), labels)
