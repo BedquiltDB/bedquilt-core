@@ -203,32 +203,38 @@ AS $$
             ",".join(current_path),
             json.dumps(v)
           ).strip()
+
         elif k == '$noteq':
           s = "(bq_jdoc #> '{{{}}}' != '{}'::jsonb or bq_jdoc #> '{{{}}}' is null)".format(
             ",".join(current_path),
             json.dumps(v),
             ",".join(current_path)
           ).strip()
+
         elif k == '$gte':
           s = "bq_jdoc #> '{{{}}}' >= '{}'::jsonb".format(
             ",".join(current_path),
             json.dumps(v)
           ).strip()
+
         elif k == '$gt':
           s = "bq_jdoc #> '{{{}}}' > '{}'::jsonb".format(
             ",".join(current_path),
             json.dumps(v)
           ).strip()
+
         elif k == '$lte':
           s = "bq_jdoc #> '{{{}}}' <= '{}'::jsonb".format(
             ",".join(current_path),
             json.dumps(v)
           ).strip()
+
         elif k == '$lt':
           s = "bq_jdoc #> '{{{}}}' < '{}'::jsonb".format(
             ",".join(current_path),
             json.dumps(v)
           ).strip()
+
         elif k == '$in':
           if type(v) is not list:
             plpy.error("Value of '$in' operator must be an array")
@@ -236,6 +242,7 @@ AS $$
             ",".join(current_path),
             json.dumps(v)
           ).strip()
+
         elif k == '$notin':
           if type(v) is not list:
             plpy.error("Value of '$notin' operator must be an array")
@@ -243,6 +250,7 @@ AS $$
             ",".join(current_path),
             json.dumps(v)
           ).strip()
+
         elif k == '$exists':
           if type(v) is not bool:
             plpy.error("Value of '$exists' operator must be a boolean")
@@ -254,6 +262,7 @@ AS $$
             s = "bq_jdoc #> '{{{}}}' is null".format(
               ",".join(current_path),
             ).strip()
+
         else:
           plpy.error("Invalid query operator: {}".format(k))
         special_queries.append(s)
