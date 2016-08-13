@@ -280,6 +280,14 @@ AS $$
             v
           ).strip()
 
+        elif k == '$regex':
+          if type(v) is not str:
+            plpy.error("Value of '$regex' operator must be a string")
+          s = "jsonb_typeof(bq_jdoc#>'{{{}}}')='string' and bq_jdoc#>>'{{{}}}' ~ '{}'".format(
+            ",".join(current_path),
+            ",".join(current_path),
+            v
+          ).strip()
 
         else:
           plpy.error("Invalid query operator: {}".format(k))
