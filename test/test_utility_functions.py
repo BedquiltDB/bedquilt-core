@@ -28,6 +28,7 @@ class TestSplitQueries(testutils.BedquiltTestCase):
 
     def test_advanced_queries(self):
         examples = [
+            # $eq
             (
                 {
                     'a': {
@@ -48,9 +49,7 @@ class TestSplitQueries(testutils.BedquiltTestCase):
                     },
                     'c': 44
                 },
-                {
-                    'c': 44
-                },
+                {'c': 44},
                 ["bq_jdoc #> '{a,b}' = '22'::jsonb"]
             ),
             (
@@ -62,10 +61,163 @@ class TestSplitQueries(testutils.BedquiltTestCase):
                         'c': 44
                     }
                 },
-                {
-                    'a': {'c': 44}
-                },
+                {'a': {'c': 44}},
                 ["bq_jdoc #> '{a,b}' = '22'::jsonb"]
+            ),
+            # $noteq
+            (
+                {
+                    'a': {
+                        'b': {
+                            '$noteq': 22
+                        },
+                        'c': 44
+                    }
+                },
+                {'a': {'c': 44}},
+                ["(bq_jdoc #> '{a,b}' != '22'::jsonb or bq_jdoc #> '{a,b}' is null)"]
+            ),
+            # $gte
+            (
+                {
+                    'a': {
+                        'b': {
+                            '$gte': 22
+                        },
+                        'c': 44
+                    }
+                },
+                {'a': {'c': 44}},
+                ["bq_jdoc #> '{a,b}' >= '22'::jsonb"]
+            ),
+            # $gt
+            (
+                {
+                    'a': {
+                        'b': {
+                            '$gt': 22
+                        },
+                        'c': 44
+                    }
+                },
+                {'a': {'c': 44}},
+                ["bq_jdoc #> '{a,b}' > '22'::jsonb"]
+            ),
+            # $lte
+            (
+                {
+                    'a': {
+                        'b': {
+                            '$lte': 22
+                        },
+                        'c': 44
+                    }
+                },
+                {'a': {'c': 44}},
+                ["bq_jdoc #> '{a,b}' <= '22'::jsonb"]
+            ),
+            # $lt
+            (
+                {
+                    'a': {
+                        'b': {
+                            '$lt': 22
+                        },
+                        'c': 44
+                    }
+                },
+                {'a': {'c': 44}},
+                ["bq_jdoc #> '{a,b}' < '22'::jsonb"]
+            ),
+            # $in
+            (
+                {
+                    'a': {
+                        'b': {
+                            '$in': [22, 21]
+                        },
+                        'c': 44
+                    }
+                },
+                {'a': {'c': 44}},
+                ["bq_jdoc #> '{a,b}' <@ '[22, 21]'::jsonb"]
+            ),
+            # $notin
+            (
+                {
+                    'a': {
+                        'b': {
+                            '$notin': [22, 21]
+                        },
+                        'c': 44
+                    }
+                },
+                {'a': {'c': 44}},
+                ["(not (bq_jdoc #> '{a,b}' <@ '[22, 21]'::jsonb))"]
+            ),
+            # $exists
+            (
+                {
+                    'a': {
+                        'b': {
+                            '$exists': True
+                        },
+                        'c': 44
+                    }
+                },
+                {'a': {'c': 44}},
+                ["bq_jdoc #> '{a,b}' is not null"]
+            ),
+            (
+                {
+                    'a': {
+                        'b': {
+                            '$exists': False
+                        },
+                        'c': 44
+                    }
+                },
+                {'a': {'c': 44}},
+                ["bq_jdoc #> '{a,b}' is null"]
+            ),
+            # $type
+            (
+                {
+                    'a': {
+                        'b': {
+                            '$type': 'number'
+                        },
+                        'c': 44
+                    }
+                },
+                {'a': {'c': 44}},
+                ["jsonb_typeof(bq_jdoc #> '{a,b}') = 'number'"]
+            ),
+            # $like
+            (
+                {
+                    'a': {
+                        'b': {
+                            '$like': '%wat%'
+                        },
+                        'c': 44
+                    }
+                },
+                {'a': {'c': 44}},
+                ["(jsonb_typeof(bq_jdoc#>'{a,b}')='string' and bq_jdoc#>>'{a,b}' like '%wat%')"]
+            ),
+            # $regex
+            (
+                {
+                    'a': {
+                        'b': {
+                            '$regex': '.*wat.*'
+                        },
+                        'c': 44
+                    }
+                },
+                {'a': {'c': 44}},
+                ["(jsonb_typeof(bq_jdoc#>'{a,b}')='string' and bq_jdoc#>>'{a,b}' ~ '.*wat.*')"]
             )
         ]
 

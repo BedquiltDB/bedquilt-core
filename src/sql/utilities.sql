@@ -246,7 +246,7 @@ AS $$
         elif k == '$notin':
           if type(v) is not list:
             plpy.error("Value of '$notin' operator must be an array")
-          s = "not (bq_jdoc #> '{{{}}}' <@ '{}'::jsonb)".format(
+          s = "(not (bq_jdoc #> '{{{}}}' <@ '{}'::jsonb))".format(
             ",".join(current_path),
             json.dumps(v)
           ).strip()
@@ -274,7 +274,7 @@ AS $$
         elif k == '$like':
           if type(v) is not str:
             plpy.error("Value of '$like' operator must be a string")
-          s = "jsonb_typeof(bq_jdoc#>'{{{}}}')='string' and bq_jdoc#>>'{{{}}}' like '{}'".format(
+          s = "(jsonb_typeof(bq_jdoc#>'{{{}}}')='string' and bq_jdoc#>>'{{{}}}' like '{}')".format(
             ",".join(current_path),
             ",".join(current_path),
             v
@@ -283,7 +283,7 @@ AS $$
         elif k == '$regex':
           if type(v) is not str:
             plpy.error("Value of '$regex' operator must be a string")
-          s = "jsonb_typeof(bq_jdoc#>'{{{}}}')='string' and bq_jdoc#>>'{{{}}}' ~ '{}'".format(
+          s = "(jsonb_typeof(bq_jdoc#>'{{{}}}')='string' and bq_jdoc#>>'{{{}}}' ~ '{}')".format(
             ",".join(current_path),
             ",".join(current_path),
             v

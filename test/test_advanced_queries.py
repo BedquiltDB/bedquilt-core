@@ -3,10 +3,15 @@ import json
 import psycopg2
 
 
-class TestAdvancedQueries(testutils.BedquiltTestCase):
+def _map_labels(results):
+    return list(map(lambda row: row[0]['label'], results))
 
-    def _map_labels(self, results):
-        return list(map(lambda row: row[0]['label'], results))
+
+def _map_ids(results):
+    return list(map(lambda row: row[0]['label'], results))
+
+
+class TestAdvancedQueries(testutils.BedquiltTestCase):
 
     def test_eq(self):
         rows = [
@@ -45,7 +50,7 @@ class TestAdvancedQueries(testutils.BedquiltTestCase):
             }))
         )
         self.assertEqual(len(result), 2)
-        self.assertEqual(self._map_labels(result), ['c', 'e'])
+        self.assertEqual(_map_labels(result), ['c', 'e'])
 
         result = self._query(
             "select bq_find('things', '{}')".format(json.dumps({
@@ -53,7 +58,7 @@ class TestAdvancedQueries(testutils.BedquiltTestCase):
             }))
         )
         self.assertEqual(len(result), 4)
-        self.assertEqual(self._map_labels(result), ['a', 'b', 'c', 'f'])
+        self.assertEqual(_map_labels(result), ['a', 'b', 'c', 'f'])
 
     def test_noteq(self):
         rows = [
@@ -89,7 +94,7 @@ class TestAdvancedQueries(testutils.BedquiltTestCase):
             }))
         )
         self.assertEqual(len(result), 3)
-        self.assertEqual(self._map_labels(result), ['oh', 'a', 'dud'])
+        self.assertEqual(_map_labels(result), ['oh', 'a', 'dud'])
 
         result = self._query(
             "select bq_find('things', '{}')".format(json.dumps({
@@ -97,7 +102,7 @@ class TestAdvancedQueries(testutils.BedquiltTestCase):
             }))
         )
         self.assertEqual(len(result), 4)
-        self.assertEqual(self._map_labels(result), ['oh', 'a', 'b', 'dud'])
+        self.assertEqual(_map_labels(result), ['oh', 'a', 'b', 'dud'])
 
         result = self._query(
             "select bq_find('things', '{}')".format(json.dumps({
@@ -105,7 +110,7 @@ class TestAdvancedQueries(testutils.BedquiltTestCase):
             }))
         )
         self.assertEqual(len(result), 2)
-        self.assertEqual(self._map_labels(result), ['oh', 'dud'])
+        self.assertEqual(_map_labels(result), ['oh', 'dud'])
 
     def test_gt_and_gte(self):
         rows = [
@@ -153,7 +158,7 @@ class TestAdvancedQueries(testutils.BedquiltTestCase):
             }))
         )
         self.assertEqual(len(result), 2)
-        self.assertEqual(self._map_labels(result), ['d', 'e'])
+        self.assertEqual(_map_labels(result), ['d', 'e'])
 
         result = self._query(
             "select bq_find('things', '{}')".format(json.dumps({
@@ -162,7 +167,7 @@ class TestAdvancedQueries(testutils.BedquiltTestCase):
             }))
         )
         self.assertEqual(len(result), 3)
-        self.assertEqual(self._map_labels(result), ['b', 'c', 'f'])
+        self.assertEqual(_map_labels(result), ['b', 'c', 'f'])
 
     def test_lt(self):
         rows = [
@@ -210,7 +215,7 @@ class TestAdvancedQueries(testutils.BedquiltTestCase):
             }))
         )
         self.assertEqual(len(result), 3)
-        self.assertEqual(self._map_labels(result), ['a', 'b', 'c'])
+        self.assertEqual(_map_labels(result), ['a', 'b', 'c'])
 
         result = self._query(
             "select bq_find('things', '{}')".format(json.dumps({
@@ -219,7 +224,7 @@ class TestAdvancedQueries(testutils.BedquiltTestCase):
             }))
         )
         self.assertEqual(len(result), 4)
-        self.assertEqual(self._map_labels(result), ['a', 'b', 'c', 'f'])
+        self.assertEqual(_map_labels(result), ['a', 'b', 'c', 'f'])
 
     def test_in(self):
         rows = [
@@ -259,7 +264,7 @@ class TestAdvancedQueries(testutils.BedquiltTestCase):
             }))
         )
         self.assertEqual(len(result), 2)
-        self.assertEqual(self._map_labels(result), ['b', 'f'])
+        self.assertEqual(_map_labels(result), ['b', 'f'])
 
     def test_notin(self):
         rows = [
@@ -299,7 +304,7 @@ class TestAdvancedQueries(testutils.BedquiltTestCase):
             }))
         )
         self.assertEqual(len(result), 2)
-        self.assertEqual(self._map_labels(result), ['a', 'f'])
+        self.assertEqual(_map_labels(result), ['a', 'f'])
 
     def test_exists(self):
         rows = [
@@ -335,7 +340,7 @@ class TestAdvancedQueries(testutils.BedquiltTestCase):
             }))
         )
         self.assertEqual(len(result), 2)
-        self.assertEqual(self._map_labels(result), ['c', 'e'])
+        self.assertEqual(_map_labels(result), ['c', 'e'])
 
         # exists=false, find one
         result = self._query(
@@ -358,7 +363,7 @@ class TestAdvancedQueries(testutils.BedquiltTestCase):
             }))
         )
         self.assertEqual(len(result), 2)
-        self.assertEqual(self._map_labels(result), ['b', 'g'])
+        self.assertEqual(_map_labels(result), ['b', 'g'])
 
     def test_type(self):
         rows = [
@@ -411,7 +416,7 @@ class TestAdvancedQueries(testutils.BedquiltTestCase):
                     'x': {'$type': type_string}
                 }))
             )
-            self.assertEqual(self._map_labels(result), labels)
+            self.assertEqual(_map_labels(result), labels)
 
     def test_like(self):
         rows = [
@@ -455,7 +460,7 @@ class TestAdvancedQueries(testutils.BedquiltTestCase):
                     'x': {'$like': like_string}
                 }))
             )
-            self.assertEqual(self._map_labels(result), labels)
+            self.assertEqual(_map_labels(result), labels)
 
     def test_regex(self):
         rows = [
@@ -499,4 +504,4 @@ class TestAdvancedQueries(testutils.BedquiltTestCase):
                     'x': {'$regex': regex_string}
                 }))
             )
-            self.assertEqual(self._map_labels(result), labels)
+            self.assertEqual(_map_labels(result), labels)
