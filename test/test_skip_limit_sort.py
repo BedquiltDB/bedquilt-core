@@ -7,6 +7,100 @@ import psycopg2
 def _names(rows):
     return map(lambda x: x[0]['name'], rows)
 
+class TestFindOneWithSkipAndSort(testutils.BedquiltTestCase):
+
+    def populate(self):
+        docs = [
+            {
+                "name": "Sarah",
+                "pet": {
+                    "name": "Snowball",
+                    "species": "dog",
+                    "age": 12
+                }
+            },
+            {
+                "name": "Jane",
+                "pet": {
+                    "name": "Mittens",
+                    "species": "cat",
+                    "age": 4
+                }
+            },
+            {
+                "name": "Eliot",
+                "pet": {
+                    "name": "Wilbur",
+                    "species": "dog",
+                    "age": 2
+                }
+            },
+            {
+                "name": "Mike",
+                "pet": {
+                    "name": "Rufus",
+                    "species": "dog",
+                    "age": 22
+                }
+            },
+            {
+                "name": "Carly",
+                "pet": {
+                    "name": "Squinty",
+                    "species": "cat",
+                    "age": 3
+                }
+            }
+        ]
+        self._query("select bq_delete_collection('people')");
+        for person in docs:
+            self._query("""
+            select bq_save('people', '{}')
+            """.format(json.dumps(person)))
+
+
+    def test_on_empty_collection(self):
+        self.cur.execute("""
+        select bq_find_one('things', '{}', 4, '[{"pet.age": 1}]')
+        """)
+        result = self.cur.fetchall()
+        self.assertEqual(result, [])
+
+        self.cur.execute("""
+        select bq_create_collection('things');
+        """)
+        _ = self.cur.fetchall()
+
+        self.cur.execute("""
+        select bq_find_one('things', '{}', 4, '[{"pet.age": 1}]')
+        """)
+        result = self.cur.fetchall()
+        self.assertEqual(result, [])
+
+    def test_simple_sort(self):
+        self.populate()
+
+        # ascending
+        result = self._query("""
+        select bq_find_one('people', '{}', 0, '[{"pet.age": 1}]')
+        """)
+        self.assertEqual(_names(result), ['Eliot'])
+
+        # descending
+        result = self._query("""
+        select bq_find_one('people', '{}', 0, '[{"pet.age": -1}]')
+        """)
+        ages = map(lambda x: x[0]['pet']['age'], result)
+        # ages should be in ascending order
+        self.assertEqual(_names(result), ['Mike'])
+
+        # with an actual query
+        result = self._query("""
+        select bq_find_one('people', '{"pet": {"species": "cat"}}',
+                       0, '[{"pet.age": 1}]')
+        """)
+        self.assertEqual(_names(result), ['Carly'])
+
 
 class TestFindWithSkipAndLimit(testutils.BedquiltTestCase):
 

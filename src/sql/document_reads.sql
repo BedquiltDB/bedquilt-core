@@ -5,7 +5,7 @@
 
 /* find one
  */
-CREATE OR REPLACE FUNCTION bq_find_one(i_coll text, i_json_query json)
+CREATE OR REPLACE FUNCTION bq_find_one(i_coll text, i_json_query json, i_skip integer DEFAULT 0, i_sort json DEFAULT null)
 RETURNS table(bq_jdoc json) AS $$
 DECLARE
   q text;
@@ -15,7 +15,9 @@ DECLARE
 BEGIN
   IF (SELECT bq_collection_exists(i_coll))
   THEN
+    -- base query
     q := format('SELECT bq_jdoc::json FROM %I', i_coll);
+    -- split json query doc into match query and special queries
     SELECT match_query, special_queries
       FROM bq_split_queries(i_json_query::jsonb)
       INTO mq, sq;
@@ -27,7 +29,15 @@ BEGIN
         q := q || format(' AND %s ', s);
       END LOOP;
     END IF;
-    q := q || ' ORDER BY created ASC LIMIT 1; ';
+    -- sort
+    IF (i_sort IS NOT NULL)
+    THEN
+      q := q || format(' %s ', bq_sort_to_text(i_sort));
+    END IF;
+    -- skip
+    q := q || format(' offset %s ', i_skip);
+    -- final query
+    q := q || ' limit 1 ';
     RETURN QUERY EXECUTE q;
   END IF;
 END
@@ -118,8 +128,8 @@ BEGIN
     ELSE
       q := q || format(' limit NULL ');
     END IF;
-    -- final query
     q := q || format(' offset %s ', i_skip);
+    -- final query
     RETURN QUERY EXECUTE q;
   END IF;
 END
