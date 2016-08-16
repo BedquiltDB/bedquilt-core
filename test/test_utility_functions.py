@@ -7,9 +7,12 @@ class TestSplitQueries(testutils.BedquiltTestCase):
 
     def _assert_examples(self, examples):
         for query, match, specials in examples:
-            result = self._query("""
-            select * from bq_split_queries('{}'::jsonb)
-            """.format(json.dumps(query)))
+            result = self._query(
+                """
+                select * from bq_split_queries(%s::jsonb)
+                """,
+                (json.dumps(query),)
+            )
             self.assertEqual(json.loads(result[0][0]), match)
             self.assertEqual(result[0][1], specials)
 

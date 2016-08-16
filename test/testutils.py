@@ -33,18 +33,22 @@ def clean_database(conn):
 
     conn.commit()
 
+
 class BedquiltTestCase(unittest.TestCase):
 
     def _insert(self, collection, document):
+        if type(document) is dict:
+            document = json.dumps(document)
         return self._query("""
         select bq_insert(
-            '{coll}',
-            '{doc}'
+          %s, %s
         );
-        """.format(coll=collection, doc=json.dumps(document)))
+        """, (collection, document))
 
-    def _query(self, query):
-        self.cur.execute(query)
+    def _query(self, query, params=None):
+        if params is None:
+            params = tuple()
+        self.cur.execute(query, params)
         self.conn.commit()
         return self.cur.fetchall()
 

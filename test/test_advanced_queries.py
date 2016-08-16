@@ -434,16 +434,15 @@ class TestAdvancedQueries(testutils.BedquiltTestCase):
         examples = [
             ('%two',    'b'),
             ('%one%',   'b'),
-            ('%four',   'f'),
-            ('%ree f%', 'f')
+            ('%ree f%', 'f'),
+            ('%four',   'f')
         ]
 
         # find one
         for like_string, label in examples:
             result = self._query(
-                "select bq_find_one('things', '{}')".format(json.dumps({
-                    'x': {'$like': like_string}
-                }))
+                "select bq_find_one('things', %s)",
+                (format(json.dumps({'x': {'$like': like_string}})),)
             )
             self.assertEqual(result[0][0]['label'], label)
 
@@ -456,9 +455,8 @@ class TestAdvancedQueries(testutils.BedquiltTestCase):
         ]
         for like_string, labels in examples:
             result = self._query(
-                "select bq_find('things', '{}')".format(json.dumps({
-                    'x': {'$like': like_string}
-                }))
+                "select bq_find('things', %s)",
+                (format(json.dumps({'x': {'$like': like_string}})),)
             )
             self.assertEqual(_map_labels(result), labels)
 
