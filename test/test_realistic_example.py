@@ -16,5 +16,17 @@ class TestFindOneWithSkipAndSort(testutils.BedquiltTestCase):
 
     def test_count(self):
         self.populate()
-        result = self._query("select bq_count('posts', '{}')")
+        result = self._query(
+            "select bq_count('posts', '{}')"
+        )
         self.assertEqual(result[0][0], 101)
+
+        result = self._query(
+            """select bq_count('posts', '{"data": {"author": "kungfooey"}}')"""
+        )
+        self.assertEqual(result[0][0], 2)
+
+        result = self._query(
+            """select bq_count('posts', '{"data": {"stickied": false}}')"""
+        )
+        self.assertEqual(result[0][0], 100)
