@@ -4,6 +4,10 @@ import string
 import psycopg2
 
 
+def post_id(doc):
+    return doc['data']['id']
+
+
 class TestFindOneWithSkipAndSort(testutils.BedquiltTestCase):
 
     def populate(self):
@@ -30,3 +34,40 @@ class TestFindOneWithSkipAndSort(testutils.BedquiltTestCase):
             """select bq_count('posts', '{"data": {"stickied": false}}')"""
         )
         self.assertEqual(result[0][0], 100)
+
+    def test_find_one(self):
+        self.populate()
+
+        result = self._query("""
+        select bq_find_one('posts', '{"data": {"score": 3}}')
+        """)
+        self.assertEqual(post_id(result[0][0]), "4xug6r")
+
+        result = self._query("""
+        select bq_find_one('posts', '{"data": {"author": "ExoHuman15"}}')
+        """)
+        self.assertEqual(post_id(result[0][0]), "4xt19h")
+
+        result = self._query("""
+        select bq_find_one('posts', '{"data": {"score": {"$gt": 5, "$lte": 22}}}')
+        """)
+        self.assertEqual(post_id(result[0][0]), "4xx22u")
+
+        result = self._query("""
+        select bq_find_one(
+          'posts',
+          '{"data": {"score": {"$gt": 5, "$lte": 22}}}',
+          2,
+          '[{"score": -1}]'
+        )
+        """)
+        self.assertEqual(post_id(result[0][0]), "4xp00c")
+
+        result = self._query("""
+        select bq_find_one(
+          'posts',
+          '{"data": {"score": {"$gte": 20},
+                     "permalink": {"$regex": ".*basics.*"}}}'
+        )
+        """)
+        self.assertEqual(post_id(result[0][0]), "4xumhx")
