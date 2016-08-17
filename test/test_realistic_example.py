@@ -8,6 +8,10 @@ def post_id(doc):
     return doc['data']['id']
 
 
+def map_post_ids(result_set):
+    return map(lambda r: r[0]['data']['id'], result_set)
+
+
 class TestFindOneWithSkipAndSort(testutils.BedquiltTestCase):
 
     def populate(self):
@@ -58,10 +62,10 @@ class TestFindOneWithSkipAndSort(testutils.BedquiltTestCase):
           'posts',
           '{"data": {"score": {"$gt": 5, "$lte": 22}}}',
           2,
-          '[{"score": -1}]'
+          '[{"data.score": -1}]'
         )
         """)
-        self.assertEqual(post_id(result[0][0]), "4xp00c")
+        self.assertEqual(post_id(result[0][0]), "4xc5ok")
 
         result = self._query("""
         select bq_find_one(
@@ -71,3 +75,27 @@ class TestFindOneWithSkipAndSort(testutils.BedquiltTestCase):
         )
         """)
         self.assertEqual(post_id(result[0][0]), "4xumhx")
+
+    def test_find(self):
+        self.populate()
+
+        result = self._query("""
+        select bq_find(
+          'posts',
+          '{"data": {"score": {"$gte": 2, "$lte": 5}}}',
+          0,
+          4
+        )
+        """)
+        self.assertEqual(map_post_ids(result), ['4xwvu9', '4xvf77', '4xw9x8', '4xv0dk'])
+
+        result = self._query("""
+        select bq_find(
+          'posts',
+          '{"data": {"score": {"$gte": 2, "$lte": 5}}}',
+          0,
+          4,
+          '[{"data.score": -1}]'
+        )
+        """)
+        self.assertEqual(map_post_ids(result), ['4xvf77', '4xw9x8', '4xc6d5', '4x7nvy'])
