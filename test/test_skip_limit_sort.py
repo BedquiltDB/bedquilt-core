@@ -2,10 +2,15 @@ import testutils
 import json
 import string
 import psycopg2
+import time
 
 
 def _names(rows):
     return map(lambda x: x[0]['name'], rows)
+
+def _labels(rows):
+    return map(lambda x: x[0]['label'], rows)
+
 
 class TestFindOneWithSkipAndSort(testutils.BedquiltTestCase):
 
@@ -345,3 +350,57 @@ class TestSortOnTwoFields(testutils.BedquiltTestCase):
         self.assertEqual(_names(result),
                          ["yy", "jj", "aa",
                           "kk", "hh", "ff", "bb"])
+
+
+class TestSortOnCreatedAndUpdated(testutils.BedquiltTestCase):
+
+    def populate(self):
+        docs = [
+            {'_id': 'aa', 'label': 'a'},
+            {'_id': 'bb', 'label': 'b'},
+            {'_id': 'cc', 'label': 'c'},
+            {'_id': 'dd', 'label': 'd'},
+            {'_id': 'ee', 'label': 'e'}
+        ]
+        for doc in docs:
+            _ = self._query("""
+            select bq_insert('things', '{}')
+            """.format(json.dumps(doc)))
+        b = docs[1]
+        d = docs[3]
+        b['wat'] = True
+        d['wat'] = False
+        for doc in [b, d]:
+            time.sleep(0.1)
+            _ = self._query("""
+            select bq_save('things', %s)
+            """, (json.dumps(doc),))
+
+    def test_created_and_updated(self):
+        self.populate()
+
+        # $created
+        result = self._query("""
+        select bq_find('things', '{}', 0, null, '[{"$created": 1}]')
+        """)
+        self.assertEqual(_labels(result),
+                         ['a', 'b', 'c', 'd', 'e'])
+
+        result = self._query("""
+        select bq_find('things', '{}', 0, null, '[{"$created": -1}]')
+        """)
+        self.assertEqual(_labels(result),
+                         ['e', 'd', 'c', 'b', 'a'])
+
+        # $updated
+        result = self._query("""
+        select bq_find('things', '{}', 0, null, '[{"$updated": 1}]')
+        """)
+        self.assertEqual(_labels(result),
+                         ['a', 'c', 'e', 'b', 'd'])
+
+        result = self._query("""
+        select bq_find('things', '{}', 0, null, '[{"$updated": -1}]')
+        """)
+        self.assertEqual(_labels(result),
+                         ['d', 'b', 'e', 'c', 'a'])

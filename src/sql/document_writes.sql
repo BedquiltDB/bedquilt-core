@@ -108,7 +108,7 @@ BEGIN
   RETURN o_id;
 EXCEPTION WHEN unique_violation THEN
   EXECUTE format('
-    UPDATE %I SET bq_jdoc = %s::jsonb WHERE _id = %s returning _id',
+    UPDATE %I SET bq_jdoc = %s::jsonb, updated = now() WHERE _id = %s returning _id',
     i_coll,
     quote_literal(i_jdoc),
     quote_literal(i_jdoc->>'_id')) INTO o_id;

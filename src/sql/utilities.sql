@@ -57,18 +57,22 @@ BEGIN
   for sort_spec in select value from json_array_elements(i_sort) loop
     for pair in select * from json_each(sort_spec) limit 1 loop
       dotted_path := pair.key;
-      if (pair.value::text = '-1')
-      then
+      if (pair.value::text = '-1') then
         direction := 'DESC';
-      elsif (pair.value::text = '1')
-      then
+      elsif (pair.value::text = '1') then
         direction := 'ASC';
       else
         raise exception 'Invalid sort direction "%s"', pair.value::text
         using hint = 'sort direction must be either 1 (ascending) or -1 (descending)';
       end if;
-      path_array := regexp_split_to_array(dotted_path, '\.');
-      o_query := o_query || format(' bq_jdoc#>''%s'' %s, ', path_array, direction);
+      if pair.key = '$created' then
+        o_query := o_query || format(' created %s, ', direction);
+      elsif pair.key = '$updated' then
+        o_query := o_query || format(' updated %s, ', direction);
+      else
+        path_array := regexp_split_to_array(dotted_path, '\.');
+        o_query := o_query || format(' bq_jdoc#>''%s'' %s, ', path_array, direction);
+      end if;
     end loop;
   end loop;
   o_query := o_query || ' updated ';
