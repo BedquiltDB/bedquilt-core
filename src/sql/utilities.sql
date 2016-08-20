@@ -199,94 +199,94 @@ AS $$
       v = d[k]
       if k.startswith('$'):
         if k == '$eq':
-          s = "bq_jdoc #> '{{{}}}' = '{}'::jsonb".format(
-            ",".join(current_path),
-            json.dumps(v)
+          s = "bq_jdoc #> {} = {}::jsonb".format(
+            plpy.quote_literal("{{{}}}".format(",".join(current_path))),
+            plpy.quote_literal(json.dumps(v))
           ).strip()
 
         elif k == '$noteq':
-          s = "(bq_jdoc #> '{{{}}}' != '{}'::jsonb or bq_jdoc #> '{{{}}}' is null)".format(
-            ",".join(current_path),
-            json.dumps(v),
-            ",".join(current_path)
+          s = "(bq_jdoc #> {} != {}::jsonb or bq_jdoc #> {} is null)".format(
+            plpy.quote_literal("{{{}}}".format(",".join(current_path))),
+            plpy.quote_literal(json.dumps(v)),
+            plpy.quote_literal("{{{}}}".format(",".join(current_path)))
           ).strip()
 
         elif k == '$gte':
-          s = "bq_jdoc #> '{{{}}}' >= '{}'::jsonb".format(
-            ",".join(current_path),
-            json.dumps(v)
+          s = "bq_jdoc #> {} >= {}::jsonb".format(
+            plpy.quote_literal("{{{}}}".format(",".join(current_path))),
+            plpy.quote_literal(json.dumps(v))
           ).strip()
 
         elif k == '$gt':
-          s = "bq_jdoc #> '{{{}}}' > '{}'::jsonb".format(
-            ",".join(current_path),
-            json.dumps(v)
+          s = "bq_jdoc #> {} > {}::jsonb".format(
+            plpy.quote_literal("{{{}}}".format(",".join(current_path))),
+            plpy.quote_literal(json.dumps(v))
           ).strip()
 
         elif k == '$lte':
-          s = "bq_jdoc #> '{{{}}}' <= '{}'::jsonb".format(
-            ",".join(current_path),
-            json.dumps(v)
+          s = "bq_jdoc #> {} <= {}::jsonb".format(
+            plpy.quote_literal("{{{}}}".format(",".join(current_path))),
+            plpy.quote_literal(json.dumps(v))
           ).strip()
 
         elif k == '$lt':
-          s = "bq_jdoc #> '{{{}}}' < '{}'::jsonb".format(
-            ",".join(current_path),
-            json.dumps(v)
+          s = "bq_jdoc #> {} < {}::jsonb".format(
+            plpy.quote_literal("{{{}}}".format(",".join(current_path))),
+            plpy.quote_literal(json.dumps(v))
           ).strip()
 
         elif k == '$in':
           if type(v) is not list:
             plpy.error("Value of '$in' operator must be an array")
-          s = "bq_jdoc #> '{{{}}}' <@ '{}'::jsonb".format(
-            ",".join(current_path),
-            json.dumps(v)
+          s = "bq_jdoc #> {} <@ {}::jsonb".format(
+            plpy.quote_literal("{{{}}}".format(",".join(current_path))),
+            plpy.quote_literal(json.dumps(v))
           ).strip()
 
         elif k == '$notin':
           if type(v) is not list:
             plpy.error("Value of '$notin' operator must be an array")
-          s = "(not (bq_jdoc #> '{{{}}}' <@ '{}'::jsonb))".format(
-            ",".join(current_path),
-            json.dumps(v)
+          s = "(not (bq_jdoc #> {} <@ {}::jsonb))".format(
+            plpy.quote_literal("{{{}}}".format(",".join(current_path))),
+            plpy.quote_literal(json.dumps(v))
           ).strip()
 
         elif k == '$exists':
           if type(v) is not bool:
             plpy.error("Value of '$exists' operator must be a boolean")
           if v is True:
-            s = "bq_jdoc #> '{{{}}}' is not null".format(
-              ",".join(current_path),
+            s = "bq_jdoc #> {} is not null".format(
+              plpy.quote_literal("{{{}}}".format(",".join(current_path))),
             ).strip()
           else:
-            s = "bq_jdoc #> '{{{}}}' is null".format(
-              ",".join(current_path),
+            s = "bq_jdoc #> {} is null".format(
+              plpy.quote_literal("{{{}}}".format(",".join(current_path))),
             ).strip()
 
         elif k == '$type':
           if type(v) is not str:
             plpy.error("Value of '$type' operator must be a string")
-          s = "jsonb_typeof(bq_jdoc #> '{{{}}}') = '{}'".format(
-            ",".join(current_path),
-            v
+          s = "jsonb_typeof(bq_jdoc #> {}) = {}".format(
+            plpy.quote_literal("{{{}}}".format(",".join(current_path))),
+            plpy.quote_literal(v)
           ).strip()
 
         elif k == '$like':
           if type(v) is not str:
             plpy.error("Value of '$like' operator must be a string")
-          s = "(jsonb_typeof(bq_jdoc#>'{{{}}}')='string' and bq_jdoc#>>'{{{}}}' like '{}')".format(
-            ",".join(current_path),
-            ",".join(current_path),
-            v
+          s = "(jsonb_typeof(bq_jdoc#>{})='string' and bq_jdoc#>>{} like {})".format(
+            plpy.quote_literal("{{{}}}".format(",".join(current_path))),
+            plpy.quote_literal("{{{}}}".format(",".join(current_path))),
+            plpy.quote_literal(v)
           ).strip()
 
         elif k == '$regex':
           if type(v) is not str:
             plpy.error("Value of '$regex' operator must be a string")
-          s = "(jsonb_typeof(bq_jdoc#>'{{{}}}')='string' and bq_jdoc#>>'{{{}}}' ~ '{}')".format(
-            ",".join(current_path),
-            ",".join(current_path),
-            v
+          s = "(jsonb_typeof(bq_jdoc#>{})='string' and bq_jdoc#>>{} ~ {})".format(
+            plpy.quote_literal("{{{}}}".format(",".join(current_path))),
+            plpy.quote_literal("{{{}}}".format(",".join(current_path))),
+            plpy.quote_literal(v)
           ).strip()
 
         else:

@@ -190,10 +190,10 @@ class TestSplitQueries(testutils.BedquiltTestCase):
                         'b': {
                             '$type': 'number'
                         },
-                        'c': 44
+                        "O'Reilly": 44  # check quoting of weird strings
                     }
                 },
-                {'a': {'c': 44}},
+                {'a': {"O'Reilly": 44}},
                 ["jsonb_typeof(bq_jdoc #> '{a,b}') = 'number'"]
             ),
             # $like
@@ -201,26 +201,26 @@ class TestSplitQueries(testutils.BedquiltTestCase):
                 {
                     'a': {
                         'b': {
-                            '$like': '%wat%'
+                            '$like': "%O'Re%"
                         },
                         'c': 44
                     }
                 },
                 {'a': {'c': 44}},
-                ["(jsonb_typeof(bq_jdoc#>'{a,b}')='string' and bq_jdoc#>>'{a,b}' like '%wat%')"]
+                ["(jsonb_typeof(bq_jdoc#>'{a,b}')='string' and bq_jdoc#>>'{a,b}' like '%O''Re%')"]
             ),
             # $regex
             (
                 {
                     'a': {
                         'b': {
-                            '$regex': '.*wat.*'
+                            '$regex': ".*O'Re.*"
                         },
                         'c': 44
                     }
                 },
                 {'a': {'c': 44}},
-                ["(jsonb_typeof(bq_jdoc#>'{a,b}')='string' and bq_jdoc#>>'{a,b}' ~ '.*wat.*')"]
+                ["(jsonb_typeof(bq_jdoc#>'{a,b}')='string' and bq_jdoc#>>'{a,b}' ~ '.*O''Re.*')"]
             )
         ]
 

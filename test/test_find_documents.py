@@ -58,7 +58,7 @@ class TestCollectionCount(testutils.BedquiltTestCase):
                 'age': 32,
                 'likes': ['code', 'crochet']}
         darren = {'_id': "darren@example.com",
-                'name': "Darren",
+                'name': "Darren O'Toole",
                 'city': "Manchester"}
 
         self._insert('people', sarah)
@@ -80,6 +80,11 @@ class TestCollectionCount(testutils.BedquiltTestCase):
         select bq_count('people', '{"likes": ["crochet"]}')
         """)
         self.assertEqual(result, [(2,)])
+
+        result = self._query("""
+        select bq_count('people', '{"name": "Darren O''Toole"}')
+        """)
+        self.assertEqual(result, [(1,)])
 
 
 class TestFindDocuments(testutils.BedquiltTestCase):
