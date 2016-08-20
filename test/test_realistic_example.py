@@ -99,3 +99,25 @@ class TestFindOneWithSkipAndSort(testutils.BedquiltTestCase):
         )
         """)
         self.assertEqual(map_post_ids(result), ['4xvf77', '4xw9x8', '4xc6d5', '4x7nvy'])
+
+        result = self._query("""
+        select bq_find(
+          'posts',
+          '{"data": {"is_self": {"$noteq": false}}}',
+          0,
+          4,
+          '[{"data.score": 1}]'
+        )
+        """)
+        self.assertEqual(map_post_ids(result), ['4xxe30', '4xu3h9', '4xu9r9', '4xtiu9'])
+
+        result = self._query("""
+        select bq_find(
+          'posts',
+          '{"data": {"is_self": {"$noteq": false}}}',
+          0,
+          4,
+          '[{"data.score": -1}]'
+        )
+        """)
+        self.assertEqual(map_post_ids(result), ['3kestk', '4x8192', '4xc5ok', '4xdwbg'])
