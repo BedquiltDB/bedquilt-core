@@ -10,21 +10,25 @@ RETURNS text AS $$
 DECLARE
   doc json;
 BEGIN
-PERFORM bq_create_collection(i_coll);
-IF (select i_jdoc->'_id') is null
-THEN
-  select bq_doc_set_key(i_jdoc, '_id', (select bq_generate_id())) into doc;
-ELSE
-  PERFORM bq_check_id_type(i_jdoc);
-  doc := i_jdoc;
-END IF;
-EXECUTE format(
-    'INSERT INTO %I (_id, bq_jdoc) VALUES (%s, %s);',
-    i_coll,
-    quote_literal(doc->>'_id'),
-    quote_literal(doc)
-);
-return doc->>'_id';
+  PERFORM bq_create_collection(i_coll);
+  IF (select i_jdoc->'_id') is null
+  THEN
+    select i_jdoc::jsonb || format('{"_id": "%s"}', bq_generate_id())::jsonb into doc;
+  ELSE
+    IF (SELECT json_typeof(i_jdoc->'_id')) <> 'string'
+    THEN
+      RAISE EXCEPTION 'The _id field is not a string: % ', i_jdoc->'_id'
+      USING HINT = 'The _id field must be a string';
+    END IF;
+    doc := i_jdoc;
+  END IF;
+  EXECUTE format(
+      'INSERT INTO %I (_id, bq_jdoc) VALUES (%s, %s);',
+      i_coll,
+      quote_literal(doc->>'_id'),
+      quote_literal(doc)
+  );
+  return doc->>'_id';
 END
 $$ LANGUAGE plpgsql;
 
