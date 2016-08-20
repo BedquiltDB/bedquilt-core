@@ -50,20 +50,20 @@ BEGIN
           IF field_name LIKE '%.%' THEN
             EXECUTE format(
               'alter table %I
-              add constraint "%s"
-              check (bq_path_exists(''%s'', bq_jdoc));',
+              add constraint %s
+              check (bq_path_exists(%s, bq_jdoc));',
               i_coll,
-              new_constraint_name,
-              field_name);
+              quote_ident(new_constraint_name),
+              quote_literal(field_name));
             result := true;
           ELSE
             EXECUTE format(
               'alter table %I
-              add constraint "%s"
-              check (bq_jdoc ? ''%s'');',
+              add constraint %s
+              check (bq_jdoc ? %s);',
               i_coll,
-              new_constraint_name,
-              field_name);
+              quote_ident(new_constraint_name),
+              quote_literal(field_name));
             result := true;
           END IF;
         END IF;
@@ -77,13 +77,13 @@ BEGIN
         THEN
           EXECUTE format(
             'alter table %I
-            add constraint "%s"
+            add constraint %s
             check (
-              jsonb_typeof((bq_jdoc#>''%s'')::jsonb) <> ''null''
+              jsonb_typeof((bq_jdoc#>%s)::jsonb) <> ''null''
             );',
             i_coll,
-            new_constraint_name,
-            regexp_split_to_array(field_name, '\.'));
+            quote_ident(new_constraint_name),
+            quote_literal(regexp_split_to_array(field_name, '\.')));
           result := true;
         END IF;
       -- $type: enforce type of the specified field
@@ -120,14 +120,14 @@ BEGIN
           END IF;
           EXECUTE format(
             'alter table %I
-            add constraint "%s"
+            add constraint %s
             check (
-              jsonb_typeof(bq_jdoc#>''%s'') in (''%s'', ''null'')
+              jsonb_typeof(bq_jdoc#>%s) in (%s, ''null'')
             );',
             i_coll,
-            new_constraint_name,
-            regexp_split_to_array(field_name, '\.'),
-            s_type);
+            quote_ident(new_constraint_name),
+            quote_literal(regexp_split_to_array(field_name, '\.')),
+            quote_literal(s_type));
           result := true;
         END IF;
       END CASE;
