@@ -190,9 +190,9 @@ BEGIN
         THEN
           EXECUTE format(
             'alter table %I
-            drop constraint "%s";',
+            drop constraint %s;',
             i_coll,
-            target_constraint
+            quote_ident(target_constraint)
           );
           result := true;
         END IF;
@@ -205,9 +205,9 @@ BEGIN
         THEN
           EXECUTE format(
             'alter table %I
-            drop constraint "%s";',
+            drop constraint %s;',
             i_coll,
-            target_constraint
+            quote_ident(target_constraint)
           );
           result := true;
         END IF;
@@ -221,9 +221,9 @@ BEGIN
         THEN
           EXECUTE format(
             'alter table %I
-            drop constraint "%s";',
+            drop constraint %s;',
             i_coll,
-            target_constraint
+            quote_ident(target_constraint)
           );
           result := true;
         END IF;
