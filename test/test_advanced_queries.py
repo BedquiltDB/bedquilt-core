@@ -60,6 +60,14 @@ class TestAdvancedQueries(testutils.BedquiltTestCase):
         self.assertEqual(len(result), 4)
         self.assertEqual(_map_labels(result), ['a', 'b', 'c', 'f'])
 
+        result = self._query(
+            "select bq_find('things', %s)", (json.dumps({
+                "o'reilly": {'$eq': "o'really"}
+            }),)
+        )
+        self.assertEqual(len(result), 0)
+        self.assertEqual(_map_labels(result), [])
+
     def test_noteq(self):
         rows = [
             {"_id": "wat", "label": "oh", "color": "purple"},
