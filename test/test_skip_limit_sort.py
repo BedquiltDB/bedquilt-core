@@ -356,11 +356,11 @@ class TestSortOnCreatedAndUpdated(testutils.BedquiltTestCase):
 
     def populate(self):
         docs = [
-            {'_id': 'aa', 'label': 'a'},
-            {'_id': 'bb', 'label': 'b'},
-            {'_id': 'cc', 'label': 'c'},
-            {'_id': 'dd', 'label': 'd'},
-            {'_id': 'ee', 'label': 'e'}
+            {'_id': 'aa', 'label': 'a', 'n': 2},
+            {'_id': 'bb', 'label': 'b', 'n': 1},
+            {'_id': 'cc', 'label': 'c', 'n': 4},
+            {'_id': 'dd', 'label': 'd', 'n': 1},
+            {'_id': 'ee', 'label': 'e', 'n': 10}
         ]
         for doc in docs:
             _ = self._query("""
@@ -392,6 +392,20 @@ class TestSortOnCreatedAndUpdated(testutils.BedquiltTestCase):
         self.assertEqual(_labels(result),
                          ['e', 'd', 'c', 'b', 'a'])
 
+        # n descending, then $created ascending
+        result = self._query("""
+        select bq_find('things', '{}', 0, null, '[{"n": -1}, {"$created": 1}]')
+        """)
+        self.assertEqual(_labels(result),
+                         ['e', 'c', 'a', 'b', 'd'])
+
+        # n descending, then $created descending
+        result = self._query("""
+        select bq_find('things', '{}', 0, null, '[{"n": -1}, {"$created": -1}]')
+        """)
+        self.assertEqual(_labels(result),
+                         ['e', 'c', 'a', 'd', 'b'])
+
         # $updated
         result = self._query("""
         select bq_find('things', '{}', 0, null, '[{"$updated": 1}]')
@@ -400,7 +414,22 @@ class TestSortOnCreatedAndUpdated(testutils.BedquiltTestCase):
                          ['a', 'c', 'e', 'b', 'd'])
 
         result = self._query("""
+        select bq_find('things', '{}', 0, null, '[{"n": -1}, {"$updated": -1}]')
+        """)
+        self.assertEqual(_labels(result),
+                         ['e', 'c', 'a', 'd', 'b']
+        )
+
+        result = self._query("""
         select bq_find('things', '{}', 0, null, '[{"$updated": -1}]')
         """)
         self.assertEqual(_labels(result),
                          ['d', 'b', 'e', 'c', 'a'])
+
+        # n descending, then $updated ascending
+        result = self._query("""
+        select bq_find('things', '{}', 0, null, '[{"n": -1}, {"$updated": 1}]')
+        """)
+        self.assertEqual(_labels(result),
+                         ['e', 'c', 'a', 'b', 'd']
+        )
