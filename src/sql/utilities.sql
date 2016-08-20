@@ -34,38 +34,9 @@ CREATE OR REPLACE FUNCTION bq_path_exists(i_path text, i_jdoc jsonb)
 RETURNS boolean AS $$
 DECLARE
   path_array text[];
-  depth int;
-  path_key text;
-  current_object jsonb;
 BEGIN
-  current_object := i_jdoc;
-  IF i_path = '' THEN
-    RETURN false;
-  END IF;
-  IF i_path NOT LIKE '%.%' THEN
-    RETURN (current_object ? i_path);
-  END IF;
-
   path_array := regexp_split_to_array(i_path, '\.');
-  FOREACH path_key IN ARRAY path_array LOOP
-    IF jsonb_typeof(current_object) = 'object' THEN
-      IF current_object ? path_key THEN
-        current_object := current_object->path_key;
-      ELSE
-        RETURN false;
-      END IF;
-    ELSIF jsonb_typeof(current_object) = 'array' THEN
-      IF path_key ~ '^\d+$' THEN
-        current_object := current_object->path_key::int;
-      ELSE
-        RETURN false;
-      END IF;
-    ELSE
-      RETURN false;
-    END IF;
-  END LOOP;
-  RETURN true;
-
+  return i_jdoc #> path_array is not null;
 END
 $$ language plpgsql;
 
