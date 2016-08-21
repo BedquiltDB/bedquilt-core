@@ -16,4 +16,4 @@ fi
 
 
 echo ">> Running tests..."
-python -m unittest discover test
+python2 -m unittest discover test
