@@ -75,10 +75,10 @@ BEGIN
     END IF;
     RETURN QUERY EXECUTE format(
       'SELECT bq_jdoc::json FROM %I
-      WHERE _id = ANY(array(select jsonb_array_elements_text(''%s''::jsonb)))
+      WHERE _id = ANY(array(select jsonb_array_elements_text(%s::jsonb)))
       ORDER BY created ASC;',
       i_coll,
-      i_ids
+      quote_literal(i_ids)
     );
   END IF;
 END
@@ -119,16 +119,14 @@ BEGIN
     -- sort
     IF (i_sort IS NOT NULL)
     THEN
-      q := q || format(' %s ', bq_sort_to_text(i_sort));
+      q := q || bq_sort_to_text(i_sort);
     END IF;
     -- skip and limit
     IF (i_limit IS NOT NULL)
     THEN
-      q := q || format(' limit %s ', i_limit);
-    ELSE
-      q := q || format(' limit NULL ');
+      q := q || format(' LIMIT %s::integer ', quote_literal(i_limit));
     END IF;
-    q := q || format(' offset %s ', i_skip);
+    q := q || format(' offset %s::integer ', quote_literal(i_skip));
     -- final query
     RETURN QUERY EXECUTE q;
   END IF;
@@ -171,8 +169,8 @@ BEGIN
   IF (SELECT bq_collection_exists(i_coll))
   THEN
     RETURN QUERY EXECUTE format(
-      'select distinct (bq_jdoc#>''%s'')::jsonb as val from %I',
-      path_array, i_coll
+      'select distinct (bq_jdoc#>%s)::jsonb as val from %I',
+      quote_literal(path_array), i_coll
     );
   END IF;
 END

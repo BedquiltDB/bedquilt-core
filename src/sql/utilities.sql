@@ -22,7 +22,7 @@ CREATE OR REPLACE FUNCTION bq_collection_exists (i_coll text)
 RETURNS boolean AS $$
 BEGIN
 RETURN EXISTS (
-    SELECT relname FROM pg_class WHERE relname = format('%s', i_coll)
+    SELECT relname FROM pg_class WHERE relname = i_coll
 );
 END
 $$ LANGUAGE plpgsql;
@@ -71,7 +71,10 @@ BEGIN
         o_query := o_query || format(' updated %s, ', direction);
       else
         path_array := regexp_split_to_array(dotted_path, '\.');
-        o_query := o_query || format(' bq_jdoc#>''%s'' %s, ', path_array, direction);
+        o_query := o_query || format(' bq_jdoc#>%s %s, ',
+          quote_literal(path_array),
+          direction
+        );
       end if;
     end loop;
   end loop;
