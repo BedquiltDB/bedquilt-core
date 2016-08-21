@@ -124,7 +124,7 @@ BEGIN
             check (
               jsonb_typeof(bq_jdoc#>%s) in (%s, ''null'')
             );',
-            i_coll,
+            quote_ident(i_coll),
             quote_ident(new_constraint_name),
             quote_literal(regexp_split_to_array(field_name, '\.')),
             quote_literal(s_type));
@@ -191,7 +191,7 @@ BEGIN
           EXECUTE format(
             'alter table %I
             drop constraint %s;',
-            i_coll,
+            quote_ident(i_coll),
             quote_ident(target_constraint)
           );
           result := true;
@@ -206,7 +206,7 @@ BEGIN
           EXECUTE format(
             'alter table %I
             drop constraint %s;',
-            i_coll,
+            quote_ident(i_coll),
             quote_ident(target_constraint)
           );
           result := true;
@@ -222,7 +222,7 @@ BEGIN
           EXECUTE format(
             'alter table %I
             drop constraint %s;',
-            i_coll,
+            quote_ident(i_coll),
             quote_ident(target_constraint)
           );
           result := true;

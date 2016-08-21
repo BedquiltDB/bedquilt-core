@@ -20,7 +20,7 @@ THEN
     );
     CREATE INDEX idx_%1$I_bq_jdoc ON %1$I USING gin (bq_jdoc);
     CREATE UNIQUE INDEX idx_%1$I_bq_jdoc_id ON %1$I ((bq_jdoc->>''_id''));
-    ', i_coll);
+    ', quote_ident(i_coll));
     RETURN true;
 ELSE
     RETURN false;
@@ -51,7 +51,7 @@ RETURNS BOOLEAN AS $$
 BEGIN
 IF (SELECT bq_collection_exists(i_coll))
 THEN
-    EXECUTE format('DROP TABLE %I CASCADE;', i_coll);
+    EXECUTE format('DROP TABLE %I CASCADE;', quote_ident(i_coll));
     RETURN true;
 ELSE
     RETURN false;

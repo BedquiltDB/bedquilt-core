@@ -16,7 +16,7 @@ BEGIN
   IF (SELECT bq_collection_exists(i_coll))
   THEN
     -- base query
-    q := format('SELECT bq_jdoc::json FROM %I', i_coll);
+    q := format('SELECT bq_jdoc::json FROM %I', quote_ident(i_coll));
     -- split json query doc into match query and special queries
     SELECT match_query, special_queries
       FROM bq_split_queries(i_json_query::jsonb)
@@ -54,7 +54,7 @@ IF (SELECT bq_collection_exists(i_coll))
       'SELECT bq_jdoc::json FROM %I
       WHERE _id = %s
       LIMIT 1',
-      i_coll,
+      quote_ident(i_coll),
       quote_literal(i_id)
     );
   END IF;
@@ -77,7 +77,7 @@ BEGIN
       'SELECT bq_jdoc::json FROM %I
       WHERE _id = ANY(array(select jsonb_array_elements_text(%s::jsonb)))
       ORDER BY created ASC;',
-      i_coll,
+      quote_ident(i_coll),
       quote_literal(i_ids)
     );
   END IF;
@@ -90,7 +90,7 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION bq_find(i_coll text, i_json_query json, i_skip integer DEFAULT 0, i_limit integer DEFAULT null, i_sort json DEFAULT null)
 RETURNS table(bq_jdoc json) AS $$
 DECLARE
-  q text = format('select bq_jdoc::json from %I ', i_coll);
+  q text = format('select bq_jdoc::json from %I ', quote_ident(i_coll));
   mq text;
   sq text[];
   s text;
@@ -146,7 +146,7 @@ THEN
   EXECUTE format(
     'SELECT COUNT(_id) from %I
     WHERE bq_jdoc @> (%s)::jsonb',
-     i_coll,
+     quote_ident(i_coll),
      quote_literal(i_doc)
   ) INTO o_value;
   RETURN o_value;
@@ -170,7 +170,7 @@ BEGIN
   THEN
     RETURN QUERY EXECUTE format(
       'select distinct (bq_jdoc#>%s)::jsonb as val from %I',
-      quote_literal(path_array), i_coll
+      quote_literal(path_array), quote_ident(i_coll)
     );
   END IF;
 END

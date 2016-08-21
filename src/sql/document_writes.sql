@@ -24,7 +24,7 @@ BEGIN
   END IF;
   EXECUTE format(
       'INSERT INTO %I (_id, bq_jdoc) VALUES (%s, %s);',
-      i_coll,
+      quote_ident(i_coll),
       quote_literal(doc->>'_id'),
       quote_literal(doc)
   );
@@ -45,7 +45,7 @@ THEN
       deleted AS
       (DELETE FROM %I WHERE bq_jdoc @> (%s)::jsonb RETURNING _id)
     SELECT count(*)::integer FROM deleted
-    ', i_coll, quote_literal(i_jdoc));
+    ', quote_ident(i_coll), quote_literal(i_jdoc));
 
 ELSE
     RETURN QUERY SELECT 0;
@@ -68,7 +68,7 @@ THEN
         deleted AS
         (DELETE FROM %1$I WHERE _id IN (select _id from candidates) RETURNING _id)
       SELECT count(*)::integer FROM deleted
-    ', i_coll, quote_literal(i_jdoc));
+    ', quote_ident(i_coll), quote_literal(i_jdoc));
 ELSE
     RETURN QUERY SELECT 0;
 END IF;
@@ -88,7 +88,7 @@ THEN
     deleted AS
     (DELETE FROM %1$I WHERE _id = %2$s RETURNING _id)
     SELECT count(*)::integer FROM deleted
-    ', i_coll, quote_literal(i_id));
+    ', quote_ident(i_coll), quote_literal(i_id));
 ELSE
 RETURN QUERY SELECT 0;
 END IF;
@@ -109,7 +109,7 @@ BEGIN
 EXCEPTION WHEN unique_violation THEN
   EXECUTE format('
     UPDATE %I SET bq_jdoc = %s::jsonb, updated = now() WHERE _id = %s returning _id',
-    i_coll,
+    quote_ident(i_coll),
     quote_literal(i_jdoc),
     quote_literal(i_jdoc->>'_id')) INTO o_id;
   RETURN o_id;
