@@ -107,7 +107,7 @@ At the moment, this just drops whatever table matches the collection name.
 
 ## bq\_find\_one
 
-- params: `i_coll text, i_json_query json`
+- params: `i_coll text, i_json_query json, i_skip integer DEFAULT 0, i_sort json DEFAULT null`
 - returns: `table(bq_jdoc json)`
 - language: `plpgsql`
 
