@@ -89,7 +89,7 @@ class TestInsertDocument(testutils.BedquiltTestCase):
             "description": "Something I've eaten"
         }
         self.cur.execute("""
-            select bq_insert('things', $${}$$::json);
+            select bq_insert('things', $${}$$::jsonb);
         """.format(json.dumps(doc)))
 
         result = self.cur.fetchone()

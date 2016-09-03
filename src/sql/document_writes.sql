@@ -5,17 +5,17 @@
 
 /* insert document
  */
-CREATE OR REPLACE FUNCTION bq_insert(i_coll text, i_jdoc json)
+CREATE OR REPLACE FUNCTION bq_insert(i_coll text, i_jdoc jsonb)
 RETURNS text AS $$
 DECLARE
-  doc json;
+  doc jsonb;
 BEGIN
   PERFORM bq_create_collection(i_coll);
   IF (select i_jdoc->'_id') is null
   THEN
     select i_jdoc::jsonb || format('{"_id": "%s"}', bq_generate_id())::jsonb into doc;
   ELSE
-    IF (SELECT json_typeof(i_jdoc->'_id')) <> 'string'
+    IF (SELECT jsonb_typeof(i_jdoc->'_id')) <> 'string'
     THEN
       RAISE EXCEPTION 'The _id field is not a string: % ', i_jdoc->'_id'
       USING HINT = 'The _id field must be a string';
@@ -35,7 +35,7 @@ $$ LANGUAGE plpgsql;
 
 /* remove documents
  */
-CREATE OR REPLACE FUNCTION bq_remove(i_coll text, i_jdoc json)
+CREATE OR REPLACE FUNCTION bq_remove(i_coll text, i_jdoc jsonb)
 RETURNS setof integer AS $$
 BEGIN
 IF (SELECT bq_collection_exists(i_coll))
@@ -56,7 +56,7 @@ $$ LANGUAGE plpgsql;
 
 /* remove one document
  */
-CREATE OR REPLACE FUNCTION bq_remove_one(i_coll text, i_jdoc json)
+CREATE OR REPLACE FUNCTION bq_remove_one(i_coll text, i_jdoc jsonb)
 RETURNS setof integer AS $$
 BEGIN
 IF (SELECT bq_collection_exists(i_coll))
@@ -98,7 +98,7 @@ $$ LANGUAGE plpgsql;
 
 /* save document
  */
-CREATE OR REPLACE FUNCTION bq_save(i_coll text, i_jdoc json)
+CREATE OR REPLACE FUNCTION bq_save(i_coll text, i_jdoc jsonb)
 RETURNS text AS $$
 DECLARE
   o_id text;

@@ -43,10 +43,10 @@ $$ language plpgsql;
 
 /* private - transform a json sort spec into an 'ORDER BY...' string
  */
-CREATE OR REPLACE FUNCTION bq_sort_to_text(i_sort json)
+CREATE OR REPLACE FUNCTION bq_sort_to_text(i_sort jsonb)
 RETURNS text AS $$
 DECLARE
-  sort_spec json;
+  sort_spec jsonb;
   pair RECORD;
   dotted_path text;
   path_array text[];
@@ -54,8 +54,8 @@ DECLARE
   o_query text;
 BEGIN
   o_query := 'order by ';
-  for sort_spec in select value from json_array_elements(i_sort) loop
-    for pair in select * from json_each(sort_spec) limit 1 loop
+  for sort_spec in select value from jsonb_array_elements(i_sort) loop
+    for pair in select * from jsonb_each(sort_spec) limit 1 loop
       dotted_path := pair.key;
       if (pair.value::text = '-1') then
         direction := 'DESC';

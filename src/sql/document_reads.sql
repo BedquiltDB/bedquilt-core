@@ -5,8 +5,8 @@
 
 /* find one
  */
-CREATE OR REPLACE FUNCTION bq_find_one(i_coll text, i_json_query json, i_skip integer DEFAULT 0, i_sort json DEFAULT null)
-RETURNS table(bq_jdoc json) AS $$
+CREATE OR REPLACE FUNCTION bq_find_one(i_coll text, i_json_query jsonb, i_skip integer DEFAULT 0, i_sort jsonb DEFAULT null)
+RETURNS table(bq_jdoc jsonb) AS $$
 DECLARE
   q text;
   mq text;
@@ -16,7 +16,7 @@ BEGIN
   IF (SELECT bq_collection_exists(i_coll))
   THEN
     -- base query
-    q := format('SELECT bq_jdoc::json FROM %I', quote_ident(i_coll));
+    q := format('SELECT bq_jdoc::jsonb FROM %I', quote_ident(i_coll));
     -- split json query doc into match query and special queries
     SELECT match_query, special_queries
       FROM bq_split_queries(i_json_query::jsonb)
@@ -46,12 +46,12 @@ $$ LANGUAGE plpgsql;
 
 -- find one by id
 CREATE OR REPLACE FUNCTION bq_find_one_by_id(i_coll text, i_id text)
-RETURNS table(bq_jdoc json) AS $$
+RETURNS table(bq_jdoc jsonb) AS $$
 BEGIN
 IF (SELECT bq_collection_exists(i_coll))
   THEN
     RETURN QUERY EXECUTE format(
-      'SELECT bq_jdoc::json FROM %I
+      'SELECT bq_jdoc::jsonb FROM %I
       WHERE _id = %s
       LIMIT 1',
       quote_ident(i_coll),
@@ -63,18 +63,18 @@ $$ LANGUAGE plpgsql;
 
 -- find many by ids
 CREATE OR REPLACE FUNCTION bq_find_many_by_ids(i_coll text, i_ids jsonb)
-RETURNS table(bq_jdoc json) AS $$
+RETURNS table(bq_jdoc jsonb) AS $$
 BEGIN
   IF (SELECT bq_collection_exists(i_coll))
   THEN
     IF jsonb_typeof(i_ids) != 'array'
     THEN
       RAISE EXCEPTION
-      'Invalid ids parameter "%s"', json_typeof(i_ids)
+      'Invalid ids parameter "%s"', jsonb_typeof(i_ids)
       USING HINT = 'ids should be a json array of strings';
     END IF;
     RETURN QUERY EXECUTE format(
-      'SELECT bq_jdoc::json FROM %I
+      'SELECT bq_jdoc::jsonb FROM %I
       WHERE _id = ANY(array(select jsonb_array_elements_text(%s::jsonb)))
       ORDER BY created ASC;',
       quote_ident(i_coll),
@@ -87,20 +87,20 @@ $$ LANGUAGE plpgsql;
 
 /* find many documents
  */
-CREATE OR REPLACE FUNCTION bq_find(i_coll text, i_json_query json, i_skip integer DEFAULT 0, i_limit integer DEFAULT null, i_sort json DEFAULT null)
-RETURNS table(bq_jdoc json) AS $$
+CREATE OR REPLACE FUNCTION bq_find(i_coll text, i_json_query jsonb, i_skip integer DEFAULT 0, i_limit integer DEFAULT null, i_sort jsonb DEFAULT null)
+RETURNS table(bq_jdoc jsonb) AS $$
 DECLARE
-  q text = format('select bq_jdoc::json from %I ', quote_ident(i_coll));
+  q text = format('select bq_jdoc::jsonb from %I ', quote_ident(i_coll));
   mq text;
   sq text[];
   s text;
 BEGIN
   IF (SELECT bq_collection_exists(i_coll))
   THEN
-    IF json_typeof(i_sort) != 'array'
+    IF jsonb_typeof(i_sort) != 'array'
     THEN
       RAISE EXCEPTION
-      'Invalid sort parameter json type "%s"', json_typeof(i_sort)
+      'Invalid sort parameter json type "%s"', jsonb_typeof(i_sort)
       USING HINT = 'The i_sort parameter to bq_find should be a json array';
     END IF;
     -- query match
@@ -136,7 +136,7 @@ $$ LANGUAGE plpgsql;
 
 /* count documents in collection
  */
-CREATE OR REPLACE FUNCTION bq_count(i_coll text, i_doc json)
+CREATE OR REPLACE FUNCTION bq_count(i_coll text, i_doc jsonb)
 RETURNS integer AS $$
 DECLARE
   o_value int;

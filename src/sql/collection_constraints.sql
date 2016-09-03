@@ -17,12 +17,12 @@
  *       Valid types are "string", "number", "object", "array", "boolean".
  * Returns a boolean indicating whether any of the constraints newly applied.
  */
-CREATE OR REPLACE FUNCTION bq_add_constraints(i_coll text, i_jdoc json)
+CREATE OR REPLACE FUNCTION bq_add_constraints(i_coll text, i_jdoc jsonb)
 RETURNS boolean AS $$
 DECLARE
   jdoc_keys RECORD;
   field_name text;
-  spec json;
+  spec jsonb;
   spec_keys RECORD;
   op text;
   new_constraint_name text;
@@ -31,13 +31,13 @@ DECLARE
 BEGIN
   result := false;
   -- loop over the field names
-  FOR jdoc_keys IN SELECT * FROM json_object_keys(i_jdoc) LOOP
-    field_name := jdoc_keys.json_object_keys;
+  FOR jdoc_keys IN SELECT * FROM jsonb_object_keys(i_jdoc) LOOP
+    field_name := jdoc_keys.jsonb_object_keys;
     spec := i_jdoc->field_name;
 
     -- for each field name, loop over the constrant ops
-    FOR spec_keys IN SELECT * FROM json_object_keys(spec) LOOP
-      op := spec_keys.json_object_keys;
+    FOR spec_keys IN SELECT * FROM jsonb_object_keys(spec) LOOP
+      op := spec_keys.jsonb_object_keys;
       CASE op
       -- $required : the key must be present in the json object
       WHEN '$required' THEN
@@ -159,12 +159,12 @@ $$ LANGUAGE plpgsql;
  * The supplied json document should match the spec for existing constraints.
  * Returns True if any of the constraints were removed, False otherwise.
  */
-CREATE OR REPLACE FUNCTION bq_remove_constraints(i_coll text, i_jdoc json)
+CREATE OR REPLACE FUNCTION bq_remove_constraints(i_coll text, i_jdoc jsonb)
 RETURNS boolean AS $$
 DECLARE
   jdoc_keys RECORD;
   field_name text;
-  spec json;
+  spec jsonb;
   spec_keys RECORD;
   op text;
   target_constraint text;
@@ -174,13 +174,13 @@ BEGIN
 
   result := false;
   -- loop over the field names
-  FOR jdoc_keys IN SELECT * FROM json_object_keys(i_jdoc) LOOP
-    field_name := jdoc_keys.json_object_keys;
+  FOR jdoc_keys IN SELECT * FROM jsonb_object_keys(i_jdoc) LOOP
+    field_name := jdoc_keys.jsonb_object_keys;
     spec := i_jdoc->field_name;
 
     -- for each field name, loop over the constrant ops
-    FOR spec_keys IN SELECT * FROM json_object_keys(spec) LOOP
-      op := spec_keys.json_object_keys;
+    FOR spec_keys IN SELECT * FROM jsonb_object_keys(spec) LOOP
+      op := spec_keys.jsonb_object_keys;
       CASE op
       WHEN '$required' THEN
         target_constraint := format(

@@ -9,7 +9,7 @@ This document is auto-generated from the core `bedquilt` source code, and descri
 
 ## bq\_add\_constraints
 
-- params: `i_coll text, i_jdoc json`
+- params: `i_coll text, i_jdoc jsonb`
 - returns: `boolean`
 - language: `plpgsql`
 
@@ -34,7 +34,7 @@ Returns a boolean indicating whether any of the constraints newly applied.
 
 ## bq\_remove\_constraints
 
-- params: `i_coll text, i_jdoc json`
+- params: `i_coll text, i_jdoc jsonb`
 - returns: `boolean`
 - language: `plpgsql`
 
@@ -107,8 +107,8 @@ At the moment, this just drops whatever table matches the collection name.
 
 ## bq\_find\_one
 
-- params: `i_coll text, i_json_query json, i_skip integer DEFAULT 0, i_sort json DEFAULT null`
-- returns: `table(bq_jdoc json)`
+- params: `i_coll text, i_json_query jsonb, i_skip integer DEFAULT 0, i_sort jsonb DEFAULT null`
+- returns: `table(bq_jdoc jsonb)`
 - language: `plpgsql`
 
 ```markdown
@@ -121,7 +121,7 @@ find one
 ## bq\_find\_one\_by\_id
 
 - params: `i_coll text, i_id text`
-- returns: `table(bq_jdoc json)`
+- returns: `table(bq_jdoc jsonb)`
 - language: `plpgsql`
 
 ```markdown
@@ -132,8 +132,8 @@ find one
 
 ## bq\_find
 
-- params: `i_coll text, i_json_query json, i_skip integer DEFAULT 0, i_limit integer DEFAULT null, i_sort json DEFAULT null`
-- returns: `table(bq_jdoc json)`
+- params: `i_coll text, i_json_query jsonb, i_skip integer DEFAULT 0, i_limit integer DEFAULT null, i_sort jsonb DEFAULT null`
+- returns: `table(bq_jdoc jsonb)`
 - language: `plpgsql`
 
 ```markdown
@@ -145,7 +145,7 @@ find many documents
 
 ## bq\_count
 
-- params: `i_coll text, i_doc json`
+- params: `i_coll text, i_doc jsonb`
 - returns: `integer`
 - language: `plpgsql`
 
@@ -174,7 +174,7 @@ example: bq_distinct('people', 'address.city')
 
 ## bq\_insert
 
-- params: `i_coll text, i_jdoc json`
+- params: `i_coll text, i_jdoc jsonb`
 - returns: `text`
 - language: `plpgsql`
 
@@ -187,7 +187,7 @@ insert document
 
 ## bq\_remove
 
-- params: `i_coll text, i_jdoc json`
+- params: `i_coll text, i_jdoc jsonb`
 - returns: `setof integer`
 - language: `plpgsql`
 
@@ -200,7 +200,7 @@ remove documents
 
 ## bq\_remove\_one
 
-- params: `i_coll text, i_jdoc json`
+- params: `i_coll text, i_jdoc jsonb`
 - returns: `setof integer`
 - language: `plpgsql`
 
@@ -226,7 +226,7 @@ remove one document
 
 ## bq\_save
 
-- params: `i_coll text, i_jdoc json`
+- params: `i_coll text, i_jdoc jsonb`
 - returns: `text`
 - language: `plpgsql`
 
