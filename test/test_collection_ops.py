@@ -20,7 +20,7 @@ class TestBasics(testutils.BedquiltTestCase):
 
     def test_assert_version(self):
         result = self._query("""
-        select bq_assert_minimum_version('1.0.0');
+        select bq_util_assert_minimum_version('1.0.0');
         """)
         self.assertEqual(result, [(True,)])
 

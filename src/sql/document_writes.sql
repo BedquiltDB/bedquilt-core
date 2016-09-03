@@ -13,7 +13,7 @@ BEGIN
   PERFORM bq_create_collection(i_coll);
   IF (select i_jdoc->'_id') is null
   THEN
-    select i_jdoc::jsonb || format('{"_id": "%s"}', bq_generate_id())::jsonb into doc;
+    select i_jdoc::jsonb || format('{"_id": "%s"}', bq_util_generate_id())::jsonb into doc;
   ELSE
     IF (SELECT jsonb_typeof(i_jdoc->'_id')) <> 'string'
     THEN

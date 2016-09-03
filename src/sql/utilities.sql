@@ -7,7 +7,7 @@
  * Used by the document write functions to populate the '_id' field
  * if it is missing.
  */
-CREATE OR REPLACE FUNCTION bq_generate_id ()
+CREATE OR REPLACE FUNCTION bq_util_generate_id ()
 RETURNS char(24) AS $$
 BEGIN
 RETURN CAST(encode(gen_random_bytes(12), 'hex') as char(24));
@@ -15,22 +15,9 @@ END
 $$ LANGUAGE plpgsql;
 
 
-/* Check if a collection exists.
- * Currently does a simple check for a table with the specified name.
- */
-CREATE OR REPLACE FUNCTION bq_collection_exists (i_coll text)
-RETURNS boolean AS $$
-BEGIN
-RETURN EXISTS (
-    SELECT relname FROM pg_class WHERE relname = i_coll
-);
-END
-$$ LANGUAGE plpgsql;
-
-
 /* private - Check if a dotted path exists in a document
  */
-CREATE OR REPLACE FUNCTION bq_path_exists(i_path text, i_jdoc jsonb)
+CREATE OR REPLACE FUNCTION bq_util_path_exists(i_path text, i_jdoc jsonb)
 RETURNS boolean AS $$
 DECLARE
   path_array text[];
@@ -43,7 +30,7 @@ $$ language plpgsql;
 
 /* private - transform a json sort spec into an 'ORDER BY...' string
  */
-CREATE OR REPLACE FUNCTION bq_sort_to_text(i_sort jsonb)
+CREATE OR REPLACE FUNCTION bq_util_sort_to_text(i_sort jsonb)
 RETURNS text AS $$
 DECLARE
   sort_spec jsonb;
@@ -87,7 +74,7 @@ $$ LANGUAGE plpgsql;
 /* private - raise an exception if the extension version is less than
  * the supplied version.
  */
-CREATE OR REPLACE FUNCTION bq_assert_minimum_version(i_version text)
+CREATE OR REPLACE FUNCTION bq_util_assert_minimum_version(i_version text)
 RETURNS boolean AS $$
 DECLARE
   version text;
@@ -108,11 +95,11 @@ END
 $$ LANGUAGE plpgsql;
 
 
-DROP TYPE IF EXISTS bq_split_queries_result;
+DROP TYPE IF EXISTS bq_util_split_queries_result;
 
 /* private - return type for bq_split_queries
 */
-CREATE TYPE bq_split_queries_result AS (
+CREATE TYPE bq_util_split_queries_result AS (
     match_query text,
     special_queries text[]
 );
@@ -120,8 +107,8 @@ CREATE TYPE bq_split_queries_result AS (
 
 /* private - split a json query into query and special queries, '$eq' etc.
  */
-CREATE OR REPLACE FUNCTION bq_split_queries(i_json jsonb)
-  RETURNS bq_split_queries_result
+CREATE OR REPLACE FUNCTION bq_util_split_queries(i_json jsonb)
+  RETURNS bq_util_split_queries_result
 AS $$
   if 'json' in SD:
     json = SD['json']

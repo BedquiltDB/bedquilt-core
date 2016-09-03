@@ -51,7 +51,7 @@ BEGIN
             EXECUTE format(
               'alter table %I
               add constraint %s
-              check (bq_path_exists(%s, bq_jdoc));',
+              check (bq_util_path_exists(%s, bq_jdoc));',
               i_coll,
               quote_ident(new_constraint_name),
               quote_literal(field_name));

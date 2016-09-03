@@ -58,3 +58,15 @@ ELSE
 END IF;
 END
 $$ LANGUAGE plpgsql SECURITY DEFINER;
+
+/* Check if a collection exists.
+* Currently does a simple check for a table with the specified name.
+*/
+CREATE OR REPLACE FUNCTION bq_collection_exists (i_coll text)
+RETURNS boolean AS $$
+BEGIN
+RETURN EXISTS (
+SELECT relname FROM pg_class WHERE relname = i_coll
+);
+END
+$$ LANGUAGE plpgsql;

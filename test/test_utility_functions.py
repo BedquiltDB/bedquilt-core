@@ -9,7 +9,7 @@ class TestSplitQueries(testutils.BedquiltTestCase):
         for query, match, specials in examples:
             result = self._query(
                 """
-                select * from bq_split_queries(%s::jsonb)
+                select * from bq_util_split_queries(%s::jsonb)
                 """,
                 (json.dumps(query),)
             )
@@ -273,6 +273,6 @@ class TestSplitQueries(testutils.BedquiltTestCase):
         }
         with self.assertRaises(psycopg2.InternalError):
             self.cur.execute("""
-            select * from bq_split_queries('{}'::jsonb)
+            select * from bq_util_split_queries('{}'::jsonb)
             """.format(json.dumps(query)))
         self.conn.rollback()

@@ -19,7 +19,7 @@ BEGIN
     q := format('SELECT bq_jdoc::jsonb FROM %I', quote_ident(i_coll));
     -- split json query doc into match query and special queries
     SELECT match_query, special_queries
-      FROM bq_split_queries(i_json_query::jsonb)
+      FROM bq_util_split_queries(i_json_query::jsonb)
       INTO mq, sq;
     q := q || format(' WHERE bq_jdoc @> (%s)::jsonb ', quote_literal(mq));
     IF array_length(sq, 1) > 0
@@ -32,7 +32,7 @@ BEGIN
     -- sort
     IF (i_sort IS NOT NULL)
     THEN
-      q := q || format(' %s ', bq_sort_to_text(i_sort));
+      q := q || format(' %s ', bq_util_sort_to_text(i_sort));
     END IF;
     -- skip
     q := q || format(' offset %s ', i_skip);
@@ -105,7 +105,7 @@ BEGIN
     END IF;
     -- query match
     SELECT match_query, special_queries
-      FROM bq_split_queries(i_json_query::jsonb)
+      FROM bq_util_split_queries(i_json_query::jsonb)
       INTO mq, sq;
     q := q || format(' WHERE bq_jdoc @> (%s)::jsonb ', quote_literal(mq));
     -- special queries
@@ -119,7 +119,7 @@ BEGIN
     -- sort
     IF (i_sort IS NOT NULL)
     THEN
-      q := q || bq_sort_to_text(i_sort);
+      q := q || bq_util_sort_to_text(i_sort);
     END IF;
     -- skip and limit
     IF (i_limit IS NOT NULL)
