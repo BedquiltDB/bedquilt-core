@@ -27,6 +27,8 @@ Valid constraints are: $required, $notnull and $type.
       then the type of that value must match the specified type.
       Valid types are "string", "number", "object", "array", "boolean".
 Returns a boolean indicating whether any of the constraints newly applied.
+Example:
+  select bq_add_constraints('things', '{"name": {"$required": true}}')
 ```
 
 
@@ -41,6 +43,8 @@ Returns a boolean indicating whether any of the constraints newly applied.
 Remove constraints from collection.
 The supplied json document should match the spec for existing constraints.
 Returns True if any of the constraints were removed, False otherwise.
+Example:
+  select bq_remove_constraints('things', '{"name": {"$required": true}}')
 ```
 
 
@@ -53,6 +57,8 @@ Returns True if any of the constraints were removed, False otherwise.
 
 ```markdown
 Get a list of text descriptions of constraints on this collection.
+Example:
+  select bq_list_constraints('orders')
 ```
 
 

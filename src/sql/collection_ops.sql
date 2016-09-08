@@ -3,7 +3,9 @@
 -- # -- # -- # -- # -- #
 
 
-/* Create a collection with the specified name
+/* Create a collection with the specified name.
+ * Example:
+ *   select bq_create_collection('orders');
  */
 CREATE OR REPLACE FUNCTION bq_create_collection(i_coll text)
 RETURNS BOOLEAN AS $$
@@ -31,6 +33,8 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 /* Get a list of existing collections.
  * This checks information_schema for tables matching the expected structure.
+ * Example:
+ *   select bq_list_collections();
  */
 CREATE OR REPLACE FUNCTION bq_list_collections()
 RETURNS table(collection_name text) AS $$
@@ -45,6 +49,8 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 /* Delete/drop a collection.
  * At the moment, this just drops whatever table matches the collection name.
+ * Example:
+ *   select bq_delete_collection('orders');
  */
 CREATE OR REPLACE FUNCTION bq_delete_collection(i_coll text)
 RETURNS BOOLEAN AS $$
@@ -59,14 +65,17 @@ END IF;
 END
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
+
 /* Check if a collection exists.
-* Currently does a simple check for a table with the specified name.
-*/
+ * Example:
+ *   select bq_collection_exists('orders');
+ */
 CREATE OR REPLACE FUNCTION bq_collection_exists (i_coll text)
 RETURNS boolean AS $$
 BEGIN
-RETURN EXISTS (
-SELECT relname FROM pg_class WHERE relname = i_coll
-);
+  RETURN EXISTS (
+    SELECT table_name FROM information_schema.columns
+    where table_name = i_coll and column_name = 'bq_jdoc'
+  );
 END
 $$ LANGUAGE plpgsql;

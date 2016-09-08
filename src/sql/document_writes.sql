@@ -3,7 +3,11 @@
 -- # -- # -- # -- # -- #
 
 
-/* insert document
+/* Insert a document into a collection.
+ * Raises an error if a document already exists with the same `_id` field.
+ * If the document doesn't contain an `_id` field, then one will be randomly generated
+ * Example:
+ *   select bq_insert('things', '{"name": "wrench"}');
  */
 CREATE OR REPLACE FUNCTION bq_insert(i_coll text, i_jdoc jsonb)
 RETURNS text AS $$
@@ -33,7 +37,10 @@ END
 $$ LANGUAGE plpgsql;
 
 
-/* remove documents
+/* Remove documents from a collection, matching a query document.
+ * Returns count of deleted documents.
+ * Example:
+ *   select bq_remove('orders', '{"cancelled": true}');
  */
 CREATE OR REPLACE FUNCTION bq_remove(i_coll text, i_jdoc jsonb)
 RETURNS setof integer AS $$
@@ -54,7 +61,11 @@ END
 $$ LANGUAGE plpgsql;
 
 
-/* remove one document
+/* Remove a single document from a collection, matching a query document.
+ * The first document to match the query will be removed.
+ * Returns count of deleted documents, either one or zero.
+ * Example:
+ *   select bq_remove_one('orders', '{"cancelled": true}');
  */
 CREATE OR REPLACE FUNCTION bq_remove_one(i_coll text, i_jdoc jsonb)
 RETURNS setof integer AS $$
@@ -76,7 +87,10 @@ END
 $$ LANGUAGE plpgsql;
 
 
-/* remove one document
+/* Remove a single document from a collection, by its `_id` field.
+ * Returns count of deleted documents, either one or zero.
+ * Example:
+ *   select bq_remove_one_by_id('orders', '4d733fb148e7d89f7c569655');
  */
 CREATE OR REPLACE FUNCTION bq_remove_one_by_id(i_coll text, i_id text)
 RETURNS setof integer AS $$
@@ -96,7 +110,11 @@ END
 $$ LANGUAGE plpgsql;
 
 
-/* save document
+/* Save a document to a collection.
+ * Similar to `bq_insert`, but will overwrite an existing document if one with a matching
+ * `_id` field is found. Can be used to either create new documents or update existing documents.
+ * Example:
+ *   select bq_save('things', '{"_id": "abc", "name": "wrench"}');
  */
 CREATE OR REPLACE FUNCTION bq_save(i_coll text, i_jdoc jsonb)
 RETURNS text AS $$

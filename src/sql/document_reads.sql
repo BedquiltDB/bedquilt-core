@@ -56,7 +56,7 @@ $$ LANGUAGE plpgsql;
  * This function is potentially faster than the equivalent call to bq_find_one
  * with a '{"_id": "..."}' query document.
  * Example:
- *   select bq_find_one_by_id('things', 'fa0c852e4bc5d384b5f9fde5')
+ *   select bq_find_one_by_id('things', 'fa0c852e4bc5d384b5f9fde5');
  */
 CREATE OR REPLACE FUNCTION bq_find_one_by_id(i_coll text, i_id text)
 RETURNS table(bq_jdoc jsonb) AS $$
@@ -76,7 +76,7 @@ $$ LANGUAGE plpgsql;
 
 /* Find many documents by their `_id` fields.
  * Example:
- *   select bq_find_many_by_ids('things', '["one", "four", "nine"]')
+ *   select bq_find_many_by_ids('things', '["one", "four", "nine"]');
  */
 CREATE OR REPLACE FUNCTION bq_find_many_by_ids(i_coll text, i_ids jsonb)
 RETURNS table(bq_jdoc jsonb) AS $$
