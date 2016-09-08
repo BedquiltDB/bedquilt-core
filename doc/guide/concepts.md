@@ -274,8 +274,7 @@ print db['orders'].find({
 })
 ```
 
-See the documentation on [Reading Data](reading_data.md) for a full list of advanced query operations.
-
+See the [BedquiltDB Spec](../spec.md#aside-advanced-query-operations) for full documentation on advanced query operations.
 
 
 ## Skip, Limit and Sort
