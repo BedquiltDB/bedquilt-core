@@ -27,7 +27,6 @@ Valid constraints are: $required, $notnull and $type.
       then the type of that value must match the specified type.
       Valid types are "string", "number", "object", "array", "boolean".
 Returns a boolean indicating whether any of the constraints newly applied.
-
 ```
 
 
@@ -42,7 +41,6 @@ Returns a boolean indicating whether any of the constraints newly applied.
 Remove constraints from collection.
 The supplied json document should match the spec for existing constraints.
 Returns True if any of the constraints were removed, False otherwise.
-
 ```
 
 
@@ -55,7 +53,6 @@ Returns True if any of the constraints were removed, False otherwise.
 
 ```markdown
 Get a list of text descriptions of constraints on this collection.
-
 ```
 
 
@@ -70,7 +67,6 @@ Get a list of text descriptions of constraints on this collection.
 
 ```markdown
 Create a collection with the specified name
-
 ```
 
 
@@ -84,7 +80,6 @@ Create a collection with the specified name
 ```markdown
 Get a list of existing collections.
 This checks information_schema for tables matching the expected structure.
-
 ```
 
 
@@ -98,7 +93,6 @@ This checks information_schema for tables matching the expected structure.
 ```markdown
 Delete/drop a collection.
 At the moment, this just drops whatever table matches the collection name.
-
 ```
 
 
@@ -112,8 +106,15 @@ At the moment, this just drops whatever table matches the collection name.
 - language: `plpgsql`
 
 ```markdown
-find one
-
+Find one document from a collection, matching a query document.
+Effectively the same as bq_find with limit set to 1.
+Params:
+  - i_coll: collection name
+  - i_json_query: the query document
+  - i_skip: (optional) number of documents to skip, default 0
+  - i_sort: (optional) json array of sort specifications, default null
+Example:
+  select bq_find_one('orders', '{"processed": false}');
 ```
 
 
@@ -125,7 +126,11 @@ find one
 - language: `plpgsql`
 
 ```markdown
-
+Find a single document from a collection, by it's `_id` property.
+This function is potentially faster than the equivalent call to bq_find_one
+with a '{"_id": "..."}' query document.
+Example:
+  select bq_find_one_by_id('things', 'fa0c852e4bc5d384b5f9fde5')
 ```
 
 
@@ -137,8 +142,16 @@ find one
 - language: `plpgsql`
 
 ```markdown
-find many documents
-
+Find documents from a collection, matching a query document.
+Params:
+  - i_coll: collection name
+  - i_json_query: the query document
+  - i_skip: (optional) number of documents to skip, default 0
+  - i_limit: (optional) number of documents to limit the result set to,
+  - i_sort: (optional) json array of sort specifications, default null
+Example:
+  select bq_find('orders', '{"processed": false}');
+  select bq_find('orders', '{"processed": false}', 2, 10, '[{"orderTime": -1}]');
 ```
 
 
@@ -150,8 +163,9 @@ find many documents
 - language: `plpgsql`
 
 ```markdown
-count documents in collection
-
+Count documents in a collection, matching a query document.
+Example:
+  select bq_countt('orders', '{"processed": true}')
 ```
 
 
@@ -164,8 +178,8 @@ count documents in collection
 
 ```markdown
 Get a sequence of the distinct values present in the collection for a given key,
-example: bq_distinct('people', 'address.city')
-
+Example:
+  select bq_distinct('people', 'address.city')
 ```
 
 
@@ -180,7 +194,6 @@ example: bq_distinct('people', 'address.city')
 
 ```markdown
 insert document
-
 ```
 
 
@@ -193,7 +206,6 @@ insert document
 
 ```markdown
 remove documents
-
 ```
 
 
@@ -206,7 +218,6 @@ remove documents
 
 ```markdown
 remove one document
-
 ```
 
 
@@ -219,7 +230,6 @@ remove one document
 
 ```markdown
 remove one document
-
 ```
 
 
@@ -232,7 +242,6 @@ remove one document
 
 ```markdown
 save document
-
 ```
 
 
@@ -249,6 +258,5 @@ save document
 Generate a random string ID.
 Used by the document write functions to populate the '_id' field
 if it is missing.
-
 ```
 

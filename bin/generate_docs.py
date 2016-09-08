@@ -120,7 +120,7 @@ def get_doc_comment(st):
                     comment_lines.append(line[3:])
                 if line[:3] == comment_starts[-1]:
                     break
-            result = "\n".join(comment_lines)
+            result = "\n".join(comment_lines).rstrip()
     return result
 
 

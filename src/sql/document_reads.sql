@@ -3,7 +3,15 @@
 -- # -- # -- # -- # -- #
 
 
-/* find one
+/* Find one document from a collection, matching a query document.
+ * Effectively the same as bq_find with limit set to 1.
+ * Params:
+ *   - i_coll: collection name
+ *   - i_json_query: the query document
+ *   - i_skip: (optional) number of documents to skip, default 0
+ *   - i_sort: (optional) json array of sort specifications, default null
+ * Example:
+ *   select bq_find_one('orders', '{"processed": false}');
  */
 CREATE OR REPLACE FUNCTION bq_find_one(i_coll text, i_json_query jsonb, i_skip integer DEFAULT 0, i_sort jsonb DEFAULT null)
 RETURNS table(bq_jdoc jsonb) AS $$
@@ -44,7 +52,12 @@ END
 $$ LANGUAGE plpgsql;
 
 
--- find one by id
+/* Find a single document from a collection, by it's `_id` property.
+ * This function is potentially faster than the equivalent call to bq_find_one
+ * with a '{"_id": "..."}' query document.
+ * Example:
+ *   select bq_find_one_by_id('things', 'fa0c852e4bc5d384b5f9fde5')
+ */
 CREATE OR REPLACE FUNCTION bq_find_one_by_id(i_coll text, i_id text)
 RETURNS table(bq_jdoc jsonb) AS $$
 BEGIN
@@ -61,7 +74,10 @@ IF (SELECT bq_collection_exists(i_coll))
 END
 $$ LANGUAGE plpgsql;
 
--- find many by ids
+/* Find many documents by their `_id` fields.
+ * Example:
+ *   select bq_find_many_by_ids('things', '["one", "four", "nine"]')
+ */
 CREATE OR REPLACE FUNCTION bq_find_many_by_ids(i_coll text, i_ids jsonb)
 RETURNS table(bq_jdoc jsonb) AS $$
 BEGIN
@@ -85,7 +101,17 @@ END
 $$ LANGUAGE plpgsql;
 
 
-/* find many documents
+/* Find documents from a collection, matching a query document.
+ * Params:
+ *   - i_coll: collection name
+ *   - i_json_query: the query document
+ *   - i_skip: (optional) number of documents to skip, default 0
+ *   - i_limit: (optional) number of documents to limit the result set to,
+       default null, returns all documents matching
+ *   - i_sort: (optional) json array of sort specifications, default null
+ * Example:
+ *   select bq_find('orders', '{"processed": false}');
+ *   select bq_find('orders', '{"processed": false}', 2, 10, '[{"orderTime": -1}]');
  */
 CREATE OR REPLACE FUNCTION bq_find(i_coll text, i_json_query jsonb, i_skip integer DEFAULT 0, i_limit integer DEFAULT null, i_sort jsonb DEFAULT null)
 RETURNS table(bq_jdoc jsonb) AS $$
@@ -134,7 +160,9 @@ END
 $$ LANGUAGE plpgsql;
 
 
-/* count documents in collection
+/* Count documents in a collection, matching a query document.
+ * Example:
+ *   select bq_countt('orders', '{"processed": true}')
  */
 CREATE OR REPLACE FUNCTION bq_count(i_coll text, i_doc jsonb)
 RETURNS integer AS $$
@@ -158,7 +186,8 @@ $$ LANGUAGE plpgsql;
 
 
 /* Get a sequence of the distinct values present in the collection for a given key,
- * example: bq_distinct('people', 'address.city')
+ * Example:
+ *   select bq_distinct('people', 'address.city')
  */
 CREATE OR REPLACE FUNCTION bq_distinct(i_coll text, i_key_path text)
 RETURNS table(val jsonb) AS $$
