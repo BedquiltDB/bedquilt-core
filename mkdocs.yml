@@ -11,5 +11,6 @@ pages:
     - 'Clients': 'guide/clients.md'
     - 'Database Operations': 'guide/database_ops.md'
     - 'Constraints': 'guide/constraints.md'
+    - 'Reading Data': 'guide/reading_data.md'
   - 'Spec': 'spec.md'
   - 'Core API': 'api_docs.md'

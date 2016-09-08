@@ -6,7 +6,7 @@ To use BedquiltDB, you will need the following:
 
 - A PostgreSQL database server, at least version 9.4
 - The `pgcrypto` extension, which is usually included with PostgreSQL
-- The `plpython3u` extension, which can usually be installed from your pacakage manager
+- The `plpython3u` extension, which can usually be installed from your package manager
 
 
 ## Installation

@@ -174,9 +174,8 @@ We can also just query for all documents in the collection, by suppling an empty
 cool_people = db['users'].find({})
 ```
 
-For most BedquiltDB drivers, the result of a `find` operation will be a `Cursor` of results,
-rather than an Array. This is so that the results can be streamed from the PostgreSQL server to the
-client as needed, rather than being eagerly materialised in memory:
+For some BedquiltDB drivers, the result of a `find` operation will be a `Cursor` of results,
+rather than an Array. Generally the driver should use the languages equivalent of lazy sequences to prepresent query result sets. This is so that the results can be streamed from the PostgreSQL server to the client as needed, rather than being eagerly materialised in memory:
 
 ```python
 print db['users'].find({...})
@@ -234,6 +233,49 @@ the `distinct` operation.
 ```python
 print db['users'].distinct('address.city')
 ```
+
+
+## Advanced Queries
+
+All of the examples so far have queried for documents which match a query document. In other words, the query document should be a sub-set of the matched document. BedquiltDB also supports more advanced query operations. For example, we can test that a certain field does _not equal_ to a given value:
+
+```python
+print db['orders'].find({
+    'address': {
+        'city': {
+            '$noteq': 'Glasgow'
+        }
+    }
+})
+```
+
+
+Or that a numeric field is greater than a certain value:
+
+```python
+print db['articles'].find_one({
+    'upvotes': {
+        '$gt': 4
+    }
+})
+```
+
+Of course, we can intermingle these special queries with ordinary matching queries too:
+
+```python
+print db['orders'].find({
+    'processed': True',
+    'address': {
+        'city': {
+            '$noteq': 'Glasgow'
+        },
+        'address1': 'Church Street'
+    }
+})
+```
+
+See the documentation on [Reading Data](reading_data.md) for a full list of advanced query operations.
+
 
 
 ## Skip, Limit and Sort
