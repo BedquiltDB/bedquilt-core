@@ -176,24 +176,6 @@ coll.save(sarah_doc)
 ```
 
 
-### Find One
-
-Retrieve the first document which matches the provided query document
-from the collection. The filter specifies the structure of the
-returned document.
-
-Params:
-- query::Map
-- filter::Map (optional)
-
-Returns: A single document, or null if none could be found.
-
-Examples:
-```
-likes = coll.find_one({"name": "Sarah Bingham"}, {"likes": 1})
-```
-
-
 ### Find
 
 Retrieve a sequence of documents which match the provided
@@ -235,6 +217,25 @@ coll.find(
 ```
 
 
+### Find One
+
+Retrieve the first document which matches the provided query document
+from the collection. The filter specifies the structure of the
+returned document.
+
+Params:
+- query::Map
+- skip::Integer (optional, default 0)
+- sort::Array (optional, default null)
+
+Returns: A single document, or null if none could be found.
+
+Examples:
+```
+likes = coll.find_one({"name": "Sarah Bingham"}, {"likes": 1})
+```
+
+
 ### Find One By Id
 
 Retrieve the document whose `_id` field matches the supplied value.
@@ -265,51 +266,228 @@ orders = coll.find_many_by_ids(["X224", "X573", "X248"])
 ```
 
 
+### Aside: Advanced Query Operations
+
+Query documents are normally used as a sub-document match, following the semantics of PostgreSQL `@>` operator. A query document may optionally include _Advanced Query Operators_, which take the form of key=>value mappings where the key begins with a `$` character.
+
+These query operators can be mixed into a query document at any location, and at any level of nesting,
+and will be filtered out of the query before execution. In this way a match query can be comibined with advanced query operators.
+
+The following operators are supported:
+
+#### $eq => Any
+
+Asserts that a field value is equal to some specified value.
+Examples:
+```
+collection.find({
+    "city": {
+        "$eq": "Glasgow"
+    }
+})
+```
+
+#### $noteq => Any
+
+Asserts that a field value is not equal to some specified value.
+Examples:
+
+```
+collection.find({
+    "city": {
+        "$noteq": "Edinburgh"
+    }
+}
+```
+
+#### $gt => Number
+
+Asserts that a value is greater than some specified value.
+Examples:
+```
+collection.find({
+    "voteCount": {
+        "$gt": 40
+    }
+})
+```
+
+#### $gte => Number
+
+Asserts that a value is greater than or equal to some specified value.
+Examples:
+```
+collection.find({
+    "voteCount": {
+        "$gte": 20
+    }
+})
+```
+
+#### $lt => Number
+
+Asserts that a value is less than some specified value.
+Examples:
+```
+collection.find({
+    "voteCount": {
+        "$lt": 40
+    }
+})
+```
+
+#### $lte => Number
+
+Asserts that a value is less than or equal to some specified value.
+Examples:
+```
+collection.find({
+    "voteCount": {
+        "$lte": 20
+    }
+})
+```
+
+#### $in => Array
+
+Asserts that a value is in a specified list of values.
+Examples:
+```
+collection.find({
+    "city": {
+        "$in": ["Manchester", "Edinburgh"]
+    }
+})
+```
+
+
+#### $notin => Array
+
+Asserts that a value is not in a specified list of values.
+Examples:
+```
+collection.find({
+    "city": {
+        "$notin": ["London", "Glasgow"]
+    }
+})
+```
+
+
+#### $exists => Boolean
+
+Asserts that the key exists (or doesn't exist).
+Examples:
+```
+collection.find({
+    "paymentId": {
+        "$exists": true
+    }
+})
+collection.find({
+    "paymentId": {
+        "$exists": false
+    }
+})
+```
+
+#### $type => String
+
+Asserts that the type of a fields value matches the provided type name.
+Valid types: `"object"`, `"string"`, `"boolean"`, `"number"`, `"array"`, `"null"`
+Examples:
+```
+collection.find({
+    "specification": {
+        "$type": "object"
+    }
+})
+collection.find({
+    "specification": {
+        "$type": "string"
+    }
+})
+```
+
+#### $like => String
+
+Asserts that a fields string value is 'like' the specified pattern string, following the semantics of PostgreSQL `LIKE` operation.
+Examples:
+```
+collection.find({
+    "title": {
+        "$like": "%Ruby%"
+    }
+})
+```
+
+#### $regex => String
+
+Asserts that a fields string value matches the provided regex pattern string, following the semantics of PostgreSQL `~` regex operation.
+Examples:
+```
+collection.find({
+    "title": {
+        "$regex": "^.*Elixir.*$"
+    }
+})
+```
+
+As an example of mixing match queries with advanced query operations, the following query should match all documents which live in either Edinburgh or Glasgow, and have logged in at least twice:
+```
+users.find({
+    "address": {
+        "city": {
+            "$in": ["Edinburgh", "Glasgow"]
+        }
+    },
+    "loginCount": {
+        "$gte": 2
+    }
+})
+```
+
+
 ### Remove
 
 Remove documents matching the query.
 
 Params:
 - query::Map
-- multi::Boolean (default False)
 
 Returns: Number, representing the number of documents removed
 
 Examples:
 ```
-removed = coll.remove({"likes": ["pears"]}, multi=True)
+removed = coll.remove({"likes": ["pears"]})
 ```
 
 
-### Update
+### Remove One
 
-Update documents in collection with new data.
-The operations map supports the following update operations:
-- $set : set fields to values
-- $unset : unset, or remove specified fields
+Remove one document matching the query.
 
 Params:
 - query::Map
-- operations::Map
+
+Returns: Number, representing the number of documents removed, either one or zero.
 
 Examples:
 ```
-coll.update({"_id": "some_id"},
-            {"$set": {"description": "A nice thing"})
-
-coll.update({"likes": ["jazz"]},
-            {"$set": {"goodPerson": True}})
-
-coll.update({"likes": ["pineapple"]},
-            {"$unset": {"goodPerson": 1}})
+removed = coll.remove_one({"likes": ["pears"]})
 ```
 
 
-### Update One
+### Remove One By Id
 
-Todo
+Remove one document by its `_id` field.
 
+Params:
+- id::String
 
-### Update One By Id
+Returns: Number, representing the number of documents removed, either one or zero.
 
-Todo
+Examples:
+```
+removed = coll.remove_one_by_id("abc")
+```
