@@ -5,7 +5,7 @@ This document is auto-generated from the core `bedquilt` source code, and descri
 ---- ---- ---- ----
 
 
-
+# collection_constraints
 
 ## bq\_add\_constraints
 
@@ -63,7 +63,7 @@ Example:
 
 
 
-
+# collection_ops
 
 ## bq\_create\_collection
 
@@ -72,7 +72,9 @@ Example:
 - language: `plpgsql`
 
 ```markdown
-Create a collection with the specified name
+Create a collection with the specified name.
+Example:
+  select bq_create_collection('orders');
 ```
 
 
@@ -86,6 +88,8 @@ Create a collection with the specified name
 ```markdown
 Get a list of existing collections.
 This checks information_schema for tables matching the expected structure.
+Example:
+  select bq_list_collections();
 ```
 
 
@@ -99,11 +103,27 @@ This checks information_schema for tables matching the expected structure.
 ```markdown
 Delete/drop a collection.
 At the moment, this just drops whatever table matches the collection name.
+Example:
+  select bq_delete_collection('orders');
 ```
 
 
 
+## bq\_collection\_exists 
 
+- params: `None`
+- returns: `boolean`
+- language: `plpgsql`
+
+```markdown
+Check if a collection exists.
+Example:
+  select bq_collection_exists('orders');
+```
+
+
+
+# document_reads
 
 ## bq\_find\_one
 
@@ -136,7 +156,7 @@ Find a single document from a collection, by it's `_id` property.
 This function is potentially faster than the equivalent call to bq_find_one
 with a '{"_id": "..."}' query document.
 Example:
-  select bq_find_one_by_id('things', 'fa0c852e4bc5d384b5f9fde5')
+  select bq_find_one_by_id('things', 'fa0c852e4bc5d384b5f9fde5');
 ```
 
 
@@ -190,7 +210,7 @@ Example:
 
 
 
-
+# document_writes
 
 ## bq\_insert
 
@@ -199,7 +219,11 @@ Example:
 - language: `plpgsql`
 
 ```markdown
-insert document
+Insert a document into a collection.
+Raises an error if a document already exists with the same `_id` field.
+If the document doesn't contain an `_id` field, then one will be randomly generated
+Example:
+  select bq_insert('things', '{"name": "wrench"}');
 ```
 
 
@@ -211,7 +235,10 @@ insert document
 - language: `plpgsql`
 
 ```markdown
-remove documents
+Remove documents from a collection, matching a query document.
+Returns count of deleted documents.
+Example:
+  select bq_remove('orders', '{"cancelled": true}');
 ```
 
 
@@ -223,7 +250,11 @@ remove documents
 - language: `plpgsql`
 
 ```markdown
-remove one document
+Remove a single document from a collection, matching a query document.
+The first document to match the query will be removed.
+Returns count of deleted documents, either one or zero.
+Example:
+  select bq_remove_one('orders', '{"cancelled": true}');
 ```
 
 
@@ -235,7 +266,10 @@ remove one document
 - language: `plpgsql`
 
 ```markdown
-remove one document
+Remove a single document from a collection, by its `_id` field.
+Returns count of deleted documents, either one or zero.
+Example:
+  select bq_remove_one_by_id('orders', '4d733fb148e7d89f7c569655');
 ```
 
 
@@ -247,12 +281,16 @@ remove one document
 - language: `plpgsql`
 
 ```markdown
-save document
+Save a document to a collection.
+Similar to `bq_insert`, but will overwrite an existing document if one with a matching
+`_id` field is found. Can be used to either create new documents or update existing documents.
+Example:
+  select bq_save('things', '{"_id": "abc", "name": "wrench"}');
 ```
 
 
 
-
+# utilities
 
 ## bq\_util\_generate\_id 
 

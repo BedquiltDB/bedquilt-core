@@ -50,6 +50,8 @@ def main():
         details = [parse(x) for x in function_blocks]
 
         final_string = "\n\n"
+        file_name = os.path.splitext(os.path.basename(path))[0]
+        final_string = final_string + "# {}".format(file_name)
         for detail in details:
             if detail is not None and detail['name'] is not None:
                 final_string = final_string + to_md(detail)
