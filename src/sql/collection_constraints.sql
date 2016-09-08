@@ -16,6 +16,8 @@
  *       then the type of that value must match the specified type.
  *       Valid types are "string", "number", "object", "array", "boolean".
  * Returns a boolean indicating whether any of the constraints newly applied.
+ * Example:
+ *   select bq_add_constraints('things', '{"name": {"$required": true}}')
  */
 CREATE OR REPLACE FUNCTION bq_add_constraints(i_coll text, i_jdoc jsonb)
 RETURNS boolean AS $$
@@ -158,6 +160,8 @@ $$ LANGUAGE plpgsql;
 /* Remove constraints from collection.
  * The supplied json document should match the spec for existing constraints.
  * Returns True if any of the constraints were removed, False otherwise.
+ * Example:
+ *   select bq_remove_constraints('things', '{"name": {"$required": true}}')
  */
 CREATE OR REPLACE FUNCTION bq_remove_constraints(i_coll text, i_jdoc jsonb)
 RETURNS boolean AS $$
@@ -238,6 +242,8 @@ $$ LANGUAGE plpgsql;
 
 
 /* Get a list of text descriptions of constraints on this collection.
+ * Example:
+ *   select bq_list_constraints('orders')
  */
 CREATE OR REPLACE FUNCTION bq_list_constraints(i_coll text)
 RETURNS setof text AS $$
