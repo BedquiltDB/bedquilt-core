@@ -239,7 +239,7 @@ save document
 
 
 
-## bq\_generate\_id 
+## bq\_util\_generate\_id 
 
 - params: `None`
 - returns: `char(24)`
@@ -249,20 +249,6 @@ save document
 Generate a random string ID.
 Used by the document write functions to populate the '_id' field
 if it is missing.
-
-```
-
-
-
-## bq\_collection\_exists 
-
-- params: `None`
-- returns: `boolean`
-- language: `plpgsql`
-
-```markdown
-Check if a collection exists.
-Currently does a simple check for a table with the specified name.
 
 ```
 

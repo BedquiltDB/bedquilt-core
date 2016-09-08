@@ -97,6 +97,8 @@ $$ LANGUAGE plpgsql;
 
 DROP TYPE IF EXISTS bq_util_split_queries_result;
 
+
+
 /* private - return type for bq_split_queries
 */
 CREATE TYPE bq_util_split_queries_result AS (

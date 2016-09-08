@@ -72,9 +72,12 @@ install-head:
 docs:
 	python bin/generate_docs.py && mkdocs build --clean
 
+docs-serve: docs
+	mkdocs serve
+
 
 test: install-head
 	bin/run-tests.sh
 
 
-.PHONY: test build-head build-package build-package-head install-head install docs all clean
+.PHONY: test build-head build-package build-package-head install-head install docs docs-serve all clean

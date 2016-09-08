@@ -6,6 +6,7 @@ To use BedquiltDB, you will need the following:
 
 - A PostgreSQL database server, at least version 9.4
 - The `pgcrypto` extension, which is usually included with PostgreSQL
+- The `plpython3u` extension, which can usually be installed from your pacakage manager
 
 
 ## Installation
@@ -28,6 +29,7 @@ Once the extension is installed on the server, it needs to be enabled on the
 database you intend to use:
 ```
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
+CREATE EXTENSION IF NOT EXISTS plpython3u;
 CREATE EXTENSION bedquilt;
 ```
 
@@ -40,10 +42,10 @@ You can run a simple test with this query:
 select bq_find('test', '{}');
 ```
 
-If it doesn't crash, then `bedquilt-core` is installed and ready to use.
+If the query doesn't crash, then `bedquilt-core` is installed and ready to use.
 
 
 ## Next steps
 
 Now you can install a client library
-(such as [pybedquilt](http://pybedquilt.readthedocs.org)), and start using BedquiltDB.
+(such as [pybedquilt](http://pybedquilt.readthedocs.org)), read the [BedquiltDB Guide](index.md) and start using BedquiltDB.
