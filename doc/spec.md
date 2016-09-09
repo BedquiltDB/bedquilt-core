@@ -122,7 +122,7 @@ Adds a constraint to the fields of this collection.  The spec
 describes the fields which should be constrained, and how. This will
 validate all existing documents in the collection before
 applying. Further writes to this collection will be validated before
-writing, and will fail if the written document does not satisfy the
+writing, and will fail (raise an error) if the written document does not satisfy the
 constraints.
 
 Spec Options:
