@@ -22,6 +22,7 @@ The examples will be given in a pseudo-python language.
 Create a collection. Does nothing if the collection already exists.
 
 Params:
+
 - collectionName::String
 
 Returns: Boolean indicating whether the collection was created.
@@ -37,6 +38,7 @@ db.create_collection("people")
 Delete a collection. Does nothing if the collection does not exist.
 
 Params:
+
 - collectionName::String
 
 Returns: Boolean indicating whether the collection was deleted.
@@ -72,6 +74,7 @@ correspond to ascending index, negative numbers to descending
 index. If unique is true, then the index will enforce uniqueness.
 
 Params:
+
 - spec::Map
 - unique::Boolean (default False)
 
@@ -87,6 +90,7 @@ coll.create_index({"name": 1})
 Remove an index from the collection.
 
 Params:
+
 - spec::Map
 
 Returns: None
@@ -113,6 +117,7 @@ Spec Options:
   options are "string", "number|double|float",  "array", "object"
 
 Params:
+
 - spec::Map
 
 Returns: Boolean indicating success or failure
@@ -135,6 +140,7 @@ already exists a document in this collection with the
 same \_id, that is an error.
 
 Params:
+
 - doc::Map
 
 Returns: String representing the \_id field of the document
@@ -160,6 +166,7 @@ generated and added to the document before insertion as
 a new document.
 
 Params:
+
 - doc::Map
 
 Returns: String representing the \_id field of the document
@@ -188,6 +195,7 @@ sorts are applied in that order. For example `[{age: 1}, {name: 1}]` means
 "sort by age, then by name".
 
 Params:
+
 - query::Map
 - skip::Integer (optional, default 0)
 - limit::Integer (optional, default null)
@@ -224,6 +232,7 @@ from the collection. The filter specifies the structure of the
 returned document.
 
 Params:
+
 - query::Map
 - skip::Integer (optional, default 0)
 - sort::Array (optional, default null)
@@ -241,6 +250,7 @@ likes = coll.find_one({"name": "Sarah Bingham"}, {"likes": 1})
 Retrieve the document whose `_id` field matches the supplied value.
 
 Params:
+
 - id::String
 
 Returns: A single document, or null if none could be found.
@@ -256,6 +266,7 @@ likes = coll.find_one_by_id("sarah@example.com")
 Retrieve documents whose `_id` field is in the supplied list of ids.
 
 Params:
+
 - ids::List[String]
 
 Returns: a (possibly empty) sequence of documents.
@@ -453,6 +464,7 @@ users.find({
 Remove documents matching the query.
 
 Params:
+
 - query::Map
 
 Returns: Number, representing the number of documents removed
@@ -468,6 +480,7 @@ removed = coll.remove({"likes": ["pears"]})
 Remove one document matching the query.
 
 Params:
+
 - query::Map
 
 Returns: Number, representing the number of documents removed, either one or zero.
@@ -483,6 +496,7 @@ removed = coll.remove_one({"likes": ["pears"]})
 Remove one document by its `_id` field.
 
 Params:
+
 - id::String
 
 Returns: Number, representing the number of documents removed, either one or zero.
@@ -491,3 +505,5 @@ Examples:
 ```
 removed = coll.remove_one_by_id("abc")
 ```
+
+----

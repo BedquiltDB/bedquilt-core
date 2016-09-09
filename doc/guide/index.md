@@ -14,10 +14,10 @@ Welcome to the BedquiltDB Guide
 
 ### [Database Operations](database_ops.md)
 
-### Inserting Data
+### [Writing Data](writing_data.md)
 
-### [Constraints](constraints.md)
+### [Reading Data](reading_data.md)
 
-### Retrieving Data
+### [Collection Constraints](constraints.md)
 
-### Updating Data
+### [Updating BedquiltDB](updating.md)

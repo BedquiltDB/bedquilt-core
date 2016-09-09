@@ -37,8 +37,6 @@ on [github](https://github.com/BedquiltDB).
 
 ### [BedquiltDB Guide](guide/index.md)
 
-### [Getting Started (Installation)](guide/installation.md)
+### [Spec](spec.md)
 
 ### [Core API](api_docs.md)
-
-### [Spec](spec.md)

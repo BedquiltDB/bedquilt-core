@@ -12,5 +12,7 @@ pages:
     - 'Database Operations': 'guide/database_ops.md'
     - 'Constraints': 'guide/constraints.md'
     - 'Reading Data': 'guide/reading_data.md'
+    - 'Writing Data': 'guide/writing_data.md'
+    - 'Updating BedquiltDB': 'guide/updating.md'
   - 'Spec': 'spec.md'
   - 'Core API': 'api_docs.md'
