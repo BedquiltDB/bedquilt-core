@@ -9,15 +9,21 @@ The examples will be given in a pseudo-python language.
 
 ## Connections
 
-- Connect to a PostgreSQL database directly:
-`db = bedquilt.BedquiltClient("localhost/bedquilt_test")`
-- Get a collection from the database:
-`coll = db[‘people’]`
+The semantics of a "Connection" are left to the client library to decide. In general, the following code example should be considered typical for an imperative language like Python or Ruby:
+
+```
+db = bedquilt.BedquiltClient("localhost/bedquilt_test")
+people = db['people']
+```
+
+Because most/all BedquiltDB clients will be wrappers around that languages PostgreSQL library, it is likely that the semantics of creating a connection, including the connection-string specification, will mirror the semantics of that underlying library.
 
 
 ## Database Operations
 
-## Create Collection
+A Database is presumed to correspond to a PostgreSQL Database object.
+
+### Create Collection
 
 Create a collection. Does nothing if the collection already exists.
 
@@ -33,7 +39,7 @@ db.create_collection("people")
 ```
 
 
-## Delete Collection
+### Delete Collection
 
 Delete a collection. Does nothing if the collection does not exist.
 
@@ -49,7 +55,7 @@ db.delete_collection("people")
 ```
 
 
-## List Collections
+### List Collections
 
 Get a list of collection names.
 
@@ -64,43 +70,53 @@ for collection_name in db.list_collections():
 ```
 
 
+### Collection Exists
+
+Check if a collection exists.
+
+Params:
+
+- collectionName::String
+
+Examples:
+```
+db.collection_exists('people')
+```
+
+
+### List Constraints
+
+Get a list of constraints on a collection. The return value is a list of strings which should be meaningful to humans, but not necessarily meaningful to the BedquiltDB API.
+
+Examples:
+```
+coll.list_constraints()
+```
+
+Returns: Boolean indicating whether the collection exists
+
+
 ## Collection Operations
 
-### Create Index:
+A collection is a named bucket in which JSON documents (objects) can be stored. The following assumptions are made about documents within a collection:
 
-Add an index to the collection.  The spec is a json-like map where the
-keys are field names and the values are numbers. positive numbers
-correspond to ascending index, negative numbers to descending
-index. If unique is true, then the index will enforce uniqueness.
+- Each document must have a `_id` ("underscore eye-dee") field at the top level, whose value is a String.
+- If a document is written to a collection, but does not contain a `_id` field, then the server will randomly generate one and add it to the document before persisting to storage.
+- Each documents `_id` field must be unique. Each `_id` value is presumed to uniquely identify a logical document
 
-Params:
-
-- spec::Map
-- unique::Boolean (default False)
-
-Returns: None
-
-Examples:
+In broad terms, the following pseudo-code should store a JSON document in the `people` collection:
 ```
-coll.create_index({"name": 1})
+people = db['people']
+sarah = {
+    '_id': 'abcd',
+    'name': 'Sarah',
+    'likes': ['icecream', 'code']
+}
+people.insert(sarah)
 ```
 
-### Delete Index
 
-Remove an index from the collection.
-
-Params:
-
-- spec::Map
-
-Returns: None
-
-Examples:
-```
-coll.delete_index({"name": 1})
-```
-
-### Add Constraint
+### Add Constraints
 
 Adds a constraint to the fields of this collection.  The spec
 describes the fields which should be constrained, and how. This will
@@ -120,7 +136,7 @@ Params:
 
 - spec::Map
 
-Returns: Boolean indicating success or failure
+Returns: Boolean indicating whether any constraints were added or not.
 
 Examples:
 ```
@@ -128,6 +144,34 @@ coll.add_constraint({"name": {"$required": True,
                               "$notnull": True,
                               "$type": "string",
                               "$unique": False}})
+```
+
+
+### Remove Constraints
+
+Removes constraints, if they exist, on a collection. Removing constraints which don't exist is a no-op. Should use the same constraint spec documents as for creating constraints.
+
+Params:
+
+- spec::Map
+
+Returns: Boolean indicating whether any constraints were removed or not.
+
+Examples:
+```
+coll.remove_constraint({
+    "name": {"$required": True}
+})
+```
+
+
+### List Constraints
+
+Get a list of constraints on a collection. The return value is a list of strings which should be meaningful to humans, but not necessarily meaningful to the BedquiltDB API.
+
+Examples:
+```
+coll.list_constraints()
 ```
 
 
@@ -274,6 +318,38 @@ Returns: a (possibly empty) sequence of documents.
 Examples:
 ```
 orders = coll.find_many_by_ids(["X224", "X573", "X248"])
+```
+
+
+### Count
+
+Get a count of documents in a collection, matching a query document.
+
+Params:
+
+- query::Map
+
+Returns: Integer indicating count of documents matching the query
+
+Examples:
+```
+coll.count({"active": True})
+```
+
+
+### Distinct
+
+Get a list of distinct values which exist at some path in a collection. The path is a string representing a dotted-path into the collections documents. For example, to retrieve the list of distinct cities that users live in, the `city` field, within the `address` field, within the `users` collection, would be represented as `"address.city"`.
+
+Params:
+
+- path::String
+
+Examples:
+```
+users = db['users']
+users.distinct('address.city')    # => ['Edinburgh', 'Glasgow', ...]
+users.distinct('lastName')        # => ['Smith', 'Clarke', ...]
 ```
 
 
