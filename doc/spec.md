@@ -236,7 +236,8 @@ The `sort` parameter is an array of `key->integer` maps, where the key is the
 name of the field to sort by and the integer indicates ascending (1) or
 descending (-1) ordering. If the sort array contains more than one value, the
 sorts are applied in that order. For example `[{age: 1}, {name: 1}]` means
-"sort by age, then by name".
+"sort by age, then by name". Two 'special' sorts are available: `$created`, and `$updated`.
+The `$created` sort will sort documents by their creation timestamp, while `$updated` will sort by the time the documents were updated. These sorts should use hidden metadata which is not ordinarily available for querying.
 
 Params:
 
@@ -265,6 +266,11 @@ coll.find(
     skip=4,
     limit=2,
     sort=[{"age": 1, "name": -1}]
+)
+
+coll.find(
+    {"likes": ["icecream"]},
+    sort=[{"age": 1, "$updated": -1}]
 )
 ```
 
