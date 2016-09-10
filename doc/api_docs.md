@@ -274,6 +274,18 @@ Example:
 
 
 
+## bq\_remove\_many\_by\_ids
+
+- params: `i_coll text, i_ids jsonb`
+- returns: `setof integer`
+- language: `plpgsql`
+
+```markdown
+Remove many documents, by their `_id` fields.
+```
+
+
+
 ## bq\_save
 
 - params: `i_coll text, i_jdoc jsonb`
