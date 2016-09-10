@@ -110,6 +110,38 @@ END
 $$ LANGUAGE plpgsql;
 
 
+/* Remove many documents, by their `_id` fields.
+* Returns count of deleted documents, either one or zero.
+* Example:
+*   select bq_remove_one_by_id('orders', '4d733fb148e7d89f7c569655');
+*/
+CREATE OR REPLACE FUNCTION bq_remove_many_by_ids(i_coll text, i_ids jsonb)
+RETURNS setof integer AS $$
+BEGIN
+  IF (SELECT bq_collection_exists(i_coll))
+  THEN
+    IF jsonb_typeof(i_ids) != 'array'
+    THEN
+      RAISE EXCEPTION
+      'Invalid ids parameter "%s"', jsonb_typeof(i_ids)
+      USING HINT = 'ids should be a json array of strings';
+    END IF;
+    RETURN QUERY EXECUTE format('
+      WITH
+      deleted AS
+      (DELETE FROM %1$I WHERE _id = ANY(select jsonb_array_elements_text(%2$s::jsonb)) RETURNING _id)
+      SELECT count(*)::integer FROM deleted',
+      quote_ident(i_coll),
+      quote_literal(i_ids)
+     );
+  ELSE
+    RETURN QUERY SELECT 0;
+  END IF;
+END
+$$ LANGUAGE plpgsql;
+
+
+
 /* Save a document to a collection.
  * Similar to `bq_insert`, but will overwrite an existing document if one with a matching
  * `_id` field is found. Can be used to either create new documents or update existing documents.

@@ -328,3 +328,80 @@ class TestRemoveDocumnts(testutils.BedquiltTestCase):
                              (mike,),
                              (darren,)
                          ])
+
+    def test_remove_many_by_ids_on_non_existant_collection(self):
+        self.cur.execute("""
+        select bq_remove_many_by_ids('people', '["one", "three"]');
+        """)
+        result = self.cur.fetchall()
+        self.assertEqual(result, [ (0,) ])
+
+    def test_remove_many_by_ids_on_empty_collection(self):
+        self.cur.execute("""
+        select bq_create_collection('people');
+        """)
+        _ = self.cur.fetchall()
+
+        self.cur.execute("""
+        select bq_remove_many_by_ids('people', '["one", "three"]');
+        """)
+        result = self.cur.fetchall()
+        self.assertEqual(result, [ (0,) ])
+
+    def test_remove_many_by_ids(self):
+
+        sarah = {'_id': "sarah@example.com",
+                 'name': "Sarah",
+                 'city': "Glasgow",
+                 'age': 34,
+                 'likes': ['icecream', 'cats']}
+        mike = {'_id': "mike@example.com",
+                'name': "Mike",
+                'city': "Edinburgh",
+                'age': 32,
+                'likes': ['cats', 'crochet']}
+        jill = {'_id': "jill@example.com",
+                'name': "Jill",
+                'city': "Glasgow",
+                'age': 32,
+                'likes': ['code', 'crochet']}
+        darren = {'_id': "darren@example.com",
+                'name': "Darren",
+                'city': "Manchester"}
+
+        self._insert('people', sarah)
+        self._insert('people', mike)
+        self._insert('people', jill)
+        self._insert('people', darren)
+
+        self.cur.execute("""
+        select bq_remove_many_by_ids('people', '["nope", "nope_two"]')
+        """)
+        result = self.cur.fetchall()
+        self.assertEqual(result, [ (0,) ])
+
+        self.cur.execute("""
+        select bq_count('people', '{}')
+        """)
+        result = self.cur.fetchall()
+        self.assertEqual(result, [ (4,) ])
+
+        self.cur.execute("""
+        select bq_remove_many_by_ids('people', '["darren@example.com", "mike@example.com"]')
+        """)
+        result = self.cur.fetchall()
+        self.assertEqual(result, [ (2,) ])
+
+        self.cur.execute("""
+        select bq_count('people', '{}')
+        """)
+        result = self.cur.fetchall()
+        self.assertEqual(result, [ (2,) ])
+
+        self.cur.execute("""
+        select bq_find('people', '{}')
+        """)
+        result = self.cur.fetchall()
+        self.assertEqual(
+            map(lambda r: r[0]['_id'], result),
+            ['sarah@example.com', 'jill@example.com'])
