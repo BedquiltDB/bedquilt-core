@@ -588,4 +588,21 @@ Examples:
 removed = coll.remove_one_by_id("abc")
 ```
 
+
+### Remove Many By Ids
+
+Remove many documents by their `_id` fields.
+
+Params:
+
+- id::Array
+
+Returns: Number, representing the number of documents removed, either one or zero.
+
+Examples:
+```
+removed = coll.remove_many_by_ids(["one", "two", "four"])
+```
+
+
 ----
