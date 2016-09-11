@@ -23,10 +23,8 @@ clean:
 	mkdir -p $@
 	mkdir -p $@/sql
 	cp dist/sql/*.sql $@/sql/
-	./bin/template.py src/META.json VERSION=$(VERSION) \
-		> $@/META.json
-	./bin/template.py src/bedquilt.control VERSION=$(VERSION) \
-		> $@/bedquilt.control
+	sed s/\{\{VERSION\}\}/$(VERSION)/g src/META.json > $@/META.json
+	sed s/\{\{VERSION\}\}/$(VERSION)/g src/bedquilt.control > $@/bedquilt.control
 	cp src/Makefile $@/
 	cp -R doc $@/doc
 
