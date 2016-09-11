@@ -6,7 +6,7 @@
 
 A JSON store on PostgreSQL.
 
-[![CircleCI](https://circleci.com/gh/BedquiltDB/bedquilt-core/tree/master.svg?style=svg)](https://circleci.com/gh/BedquiltDB/bedquilt-core/tree/master)
+[![CircleCI](https://circleci.com/gh/BedquiltDB/bedquilt-core/tree/master.svg?style=shield)](https://circleci.com/gh/BedquiltDB/bedquilt-core/tree/master)
 
 
 # Releases
