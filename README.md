@@ -98,8 +98,9 @@ respective driver repositories.
 
 # Prerequisites
 
-- PostgreSQL >= 9.4 (bedquilt-core is currently being tested against 9.5 alpha)
+- PostgreSQL >= 9.5
 - PL/pgSQL
+- PL/Pyton3u
 - The pgcrypto extension
 
 
