@@ -28,7 +28,7 @@ ELSE
     RETURN false;
 END IF;
 END
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql;
 
 
 /* Get a list of existing collections.
@@ -44,7 +44,7 @@ RETURN QUERY SELECT table_name::text
        WHERE column_name = 'bq_jdoc'
        AND data_type = 'jsonb';
 END
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql;
 
 
 /* Delete/drop a collection.
@@ -63,7 +63,7 @@ ELSE
     RETURN false;
 END IF;
 END
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql;
 
 
 /* Check if a collection exists.
