@@ -100,7 +100,7 @@ respective driver repositories.
 
 - PostgreSQL >= 9.5
 - PL/pgSQL
-- PL/Pyton3u
+- PL/Python3u
 - The pgcrypto extension
 
 
