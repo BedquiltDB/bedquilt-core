@@ -4,7 +4,7 @@
 
 ![Bedquilt](./resources/bedquilt_logo_tile.png)
 
-A JSON store on PostgreSQL.
+[BedquiltDB](https://bedquiltdb.github.io) is a A JSON document-store built on PostgreSQL.
 
 [![CircleCI](https://circleci.com/gh/BedquiltDB/bedquilt-core/tree/master.svg?style=shield)](https://circleci.com/gh/BedquiltDB/bedquilt-core/tree/master)
 
