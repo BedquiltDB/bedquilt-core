@@ -12,40 +12,31 @@ Linux bedquiltplayground 3.16.0-23-generic #31-Ubuntu SMP Tue Oct 21 17:56:17 UT
 
 ## Install Docker and the BedquiltDB Example Image
 
-First we need to install Docker and some essential tools:
 
-```bash
-$ sudo apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
-$ echo 'deb https://apt.dockerproject.org/repo ubuntu-trusty main' | sudo tee /etc/apt/sources.list.d/docker.list
-$ sudo apt-get update
-$ sudo apt-get install linux-image-extra-$(uname -r)
-$ sudo apt-get install docker-engine
-```
+First, [install docker](https://docs.docker.com/engine/installation/), it's ok, we'll wait right here...
 
-We should test that the docker daemon is working correctly:
+Now that docker is installed, we should test that the docker daemon is working correctly:
 
 ```bash
 $ sudo docker run hello-world
 ```
 
-If all looks well, we can build the [BedquiltDB Example image](https://github.com/BedquiltDB/docker-bedquiltdb-example):
+Now, pull the `bedquiltdb` image:
 
 ```bash
-$ git clone https://github.com/BedquiltDB/docker-bedquiltdb-example
-$ cd docker-bedquiltdb-example
-$ sudo docker build -t "bedquiltdb_example" .
+$ sudo docker pull bedquiltdb/bedquiltdb
 ```
 
-Then start a docker container from the bedquiltdb_example image:
+And run that image as a container called `bq`:
 
 ```bash
-$ sudo docker run -d --name bedquiltdb bedquiltdb_example
+docker run -d -P --name bq bedquiltdb/bedquiltdb
 ```
 
 Now that the BedquiltDB container is runnig, we need to take note of its IP address:
 
 ```bash
-$ sudo docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' bedquiltdb
+$ sudo docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' bedquilt
 ```
 
 We can use this IP address to connect to the database. There is already a user called `docker` set up
