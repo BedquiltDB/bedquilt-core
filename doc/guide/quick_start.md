@@ -3,11 +3,11 @@
 Let's take a fresh Ubuntu machine, install Docker, install the BedquiltDB docker image
 and write a small program to check that BedquiltDB works.
 
-We'll presume we have an admin account on a fresh installation of Ubuntu 14.04:
+We'll presume we have an admin account on a fresh installation of Ubuntu 16.04:
 
 ```bash
 $ uname -a
-Linux bedquiltplayground 3.16.0-23-generic #31-Ubuntu SMP Tue Oct 21 17:56:17 UTC 2014 x86_64 x86_64 x86_64 GNU/Linux
+Linux ub 4.4.0-36-generic #55-Ubuntu SMP Thu Aug 11 18:01:55 UTC 2016 x86_64 x86_64 x86_64 GNU/Linux
 ```
 
 ## Install Docker and the BedquiltDB Example Image
@@ -33,15 +33,22 @@ And run that image as a container called `bq`:
 docker run -d -P --name bq bedquiltdb/bedquiltdb
 ```
 
-Now that the BedquiltDB container is runnig, we need to take note of its IP address:
+Now that the BedquiltDB container is running, we need to take note of the port which postgres is bound to:
 
 ```bash
-$ sudo docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' bedquilt
+$ sudo docker ps --format '{{.Names}} - {{.Ports}}'
 ```
 
-We can use this IP address to connect to the database. There is already a user called `docker` set up
-in the container (with a password `docker`), and a default database also called `docker`, so we can start
-using BedquiltDB right away.
+There should be a line of output like:
+
+```
+bq - 0.0.0.0:32768->5432/tcp
+```
+
+Which shows that localhost:32768 is the port we need to connect to. In your case, this port number will be different, take note of this port number.
+
+We can use this port to connect to the database. There is already a user called `docker` set up
+in the container (with a password `docker`), and a default database also called `docker`, so we can start using BedquiltDB right away.
 
 
 ## Write a python program
@@ -61,26 +68,25 @@ $ sudo pip install psycopg2 pybedquilt
 ### Program
 
 Let's write a simple python program, use your favourite editor to create a file `counts.py`, and
-put the following programe text in it:
+put the following program text in it:
 
 ```python
 from pybedquilt import BedquiltClient
 
 db = BedquiltClient(
-    host='<IP_ADDRESS_HERE>',
-    dbname='postgres',
-    user='docker',
-    password='docker'
+    host='localhost',
+    port='<PORT_HERE>',
+    dbname='docker',
+    user='docker'
 )
 
 things = db['things']
 
 current_count = things.count()
 print ">> there are currently {} things in the collection".format(current_count)
-
 ```
 
-Be sure to change `<IP_ADDRESS_HERE>` to the IP address of the database container.
+Be sure to change `<PORT_HERE>` to the port number you noted down earlier.
 
 Now run the program:
 
@@ -97,10 +103,10 @@ thing to the collection every time we run the program:
 from pybedquilt import BedquiltClient
 
 db = BedquiltClient(
-    host='<IP_ADDRESS_HERE>',
-    dbname='postgres',
-    user='docker',
-    password='docker'
+    host='localhost',
+    port='<PORT_HERE>',
+    dbname='docker',
+    user='docker'
 )
 
 things = db['things']
@@ -115,4 +121,9 @@ new_count = things.count()
 print ">> there are now {} things in the collection".format(new_count)
 ```
 
-And that's pretty much it.
+And that's pretty much it, you've now got an instance of PostgreSQL, with BedquiltDB, running inside a docker container, and a small python program which connects to that database to do some simple insert and read operations.
+
+
+## What Next?
+
+Check out the full documentation for the `bedquiltdb` docker image on [Docker Hub](https://hub.docker.com/r/bedquiltdb/bedquiltdb/), or move on to reading the rest of the [BedquiltDB Guide](index.md)
