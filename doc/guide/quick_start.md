@@ -127,3 +127,5 @@ And that's pretty much it, you've now got an instance of PostgreSQL, with Bedqui
 ## What Next?
 
 Check out the full documentation for the `bedquiltdb` docker image on [Docker Hub](https://hub.docker.com/r/bedquiltdb/bedquiltdb/), or move on to reading the rest of the [BedquiltDB Guide](index.md)
+
+Or, read the [Spec](../spec.md), to get an overview of all the cool stuff BedquiltDB supports.

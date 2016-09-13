@@ -324,3 +324,8 @@ Beware: the `remove*` operations will permanantly delete data. There is no way t
 ## Updating Data
 
 At the moment, the only way to update a document in a collection is to use the `save` operation detailed above.
+
+
+## What Next?
+
+Maybe read the [BedquiltDB Spec](../spec.md), to get a feel for all the cool stuff BedquiltDB can do.
