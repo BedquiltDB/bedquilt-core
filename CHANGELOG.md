@@ -1,5 +1,24 @@
 # BedquiltDB Changelog
 
+## 2.1.0
+
+Released 2016-09-13
+
+- Remove `SECURITY DEFINER` specifier from collection ops, all operations are now performed
+  with the permissions of the connected database user.
+
+
+## 2.0.0
+
+Released 2016-09-12
+
+- Advanced Query Operators
+- Add `skip` and `sort` options for `find_one`
+- New `remove_many_by_ids` operation
+- Add `$created` and `$updated` sorts
+- Add `_util_` to names of utility functions
+
+
 ## 0.6.0
 
 Released 2016-02-19
