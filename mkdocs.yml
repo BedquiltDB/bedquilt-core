@@ -14,5 +14,6 @@ pages:
     - 'Reading Data': 'guide/reading_data.md'
     - 'Writing Data': 'guide/writing_data.md'
     - 'Updating BedquiltDB': 'guide/updating.md'
+    - 'Administration': 'guide/administration.md'
   - 'Spec': 'spec.md'
   - 'Core API': 'api_docs.md'

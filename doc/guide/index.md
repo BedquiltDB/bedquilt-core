@@ -20,4 +20,6 @@ Welcome to the BedquiltDB Guide
 
 ### [Collection Constraints](constraints.md)
 
+### [Administration](administration.md)
+
 ### [Updating BedquiltDB](updating.md)
