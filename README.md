@@ -24,6 +24,16 @@ programmatic API that is consistent across languages
 - Build a tool which is actually useful for developers
 
 
+# Documentation
+
+Project documnetation hosted at [Read The Docs](http://bedquiltdb.readthedocs.org).
+
+To build documentation, install the `mkdocs` utility and run:
+```
+$ make docs
+```
+
+
 # Examples
 
 This extension provides the core functionality of BedquiltDB, and can be used from ordinary SQL queries,
@@ -71,16 +81,6 @@ select bq_create_collection('things');
 
 -- Get a list of existing collections
 select bq_list_collections();
-```
-
-
-# Documentation
-
-Project documnetation hosted at [Read The Docs](http://bedquiltdb.readthedocs.org).
-
-To build documentation, install the `mkdocs` utility and run:
-```
-$ make docs
 ```
 
 
