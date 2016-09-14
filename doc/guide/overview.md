@@ -328,4 +328,4 @@ At the moment, the only way to update a document in a collection is to use the `
 
 ## What Next?
 
-Maybe read the [BedquiltDB Spec](../spec.md), to get a feel for all the cool stuff BedquiltDB can do.
+Maybe read the [BedquiltDB Spec](../spec.md), to get a feel for all the cool stuff BedquiltDB can do, or check out the [Administration](administration.md) section.
