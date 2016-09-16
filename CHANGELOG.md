@@ -12,7 +12,7 @@ Released 2016-09-13
 
 Released 2016-09-12
 
-- Advanced Query Operators
+- Query Operators (such as `$eq`, `$regex`, ...)
 - Add `skip` and `sort` options for `find_one`
 - New `remove_many_by_ids` operation
 - Add `$created` and `$updated` sorts

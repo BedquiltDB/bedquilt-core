@@ -10,7 +10,7 @@ The BedquiltDB projects strives to preserve backwards-compatibility between rele
 - All public functions have been changed to accept `jsonb` parameters rather than `json`
 - The `find_one` function now accepts `skip` and `sort` parameters
 - Sort specifiers now include `$created` and `$updated` options
-- Query operations now support [Advanced Query Operators](../spec.md#aside-advanced-query-operations)
+- Query operations now support [Query Operators](../spec.md#aside-query-operators)
 
 Update process:
 

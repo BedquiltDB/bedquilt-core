@@ -359,12 +359,12 @@ users.distinct('lastName')        # => ['Smith', 'Clarke', ...]
 ```
 
 
-### Aside: Advanced Query Operations
+### Aside: Query Operators
 
-Query documents are normally used as a sub-document match, following the semantics of PostgreSQL `@>` operator. A query document may optionally include _Advanced Query Operators_, which take the form of key=>value mappings where the key begins with a `$` character.
+Query documents are normally used as a sub-document match, following the semantics of PostgreSQL `@>` operator. A query document may optionally include _Query Operators_, which take the form of key=>value mappings where the key begins with a `$` character.
 
 These query operators can be mixed into a query document at any location, and at any level of nesting,
-and will be filtered out of the query before execution. In this way a match query can be comibined with advanced query operators.
+and will be filtered out of the query before execution. In this way a match query can be comibined with query operators.
 
 The following operators are supported:
 
@@ -526,7 +526,7 @@ collection.find({
 })
 ```
 
-As an example of mixing match queries with advanced query operations, the following query should match all documents which live in either Edinburgh or Glasgow, and have logged in at least twice:
+As an example of mixing match queries with query operators, the following query should match all documents which live in either Edinburgh or Glasgow, and have logged in at least twice:
 ```
 users.find({
     "address": {

@@ -235,7 +235,7 @@ print db['users'].distinct('address.city')
 ```
 
 
-## Advanced Queries
+## Query Operators
 
 All of the examples so far have queried for documents which match a query document. In other words, the query document should be a sub-set of the matched document. BedquiltDB also supports more advanced query operations. For example, we can test that a certain field does _not equal_ to a given value:
 
@@ -274,7 +274,7 @@ print db['orders'].find({
 })
 ```
 
-See the [BedquiltDB Spec](../spec.md#aside-advanced-query-operations) for full documentation on advanced query operations.
+See the [BedquiltDB Spec](../spec.md#aside-query-operators) for full documentation on query operators.
 
 
 ## Skip, Limit and Sort
