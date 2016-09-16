@@ -89,8 +89,8 @@ class TestInsertDocument(testutils.BedquiltTestCase):
             "description": "Something I've eaten"
         }
         self.cur.execute("""
-            select bq_insert('things', $${}$$::jsonb);
-        """.format(json.dumps(doc)))
+            select bq_insert('things', %s);
+        """, (json.dumps(doc),))
 
         result = self.cur.fetchone()
         self.assertIsNotNone(result)
