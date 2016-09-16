@@ -48,4 +48,4 @@ If the query doesn't crash, then `bedquilt-core` is installed and ready to use.
 ## Next steps
 
 Now you can install a client library
-(such as [pybedquilt](http://pybedquilt.readthedocs.org)), read the [BedquiltDB Guide](index.md) and start using BedquiltDB.
+(such as [pybedquilt](http://pybedquilt.readthedocs.org)), ond/or read the [Overview](overview.md) section of the guide and start using BedquiltDB.
