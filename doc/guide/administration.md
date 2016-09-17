@@ -67,6 +67,6 @@ The PostgreSQL user account which is connected should have been granted permissi
 
 Really, this is up to the database operators and application developers to decide. If the BedquiltDB client should be able to create collections dynamically, then the appropriate permissions (for creating tables) should be granted to that user. If the client should be able to insert and remove data, the same applies. In many ways, BedquiltDB is designed with a full-permissions user account in mind, but in the case where a client tries to perform an action which they do not have permissions for, an ordinary PostgreSQL permission error will be raised.
 
-If you want a client to only be able to read data, but not insert or create collections, just set the permissions and it will all work fine.
+If you want a client to only be able to read data, but not insert or create collections, just set the permissions and it will all work fine. In the case where the connected user won't have permission to create collections/tables, then a super-user must create the required collections ahead of time by using `bq_create_collection()`.
 
 See the PostgreSQL documentation on [User Management](https://www.postgresql.org/docs/current/static/user-manag.html) and the [GRANT Command](https://www.postgresql.org/docs/current/static/sql-grant.html).
