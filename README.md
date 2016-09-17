@@ -95,6 +95,8 @@ BedquiltDB is intended to be used with client libraries (aka Drivers), such as:
 Installation instructions and documentation for each driver can be found on the
 respective driver repositories.
 
+BedquiltDB can also be used directly through SQL queries: `select bq_find('users', '{...}')`.
+
 
 # Prerequisites
 
