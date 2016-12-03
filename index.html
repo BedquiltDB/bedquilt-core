@@ -1,50 +1,35 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en-us">
   <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta charset="UTF-8">
     <title>Bedquilt-core by BedquiltDB</title>
-
-    <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-    <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
   </head>
   <body>
-    <div class="wrapper">
-      <header>
-        <h1>Bedquilt-core</h1>
-        <p>A JSON store on PostgreSQL</p>
+    <section class="page-header">
+      <h1 class="project-name">Bedquilt-core</h1>
+      <h2 class="project-tagline">A JSON store on PostgreSQL</h2>
+      <a href="https://github.com/BedquiltDB/bedquilt-core" class="btn">View on GitHub</a>
+      <a href="https://github.com/BedquiltDB/bedquilt-core/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/BedquiltDB/bedquilt-core/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
 
-        <p class="view"><a href="https://github.com/BedquiltDB/bedquilt-core">View the Project on GitHub <small>BedquiltDB/bedquilt-core</small></a></p>
-
-
-        <ul>
-          <li><a href="https://github.com/BedquiltDB/bedquilt-core/zipball/master">Download <strong>ZIP File</strong></a></li>
-          <li><a href="https://github.com/BedquiltDB/bedquilt-core/tarball/master">Download <strong>TAR Ball</strong></a></li>
-          <li><a href="https://github.com/BedquiltDB/bedquilt-core">View On <strong>GitHub</strong></a></li>
-        </ul>
-      </header>
-      <section>
-        <h1>
-<a id="bedquilt" class="anchor" href="#bedquilt" aria-hidden="true"><span class="octicon octicon-link"></span></a>Bedquilt</h1>
+    <section class="main-content">
+      <h1>
+<a id="bedquilt" class="anchor" href="#bedquilt" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Bedquilt</h1>
 
 <p><img src="https://raw.githubusercontent.com/BedquiltDB/bedquilt-core/master/resources/bedquilt_logo_tile.png" alt="BedquiltDB"></p>
 
 <p>A JSON store on PostgreSQL.</p>
 
-<h1>
-<a id="warning" class="anchor" href="#warning" aria-hidden="true"><span class="octicon octicon-link"></span></a>Warning</h1>
-
-<p>Bedquilt is currently worse-than-alpha quality and should not be used in production,
-or anywhere else for that matter. If Bedquilt kills your database, just imagine me
-whispering "told you so" and think hard about how you got yourself into this
-mess.</p>
+<p><a href="https://bedquiltdb.github.io">https://bedquiltdb.github.io</a></p>
 
 <h1>
-<a id="goals" class="anchor" href="#goals" aria-hidden="true"><span class="octicon octicon-link"></span></a>Goals</h1>
+<a id="goals" class="anchor" href="#goals" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Goals</h1>
 
 <ul>
 <li>Borrow some of the good ideas and positive attributes of json
@@ -56,12 +41,12 @@ programmatic API that is consistent across languages</li>
 </ul>
 
 <h1>
-<a id="examples" class="anchor" href="#examples" aria-hidden="true"><span class="octicon octicon-link"></span></a>Examples</h1>
+<a id="examples" class="anchor" href="#examples" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Examples</h1>
 
 <p>This extension provides the core functionality of BedquiltDB, and can be used from ordinary SQL queries,
 though it is recommended to use one of the driver libraries for you favourite programming language instead.</p>
 
-<div class="highlight highlight-PLpgSQL"><pre><span class="pl-c">-- Insert two documents into the 'people' collection.</span>
+<div class="highlight highlight-source-sql"><pre><span class="pl-c">-- Insert two documents into the 'people' collection.</span>
 <span class="pl-k">select</span> bq_insert(
     <span class="pl-s"><span class="pl-pds">'</span>people<span class="pl-pds">'</span></span>,
     <span class="pl-s"><span class="pl-pds">'</span>{"_id": "sarah@example.com",</span>
@@ -104,7 +89,7 @@ though it is recommended to use one of the driver libraries for you favourite pr
 <span class="pl-k">select</span> bq_list_collections();</pre></div>
 
 <h1>
-<a id="prerequisites" class="anchor" href="#prerequisites" aria-hidden="true"><span class="octicon octicon-link"></span></a>Prerequisites</h1>
+<a id="prerequisites" class="anchor" href="#prerequisites" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Prerequisites</h1>
 
 <ul>
 <li>PostgreSQL &gt;= 9.4</li>
@@ -113,7 +98,7 @@ though it is recommended to use one of the driver libraries for you favourite pr
 </ul>
 
 <h1>
-<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installation</h1>
+<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation</h1>
 
 <p>First, clone this repositroy:</p>
 
@@ -133,26 +118,28 @@ $ cd bedquilt-core
 
 <p>Then, on the postgres server:</p>
 
-<div class="highlight highlight-PLpgSQL"><pre>CREATE EXTENSION IF NOT EXISTS pgcrypto;
+<div class="highlight highlight-source-sql"><pre>CREATE EXTENSION IF NOT EXISTS pgcrypto;
 CREATE EXTENSION bedquilt;</pre></div>
 
 <h1>
-<a id="tests" class="anchor" href="#tests" aria-hidden="true"><span class="octicon octicon-link"></span></a>Tests</h1>
+<a id="tests" class="anchor" href="#tests" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Tests</h1>
 
 <p>Run <code>bin/run-tests.sh</code> to run the test suite. Requires a <code>bedquilt_test</code> database
 that the current user owns.</p>
 
 <h1>
-<a id="license" class="anchor" href="#license" aria-hidden="true"><span class="octicon octicon-link"></span></a>License</h1>
+<a id="license" class="anchor" href="#license" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>License</h1>
 
 <p>Bedquilt is released under the <a href="./LICENSE.txt">MIT License</a>.</p>
-      </section>
-      <footer>
-        <p>This project is maintained by <a href="https://github.com/BedquiltDB">BedquiltDB</a></p>
-        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/BedquiltDB/bedquilt-core">Bedquilt-core</a> is maintained by <a href="https://github.com/BedquiltDB">BedquiltDB</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
       </footer>
-    </div>
-    <script src="javascripts/scale.fix.js"></script>
-    
+
+    </section>
+
+  
   </body>
 </html>
