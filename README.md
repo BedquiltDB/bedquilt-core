@@ -1,4 +1,4 @@
-# Bedquilt
+# Bedquilt (Test)
 
 [![Join the chat at https://gitter.im/BedquiltDB/bedquilt-core](https://badges.gitter.im/BedquiltDB/bedquilt-core.svg)](https://gitter.im/BedquiltDB/bedquilt-core?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
