@@ -4,7 +4,7 @@
     "description": "Bedquilt is a json document store built on PostgreSQL",
     "version": "{{VERSION}}",
     "maintainer": [
-        "Shane Kilkelly <shane+bedquiltdb@kilkelly.me>"
+        "June Kelly (june@junek.xyz)"
     ],
     "license": "mit",
     "provides": {
@@ -25,7 +25,7 @@
             "type": "git"
         }
     },
-    "generated_by": "Shane Kilkelly",
+    "generated_by": "June Kelly",
     "meta-spec": {
         "version": "1.0.0",
         "url": "http://pgxn.org/meta/spec.txt"
